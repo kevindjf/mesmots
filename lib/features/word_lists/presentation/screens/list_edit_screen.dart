@@ -23,26 +23,9 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
   final _nameController = TextEditingController();
   final _wordsController = TextEditingController();
   bool _isLoading = false;
+  bool _dataLoaded = false;
 
   bool get _isEditing => widget.listId != null;
-
-  @override
-  void initState() {
-    super.initState();
-    if (_isEditing) {
-      _loadExistingList();
-    }
-  }
-
-  Future<void> _loadExistingList() async {
-    final repository = ref.read(wordListRepositoryProvider);
-    final wordList = await repository.getById(widget.listId!);
-
-    if (wordList != null) {
-      _nameController.text = wordList.name;
-      _wordsController.text = wordList.words.join('\n');
-    }
-  }
 
   @override
   void dispose() {
@@ -53,6 +36,19 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Load existing list data if editing
+    if (_isEditing && !_dataLoaded) {
+      ref.listen(wordListProvider(widget.listId!), (previous, next) {
+        next.whenData((wordList) {
+          if (wordList != null && !_dataLoaded) {
+            _nameController.text = wordList.name;
+            _wordsController.text = wordList.words.join('\n');
+            setState(() => _dataLoaded = true);
+          }
+        });
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? AppStrings.editList : AppStrings.createList),

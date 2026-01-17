@@ -15,6 +15,7 @@ class AppDimensions {
   static const double paddingM = 16.0;
   static const double paddingL = 20.0;
   static const double paddingXl = 24.0;
+  static const double paddingXxl = 32.0;
 
   // Border radius
   static const double radiusS = 8.0;

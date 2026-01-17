@@ -5,9 +5,6 @@ enum GameLevel {
   fillBlanks,
   writing;
 
-  /// Get level index (0-3)
-  int get index => GameLevel.values.indexOf(this);
-
   /// Get level number (1-4)
   int get number => index + 1;
 

@@ -40,7 +40,7 @@ class AppTheme {
       ),
 
       // Card theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: AppDimensions.elevationM,
         shadowColor: Colors.black.withOpacity(AppDimensions.shadowOpacity),

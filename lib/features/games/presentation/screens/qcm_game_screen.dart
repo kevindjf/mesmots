@@ -142,22 +142,25 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
       isIncorrect: showIncorrect,
       onTap: _showFeedback
           ? null
-          : () async {
+          : () {
+              // Set feedback state immediately
               setState(() {
                 _selectedAnswer = text;
                 _showFeedback = true;
               });
 
-              // Submit answer
-              await gameProvider.answer(text);
+              // Submit answer (non-blocking - provider handles delays)
+              gameProvider.answer(text);
 
-              // Reset for next question
-              if (mounted) {
-                setState(() {
-                  _selectedAnswer = null;
-                  _showFeedback = false;
-                });
-              }
+              // Reset local state after a short delay (just for visual feedback)
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted) {
+                  setState(() {
+                    _selectedAnswer = null;
+                    _showFeedback = false;
+                  });
+                }
+              });
             },
       child: Center(
         child: Text(

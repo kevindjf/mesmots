@@ -15,12 +15,20 @@ class GameSession {
   /// Total number of words at start
   final int totalWords;
 
+  /// Total number of cards presented (tracks all attempts)
+  final int cardsPresented;
+
+  /// Total cards to present (totalWords * 2, since each needs 2 successes)
+  final int totalCards;
+
   const GameSession({
     required this.pool,
     required this.successCount,
     required this.consecutiveErrors,
     required this.validated,
     required this.totalWords,
+    required this.cardsPresented,
+    required this.totalCards,
   });
 
   /// Create initial game session from word list
@@ -31,6 +39,8 @@ class GameSession {
       consecutiveErrors: {},
       validated: {},
       totalWords: words.length,
+      cardsPresented: 0,
+      totalCards: words.length * 2, // Each word needs 2 successes
     );
   }
 
@@ -40,10 +50,10 @@ class GameSession {
   /// Check if session is complete
   bool get isComplete => pool.isEmpty;
 
-  /// Get progress as percentage (0.0 to 1.0)
+  /// Get progress as percentage (0.0 to 1.0) based on cards presented
   double get progress {
-    if (totalWords == 0) return 0.0;
-    return validated.length / totalWords;
+    if (totalCards == 0) return 0.0;
+    return (cardsPresented / totalCards).clamp(0.0, 1.0);
   }
 
   /// Get progress as integer percentage (0-100)
@@ -64,6 +74,9 @@ class GameSession {
     final newConsecutiveErrors = Map<String, int>.from(consecutiveErrors);
     final newValidated = Set<String>.from(validated);
     final newPool = List<String>.from(pool);
+
+    // Increment cards presented counter (for progress bar)
+    final newCardsPresented = cardsPresented + 1;
 
     if (correct) {
       // Increment success count
@@ -102,6 +115,8 @@ class GameSession {
       consecutiveErrors: newConsecutiveErrors,
       validated: newValidated,
       totalWords: totalWords,
+      cardsPresented: newCardsPresented,
+      totalCards: totalCards,
     );
   }
 
@@ -127,6 +142,8 @@ class GameSession {
     Map<String, int>? consecutiveErrors,
     Set<String>? validated,
     int? totalWords,
+    int? cardsPresented,
+    int? totalCards,
   }) {
     return GameSession(
       pool: pool ?? this.pool,
@@ -134,6 +151,8 @@ class GameSession {
       consecutiveErrors: consecutiveErrors ?? this.consecutiveErrors,
       validated: validated ?? this.validated,
       totalWords: totalWords ?? this.totalWords,
+      cardsPresented: cardsPresented ?? this.cardsPresented,
+      totalCards: totalCards ?? this.totalCards,
     );
   }
 
@@ -146,7 +165,9 @@ class GameSession {
           successCount == other.successCount &&
           consecutiveErrors == other.consecutiveErrors &&
           validated == other.validated &&
-          totalWords == other.totalWords;
+          totalWords == other.totalWords &&
+          cardsPresented == other.cardsPresented &&
+          totalCards == other.totalCards;
 
   @override
   int get hashCode =>
@@ -154,7 +175,9 @@ class GameSession {
       successCount.hashCode ^
       consecutiveErrors.hashCode ^
       validated.hashCode ^
-      totalWords.hashCode;
+      totalWords.hashCode ^
+      cardsPresented.hashCode ^
+      totalCards.hashCode;
 
   @override
   String toString() =>

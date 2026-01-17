@@ -99,7 +99,7 @@ class ScrambleGameScreen extends ConsumerWidget {
                             AppDimensions.radiusL,
                           ),
                           border: Border.all(
-                            color: AppColors.border,
+                            color: AppColors.textLight,
                             width: 2,
                           ),
                         ),
@@ -202,13 +202,13 @@ class ScrambleGameScreen extends ConsumerWidget {
         onPressed: isDisabled ? null : () => gameProvider.addLetter(letter),
         style: ElevatedButton.styleFrom(
           backgroundColor:
-              isDisabled ? AppColors.disabled : AppColors.cardBackground,
-          foregroundColor: isDisabled ? AppColors.textSecondary : AppColors.textPrimary,
+              isDisabled ? AppColors.background : AppColors.cardBackground,
+          foregroundColor: isDisabled ? AppColors.textLight : AppColors.textPrimary,
           elevation: isDisabled ? 0 : 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusM),
             side: BorderSide(
-              color: isDisabled ? AppColors.border : AppColors.primary,
+              color: isDisabled ? AppColors.textLight : AppColors.primary,
               width: 2,
             ),
           ),

@@ -3,8 +3,6 @@ import 'package:mesmots/features/word_lists/data/models/word_status_model.dart';
 import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
-part 'level_progress_model.g.dart';
-
 @embedded
 class LevelProgressModel {
   /// Words in this level

@@ -1,8 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
-part 'word_status_model.g.dart';
-
 @embedded
 class WordStatusModel {
   late int successCount;

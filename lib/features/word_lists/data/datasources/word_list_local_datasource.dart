@@ -1,59 +1,61 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mesmots/core/utils/database_provider.dart';
 
 part 'word_list_local_datasource.g.dart';
 
-/// Local data source for word lists using Isar
+/// Local data source for word lists using Hive
 class WordListLocalDataSource {
-  final Isar _isar;
+  final Box<WordListModel> _box;
 
-  WordListLocalDataSource(this._isar);
+  WordListLocalDataSource(this._box);
 
   /// Get all word lists
   Future<List<WordListModel>> getAll() async {
-    return await _isar.wordListModels.where().findAll();
+    return _box.values.toList();
   }
 
   /// Get a word list by UUID
   Future<WordListModel?> getByUuid(String uuid) async {
-    return await _isar.wordListModels.filter().uuidEqualTo(uuid).findFirst();
+    try {
+      return _box.values.firstWhere((model) => model.uuid == uuid);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Save a word list (insert or update)
   Future<void> save(WordListModel model) async {
-    await _isar.writeTxn(() async {
-      await _isar.wordListModels.put(model);
-    });
+    // Use UUID as the key for Hive
+    await _box.put(model.uuid, model);
   }
 
   /// Delete a word list
   Future<void> delete(String uuid) async {
-    await _isar.writeTxn(() async {
-      await _isar.wordListModels.filter().uuidEqualTo(uuid).deleteFirst();
-    });
+    await _box.delete(uuid);
   }
 
   /// Delete all word lists
   Future<void> deleteAll() async {
-    await _isar.writeTxn(() async {
-      await _isar.wordListModels.clear();
-    });
+    await _box.clear();
   }
 
   /// Watch all word lists (stream)
   Stream<List<WordListModel>> watchAll() {
-    return _isar.wordListModels.where().watch(fireImmediately: true);
+    // Hive's watch() emits on any change to the box
+    return _box.watch().map((_) => _box.values.toList());
   }
 
   /// Watch a specific word list (stream)
   Stream<WordListModel?> watchByUuid(String uuid) {
-    return _isar.wordListModels
-        .filter()
-        .uuidEqualTo(uuid)
-        .watch(fireImmediately: true)
-        .map((list) => list.isEmpty ? null : list.first);
+    return _box.watch(key: uuid).map((_) {
+      try {
+        return _box.values.firstWhere((model) => model.uuid == uuid);
+      } catch (e) {
+        return null;
+      }
+    });
   }
 }
 
@@ -61,6 +63,6 @@ class WordListLocalDataSource {
 WordListLocalDataSource wordListLocalDataSource(
   WordListLocalDataSourceRef ref,
 ) {
-  final isar = ref.watch(isarProvider).requireValue;
-  return WordListLocalDataSource(isar);
+  final box = ref.watch(wordListBoxProvider).requireValue;
+  return WordListLocalDataSource(box);
 }

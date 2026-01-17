@@ -28,19 +28,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-
-        // Force extraction of native libraries for Isar compatibility
-        ndk {
-            abiFilters.clear()
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
-        }
-    }
-
-    packaging {
-        jniLibs {
-            // Fix for Isar native library loading issue
-            useLegacyPackaging = true
-        }
     }
 
     buildTypes {

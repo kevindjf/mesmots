@@ -1,24 +1,35 @@
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
 import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
 
 part 'database_provider.g.dart';
 
+/// Initialize Hive database
+Future<void> initializeDatabase() async {
+  await Hive.initFlutter();
+
+  // Register adapters
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(WordListModelAdapter());
+  }
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(ParentalSettingsModelAdapter());
+  }
+}
+
 @riverpod
-Future<Isar> isar(IsarRef ref) async {
-  final dir = await getApplicationDocumentsDirectory();
+Future<Box<WordListModel>> wordListBox(WordListBoxRef ref) async {
+  final box = await Hive.openBox<WordListModel>('wordLists');
+  ref.onDispose(() => box.close());
+  return box;
+}
 
-  final isar = await Isar.open(
-    [
-      WordListModelSchema,
-      ParentalSettingsModelSchema,
-    ],
-    directory: dir.path,
-  );
-
-  ref.onDispose(() => isar.close());
-
-  return isar;
+@riverpod
+Future<Box<ParentalSettingsModel>> parentalSettingsBox(
+  ParentalSettingsBoxRef ref,
+) async {
+  final box = await Hive.openBox<ParentalSettingsModel>('parentalSettings');
+  ref.onDispose(() => box.close());
+  return box;
 }

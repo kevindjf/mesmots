@@ -1,15 +1,20 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import 'package:mesmots/features/parental/domain/entities/parental_settings.dart';
 
 part 'parental_settings_model.g.dart';
 
-@collection
-class ParentalSettingsModel {
-  Id id = 1; // Singleton - always ID 1
-
+@HiveType(typeId: 1)
+class ParentalSettingsModel extends HiveObject {
+  @HiveField(0)
   String? pinHash;
+
+  @HiveField(1)
   String? recoveryQuestion;
+
+  @HiveField(2)
   String? recoveryAnswerHash;
+
+  @HiveField(3)
   late bool isPinConfigured;
 
   ParentalSettingsModel();

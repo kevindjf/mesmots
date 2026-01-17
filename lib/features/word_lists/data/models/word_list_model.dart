@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
 import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
@@ -6,44 +6,85 @@ import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
 part 'word_list_model.g.dart';
 
-@collection
-class WordListModel {
-  Id id = Isar.autoIncrement;
-
-  @Index(unique: true)
+@HiveType(typeId: 0)
+class WordListModel extends HiveObject {
+  @HiveField(0)
   late String uuid;
 
+  @HiveField(1)
   late String name;
+
+  @HiveField(2)
   late DateTime createdAt;
+
+  @HiveField(3)
   late DateTime updatedAt;
+
+  @HiveField(4)
   late List<String> words;
 
   // QCM Level Progress (flattened structure)
+  @HiveField(5)
   late List<int> qcmSuccessCounts;
+
+  @HiveField(6)
   late List<int> qcmConsecutiveErrors;
+
+  @HiveField(7)
   late List<bool> qcmIsValidated;
+
+  @HiveField(8)
   late bool qcmCompleted;
+
+  @HiveField(9)
   DateTime? qcmCompletedAt;
 
   // Scramble Level Progress
+  @HiveField(10)
   late List<int> scrambleSuccessCounts;
+
+  @HiveField(11)
   late List<int> scrambleConsecutiveErrors;
+
+  @HiveField(12)
   late List<bool> scrambleIsValidated;
+
+  @HiveField(13)
   late bool scrambleCompleted;
+
+  @HiveField(14)
   DateTime? scrambleCompletedAt;
 
   // Fill Blanks Level Progress
+  @HiveField(15)
   late List<int> fillBlanksSuccessCounts;
+
+  @HiveField(16)
   late List<int> fillBlanksConsecutiveErrors;
+
+  @HiveField(17)
   late List<bool> fillBlanksIsValidated;
+
+  @HiveField(18)
   late bool fillBlanksCompleted;
+
+  @HiveField(19)
   DateTime? fillBlanksCompletedAt;
 
   // Writing Level Progress
+  @HiveField(20)
   late List<int> writingSuccessCounts;
+
+  @HiveField(21)
   late List<int> writingConsecutiveErrors;
+
+  @HiveField(22)
   late List<bool> writingIsValidated;
+
+  @HiveField(23)
   late bool writingCompleted;
+
+  @HiveField(24)
   DateTime? writingCompletedAt;
 
   WordListModel();

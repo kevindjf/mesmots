@@ -1,40 +1,35 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mesmots/core/utils/database_provider.dart';
 
 part 'parental_local_datasource.g.dart';
 
-/// Local data source for parental settings using Isar
+/// Local data source for parental settings using Hive
 class ParentalLocalDataSource {
-  final Isar _isar;
+  final Box<ParentalSettingsModel> _box;
+  static const String _settingsKey = 'settings';
 
-  ParentalLocalDataSource(this._isar);
+  ParentalLocalDataSource(this._box);
 
   /// Get parental settings (singleton)
   Future<ParentalSettingsModel?> get() async {
-    return await _isar.parentalSettingsModels.get(1);
+    return _box.get(_settingsKey);
   }
 
   /// Save parental settings
   Future<void> save(ParentalSettingsModel model) async {
-    await _isar.writeTxn(() async {
-      model.id = 1; // Ensure singleton ID
-      await _isar.parentalSettingsModels.put(model);
-    });
+    await _box.put(_settingsKey, model);
   }
 
   /// Delete parental settings (reset)
   Future<void> delete() async {
-    await _isar.writeTxn(() async {
-      await _isar.parentalSettingsModels.delete(1);
-    });
+    await _box.delete(_settingsKey);
   }
 
   /// Watch parental settings (stream)
   Stream<ParentalSettingsModel?> watch() {
-    return _isar.parentalSettingsModels
-        .watchObject(1, fireImmediately: true);
+    return _box.watch(key: _settingsKey).map((_) => _box.get(_settingsKey));
   }
 }
 
@@ -42,6 +37,6 @@ class ParentalLocalDataSource {
 ParentalLocalDataSource parentalLocalDataSource(
   ParentalLocalDataSourceRef ref,
 ) {
-  final isar = ref.watch(isarProvider).requireValue;
-  return ParentalLocalDataSource(isar);
+  final box = ref.watch(parentalSettingsBoxProvider).requireValue;
+  return ParentalLocalDataSource(box);
 }

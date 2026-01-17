@@ -42,20 +42,33 @@ class WordListLocalDataSource {
   }
 
   /// Watch all word lists (stream)
-  Stream<List<WordListModel>> watchAll() {
-    // Hive's watch() emits on any change to the box
-    return _box.watch().map((_) => _box.values.toList());
+  Stream<List<WordListModel>> watchAll() async* {
+    // Emit initial value
+    yield _box.values.toList();
+
+    // Then watch for changes
+    await for (final _ in _box.watch()) {
+      yield _box.values.toList();
+    }
   }
 
   /// Watch a specific word list (stream)
-  Stream<WordListModel?> watchByUuid(String uuid) {
-    return _box.watch(key: uuid).map((_) {
+  Stream<WordListModel?> watchByUuid(String uuid) async* {
+    // Emit initial value
+    try {
+      yield _box.values.firstWhere((model) => model.uuid == uuid);
+    } catch (e) {
+      yield null;
+    }
+
+    // Then watch for changes
+    await for (final _ in _box.watch(key: uuid)) {
       try {
-        return _box.values.firstWhere((model) => model.uuid == uuid);
+        yield _box.values.firstWhere((model) => model.uuid == uuid);
       } catch (e) {
-        return null;
+        yield null;
       }
-    });
+    }
   }
 }
 

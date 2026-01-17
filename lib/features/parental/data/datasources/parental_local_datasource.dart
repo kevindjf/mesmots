@@ -28,8 +28,14 @@ class ParentalLocalDataSource {
   }
 
   /// Watch parental settings (stream)
-  Stream<ParentalSettingsModel?> watch() {
-    return _box.watch(key: _settingsKey).map((_) => _box.get(_settingsKey));
+  Stream<ParentalSettingsModel?> watch() async* {
+    // Emit initial value
+    yield _box.get(_settingsKey);
+
+    // Then watch for changes
+    await for (final _ in _box.watch(key: _settingsKey)) {
+      yield _box.get(_settingsKey);
+    }
   }
 }
 

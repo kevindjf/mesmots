@@ -33,6 +33,21 @@ class QcmQuestion {
   });
 }
 
+/// QCM game state with question and session info
+class QcmGameState {
+  final QcmQuestion? question;
+  final double progress;
+  final int validatedCount;
+  final int totalCount;
+
+  const QcmGameState({
+    required this.question,
+    required this.progress,
+    required this.validatedCount,
+    required this.totalCount,
+  });
+}
+
 /// QCM game provider
 @riverpod
 class QcmGame extends _$QcmGame {
@@ -41,7 +56,7 @@ class QcmGame extends _$QcmGame {
   final _distractorGenerator = GenerateDistractors();
 
   @override
-  FutureOr<QcmQuestion?> build(String listId) async {
+  FutureOr<QcmGameState> build(String listId) async {
     // Load word list and initialize session
     final repository = ref.read(wordListRepositoryProvider);
     final wordList = await repository.getById(listId);
@@ -73,7 +88,17 @@ class QcmGame extends _$QcmGame {
       await tts.speak(_currentQuestion!.word);
     }
 
-    return _currentQuestion;
+    return _buildState();
+  }
+
+  /// Build current game state
+  QcmGameState _buildState() {
+    return QcmGameState(
+      question: _currentQuestion,
+      progress: _session?.progress ?? 0.0,
+      validatedCount: _session?.validatedCount ?? 0,
+      totalCount: _session?.totalWords ?? 0,
+    );
   }
 
   /// Generate a question for current word
@@ -113,48 +138,54 @@ class QcmGame extends _$QcmGame {
   Future<void> answer(String selectedAnswer) async {
     if (_session == null || _currentQuestion == null) return;
 
-    final isCorrect = selectedAnswer == _currentQuestion!.word;
+    final currentWord = _currentQuestion!.word;
+    final isCorrect = selectedAnswer == currentWord;
 
-    // Play feedback
+    // Play feedback immediately (non-blocking)
     final audio = ref.read(audioServiceProvider);
     final haptic = ref.read(hapticServiceProvider);
 
     if (isCorrect) {
-      await haptic.success();
-      await audio.playSuccess();
+      haptic.success(); // Non-blocking
+      audio.playSuccess(); // Non-blocking
     } else {
-      await haptic.error();
-      await audio.playError();
+      haptic.error(); // Non-blocking
+      audio.playError(); // Non-blocking
     }
 
-    // Update session
+    // Update session immediately
     _session = _session!.answer(isCorrect);
 
+    // Update state immediately so UI refreshes (progress bar updates)
+    state = AsyncData(_buildState());
+
+    // Save progress to database asynchronously (non-blocking)
+    _saveProgress(isCorrect).ignore();
+
     // Check if word is now validated
-    if (isCorrect && _session!.isWordValidated(_currentQuestion!.word)) {
-      // Word validated! Play celebration
-      await Future.delayed(const Duration(milliseconds: 300));
-      await audio.playWordComplete();
-      await haptic.success();
+    final isValidated = isCorrect && _session!.isWordValidated(currentWord);
+
+    // Wait for feedback delay
+    await Future.delayed(const Duration(milliseconds: isValidated ? 800 : 500));
+
+    // Play celebration if word validated
+    if (isValidated) {
+      audio.playWordComplete(); // Non-blocking
+      haptic.success(); // Non-blocking
+      await Future.delayed(const Duration(milliseconds: 400));
     }
-
-    // Update word list progress in database
-    await _saveProgress(isCorrect);
-
-    // Wait a bit before showing next question
-    await Future.delayed(const Duration(milliseconds: 1200));
 
     // Generate next question
     _currentQuestion = _generateQuestion();
 
-    // Auto-play TTS for next word
+    // Auto-play TTS for next word (non-blocking for UI)
     if (_currentQuestion != null) {
       final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
+      tts.speak(_currentQuestion!.word).ignore();
     }
 
-    // Update state
-    state = AsyncData(_currentQuestion);
+    // Update state with new question
+    state = AsyncData(_buildState());
   }
 
   /// Save progress to database

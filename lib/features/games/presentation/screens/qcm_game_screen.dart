@@ -29,7 +29,7 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final questionAsync = ref.watch(qcmGameProvider(widget.listId));
+    final gameStateAsync = ref.watch(qcmGameProvider(widget.listId));
 
     return Scaffold(
       appBar: AppBar(
@@ -38,9 +38,9 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: questionAsync.when(
-        data: (question) {
-          if (question == null) {
+      body: gameStateAsync.when(
+        data: (gameState) {
+          if (gameState.question == null) {
             // Game complete!
             return SuccessOverlay(
               onNextLevel: () {
@@ -54,15 +54,15 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
           }
 
           final gameProvider = ref.read(qcmGameProvider(widget.listId).notifier);
-          final session = gameProvider.session;
+          final question = gameState.question!;
 
           return Column(
             children: [
               // Progress header
               GameHeader(
-                progress: session?.progress ?? 0.0,
-                validatedCount: session?.validatedCount ?? 0,
-                totalCount: session?.totalWords ?? 0,
+                progress: gameState.progress,
+                validatedCount: gameState.validatedCount,
+                totalCount: gameState.totalCount,
               ),
 
               // Main content

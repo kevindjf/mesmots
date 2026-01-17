@@ -5,6 +5,7 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/qcm_game_provider.dart';
+import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
 import 'package:mesmots/shared/widgets/app_card.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
@@ -41,11 +42,15 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
       body: gameStateAsync.when(
         data: (gameState) {
           if (gameState.question == null) {
-            // Game complete!
+            // Game complete! Navigate to Scramble
             return SuccessOverlay(
               onNextLevel: () {
-                // TODO: Navigate to next level
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ScrambleGameScreen(listId: widget.listId),
+                  ),
+                );
               },
               onBackToList: () {
                 Navigator.pop(context);

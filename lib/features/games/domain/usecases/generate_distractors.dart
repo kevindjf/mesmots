@@ -16,7 +16,7 @@ class GenerateDistractors {
       if (distractors.isEmpty) {
         distractor = _phoneticError(word);
       } else if (distractors.length == 1) {
-        distractor = _doubleLetter Error(word);
+        distractor = _doubleLetterError(word);
       } else {
         // Mix of other errors
         final errorType = _random.nextInt(3);

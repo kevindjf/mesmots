@@ -5,6 +5,17 @@ allprojects {
     }
 }
 
+// Patch pour Isar : ajouter le namespace manquant pour AGP 8+
+subprojects {
+    afterEvaluate {
+        if (project.name == "isar_flutter_libs") {
+            extensions.findByType<com.android.build.gradle.LibraryExtension>()?.apply {
+                namespace = "dev.isar.isar_flutter_libs"
+            }
+        }
+    }
+}
+
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")

@@ -30,7 +30,26 @@ class ParentalOperations extends _$ParentalOperations {
     // No initial state needed
   }
 
-  /// Setup PIN for the first time
+  /// Configure PIN only (for initial onboarding)
+  Future<void> configurePin(String pin) async {
+    state = const AsyncLoading();
+
+    await AsyncValue.guard(() async {
+      final repository = ref.read(parentalRepositoryProvider);
+
+      final pinHash = CryptoHelper.hashPin(pin);
+
+      final settings = ParentalSettings.initial().configure(
+        pinHash: pinHash,
+        recoveryQuestion: null,
+        recoveryAnswerHash: null,
+      );
+
+      await repository.save(settings);
+    }).then((value) => state = value);
+  }
+
+  /// Setup PIN for the first time with recovery
   Future<void> setupPin({
     required String pin,
     required String recoveryQuestion,

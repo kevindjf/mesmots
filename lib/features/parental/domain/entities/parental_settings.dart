@@ -29,11 +29,11 @@ class ParentalSettings {
     );
   }
 
-  /// Configure PIN with recovery
+  /// Configure PIN with optional recovery
   ParentalSettings configure({
     required String pinHash,
-    required String recoveryQuestion,
-    required String recoveryAnswerHash,
+    String? recoveryQuestion,
+    String? recoveryAnswerHash,
   }) {
     return ParentalSettings(
       pinHash: pinHash,

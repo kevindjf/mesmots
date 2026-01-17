@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/theme/app_theme.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/utils/database_provider.dart';
+import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
 import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
@@ -12,6 +13,10 @@ void main() async {
 
   // Initialize Hive database
   await initializeDatabase();
+
+  // Initialize TTS service
+  final tts = TtsService();
+  await tts.initialize();
 
   runApp(
     const ProviderScope(

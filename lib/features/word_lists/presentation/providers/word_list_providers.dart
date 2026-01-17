@@ -35,7 +35,7 @@ class WordListOperations extends _$WordListOperations {
   }) async {
     state = const AsyncLoading();
 
-    return await AsyncValue.guard(() async {
+    final result = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       final uuid = const Uuid().v4();
 
@@ -46,16 +46,15 @@ class WordListOperations extends _$WordListOperations {
       );
 
       await repository.create(wordList);
-
-      state = const AsyncData(null);
       return uuid;
-    }).then((value) {
-      state = value;
-      if (value.hasError) {
-        throw value.error!;
-      }
-      return value.requireValue;
     });
+
+    state = result;
+
+    if (result.hasError) {
+      throw result.error!;
+    }
+    return result.requireValue;
   }
 
   /// Update word list name and words
@@ -66,7 +65,7 @@ class WordListOperations extends _$WordListOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       final current = await repository.getById(id);
 
@@ -85,17 +84,17 @@ class WordListOperations extends _$WordListOperations {
       }
 
       await repository.update(updated);
-    }).then((value) => state = value);
+    });
   }
 
   /// Delete a word list
   Future<void> deleteList(String id) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       await repository.delete(id);
-    }).then((value) => state = value);
+    });
   }
 
   /// Update progress for a word in a specific level
@@ -107,7 +106,7 @@ class WordListOperations extends _$WordListOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       final current = await repository.getById(listId);
 
@@ -117,7 +116,7 @@ class WordListOperations extends _$WordListOperations {
 
       final updated = current.updateProgress(level, word, success);
       await repository.update(updated);
-    }).then((value) => state = value);
+    });
   }
 
   /// Reset progress for a specific level
@@ -127,7 +126,7 @@ class WordListOperations extends _$WordListOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       final current = await repository.getById(listId);
 
@@ -137,14 +136,14 @@ class WordListOperations extends _$WordListOperations {
 
       final updated = current.resetLevel(level);
       await repository.update(updated);
-    }).then((value) => state = value);
+    });
   }
 
   /// Reset all progress for a word list
   Future<void> resetAllProgress(String listId) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       final current = await repository.getById(listId);
 
@@ -154,6 +153,6 @@ class WordListOperations extends _$WordListOperations {
 
       final updated = current.resetAllProgress();
       await repository.update(updated);
-    }).then((value) => state = value);
+    });
   }
 }

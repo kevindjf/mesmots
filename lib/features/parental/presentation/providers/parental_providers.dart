@@ -34,7 +34,7 @@ class ParentalOperations extends _$ParentalOperations {
   Future<void> configurePin(String pin) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(parentalRepositoryProvider);
 
       final pinHash = CryptoHelper.hashPin(pin);
@@ -46,7 +46,7 @@ class ParentalOperations extends _$ParentalOperations {
       );
 
       await repository.save(settings);
-    }).then((value) => state = value);
+    });
   }
 
   /// Setup PIN for the first time with recovery
@@ -57,7 +57,7 @@ class ParentalOperations extends _$ParentalOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(parentalRepositoryProvider);
 
       final pinHash = CryptoHelper.hashPin(pin);
@@ -71,7 +71,7 @@ class ParentalOperations extends _$ParentalOperations {
       );
 
       await repository.save(settings);
-    }).then((value) => state = value);
+    });
   }
 
   /// Verify PIN
@@ -105,7 +105,7 @@ class ParentalOperations extends _$ParentalOperations {
   Future<void> changePin(String newPin) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(parentalRepositoryProvider);
       final current = await repository.get();
 
@@ -117,7 +117,7 @@ class ParentalOperations extends _$ParentalOperations {
       final updated = current.updatePin(newPinHash);
 
       await repository.save(updated);
-    }).then((value) => state = value);
+    });
   }
 
   /// Update recovery question and answer
@@ -127,7 +127,7 @@ class ParentalOperations extends _$ParentalOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(parentalRepositoryProvider);
       final current = await repository.get();
 
@@ -142,7 +142,7 @@ class ParentalOperations extends _$ParentalOperations {
       );
 
       await repository.save(updated);
-    }).then((value) => state = value);
+    });
   }
 
   /// Reset PIN using recovery answer
@@ -152,7 +152,7 @@ class ParentalOperations extends _$ParentalOperations {
   }) async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final verified = await verifyRecoveryAnswer(recoveryAnswer);
 
       if (!verified) {
@@ -160,16 +160,16 @@ class ParentalOperations extends _$ParentalOperations {
       }
 
       await changePin(newPin);
-    }).then((value) => state = value);
+    });
   }
 
   /// Reset all parental settings
   Future<void> resetAll() async {
     state = const AsyncLoading();
 
-    await AsyncValue.guard(() async {
+    state = await AsyncValue.guard(() async {
       final repository = ref.read(parentalRepositoryProvider);
       await repository.reset();
-    }).then((value) => state = value);
+    });
   }
 }

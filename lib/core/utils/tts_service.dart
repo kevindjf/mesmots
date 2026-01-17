@@ -13,9 +13,21 @@ class TtsService {
 
     try {
       await _tts.setLanguage('fr-FR');
-      await _tts.setSpeechRate(0.4); // Slower for children
+      await _tts.setSpeechRate(0.5); // Moderate speed for children
       await _tts.setVolume(1.0);
       await _tts.setPitch(1.0);
+
+      // Set iOS-specific settings
+      await _tts.setIosAudioCategory(
+        IosTextToSpeechAudioCategory.playback,
+        [
+          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+          IosTextToSpeechAudioCategoryOptions.defaultToSpeaker,
+        ],
+        IosTextToSpeechAudioMode.defaultMode,
+      );
 
       _isInitialized = true;
     } catch (e) {

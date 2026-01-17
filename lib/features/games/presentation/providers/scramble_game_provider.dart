@@ -1,10 +1,10 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:mesmots/core/utils/audio_service.dart';
+import 'package:mesmots/core/utils/haptic_service.dart';
+import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/game_session.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
-import 'package:mesmots/core/utils/tts_service.dart';
-import 'package:mesmots/core/utils/audio_service.dart';
-import 'package:mesmots/core/utils/haptic_service.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'scramble_game_provider.g.dart';
 
@@ -188,7 +188,7 @@ class ScrambleGame extends _$ScrambleGame {
     final isValidated = isCorrect && _session!.isWordValidated(currentWord);
 
     // Wait for feedback delay
-    await Future.delayed(const Duration(milliseconds: isValidated ? 800 : 500));
+    await Future.delayed(Duration(milliseconds: isValidated ? 800 : 500));
 
     // Play celebration if word validated
     if (isValidated) {

@@ -5,11 +5,10 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/scramble_game_provider.dart';
-import 'package:mesmots/shared/widgets/app_card.dart';
-import 'package:mesmots/shared/widgets/speaker_button.dart';
-import 'package:mesmots/shared/widgets/progress_stars.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
+import 'package:mesmots/shared/widgets/progress_stars.dart';
+import 'package:mesmots/shared/widgets/speaker_button.dart';
 
 class ScrambleGameScreen extends ConsumerWidget {
   final String listId;
@@ -203,7 +202,8 @@ class ScrambleGameScreen extends ConsumerWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor:
               isDisabled ? AppColors.background : AppColors.cardBackground,
-          foregroundColor: isDisabled ? AppColors.textLight : AppColors.textPrimary,
+          foregroundColor:
+              isDisabled ? AppColors.textLight : AppColors.textPrimary,
           elevation: isDisabled ? 0 : 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusM),
@@ -254,7 +254,7 @@ class ScrambleGameScreen extends ConsumerWidget {
             style: TextStyle(
               fontSize: AppTypography.bodySmall,
               color: isPrimary ? AppColors.success : AppColors.primary,
-              fontWeight: AppTypography.medium,
+              fontWeight: AppTypography.regular,
             ),
           ),
         ],

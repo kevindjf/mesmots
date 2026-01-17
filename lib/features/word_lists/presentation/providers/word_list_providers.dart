@@ -35,7 +35,7 @@ class WordListOperations extends _$WordListOperations {
   }) async {
     state = const AsyncLoading();
 
-    final result = await AsyncValue.guard(() async {
+    try {
       final repository = ref.read(wordListRepositoryProvider);
       final uuid = const Uuid().v4();
 
@@ -46,15 +46,13 @@ class WordListOperations extends _$WordListOperations {
       );
 
       await repository.create(wordList);
+
+      state = const AsyncData(null);
       return uuid;
-    });
-
-    state = result;
-
-    if (result.hasError) {
-      throw result.error!;
+    } catch (e, stack) {
+      state = AsyncError(e, stack);
+      rethrow;
     }
-    return result.requireValue;
   }
 
   /// Update word list name and words

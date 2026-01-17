@@ -91,7 +91,7 @@ class GameSession {
         // Remove from pool permanently
         newPool.remove(word);
       } else {
-        // Move to end of pool for later retry
+        // Remove current word (will be re-added after shuffle)
         newPool.remove(word);
         newPool.add(word);
       }
@@ -104,9 +104,14 @@ class GameSession {
         newSuccessCount[word] = 0;
       }
 
-      // Move to end of pool for retry
+      // Remove current word (will be re-added after shuffle)
       newPool.remove(word);
       newPool.add(word);
+    }
+
+    // Shuffle pool for random order (except if validated)
+    if (newPool.isNotEmpty) {
+      newPool.shuffle();
     }
 
     return GameSession(

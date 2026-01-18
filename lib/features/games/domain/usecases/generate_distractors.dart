@@ -7,9 +7,12 @@ class GenerateDistractors {
   /// Generate 3 unique distractors for a word
   List<String> call(String word) {
     final distractors = <String>{};
+    int attempts = 0;
+    const maxAttempts = 50; // Prevent infinite loops
 
     // Try different error types until we have 3 unique distractors
-    while (distractors.length < 3) {
+    while (distractors.length < 3 && attempts < maxAttempts) {
+      attempts++;
       String distractor;
 
       // Prioritize phonetic errors (most pedagogical)
@@ -38,7 +41,34 @@ class GenerateDistractors {
       }
     }
 
+    // If we couldn't generate 3 unique distractors, add simple fallbacks
+    while (distractors.length < 3) {
+      final fallback = _generateFallbackDistractor(word, distractors.length);
+      if (fallback != word && !distractors.contains(fallback)) {
+        distractors.add(fallback);
+      } else {
+        // Last resort: add numbered suffix
+        distractors.add('$word${distractors.length + 1}');
+      }
+    }
+
     return distractors.toList()..shuffle();
+  }
+
+  /// Generate simple fallback distractors for very short words
+  String _generateFallbackDistractor(String word, int index) {
+    switch (index) {
+      case 0:
+        return word.length > 1 ? word.substring(1) + word[0] : word + 'x';
+      case 1:
+        return word + (word.endsWith('e') ? 's' : 'e');
+      case 2:
+        return word.length > 1
+            ? word[0] + word.substring(1).toUpperCase()
+            : word.toUpperCase();
+      default:
+        return word + index.toString();
+    }
   }
 
   /// Generate phonetic errors (eau/au/o, ai/é/è, etc.)

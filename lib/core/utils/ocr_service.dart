@@ -35,27 +35,13 @@ class OcrService {
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Recadrer',
-            toolbarColor: const Color(0xFF7EC8E3),
-            toolbarWidgetColor: const Color(0xFFFFFFFF),
+            toolbarColor: Color(0xFF7EC8E3),
+            toolbarWidgetColor: Color(0xFFFFFFFF),
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9,
-            ],
           ),
           IOSUiSettings(
             title: 'Recadrer',
-            aspectRatioPresets: [
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio3x2,
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPreset.ratio16x9,
-            ],
           ),
         ],
       );

@@ -104,7 +104,7 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
           const SizedBox(height: AppDimensions.spacingXxl),
           AppButton(
             text: 'Prendre une photo',
-            icon: Icons.camera_alt,
+            icon: const Icon(Icons.camera_alt),
             onPressed: () => _pickImage(fromCamera: true),
             isFullWidth: true,
           ),
@@ -156,14 +156,14 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
             children: [
               AppButton(
                 text: 'Recadrer la photo',
-                icon: Icons.crop,
+                icon: const Icon(Icons.crop),
                 onPressed: _cropImage,
                 isFullWidth: true,
               ),
               const SizedBox(height: AppDimensions.spacingM),
               AppButton(
                 text: 'Détecter les mots',
-                icon: Icons.text_fields,
+                icon: const Icon(Icons.text_fields),
                 onPressed: _recognizeText,
                 isFullWidth: true,
               ),
@@ -251,7 +251,7 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
                       const SizedBox(height: AppDimensions.spacingXl),
                       AppButton(
                         text: 'Réessayer',
-                        icon: Icons.camera_alt,
+                        icon: const Icon(Icons.camera_alt),
                         onPressed: () {
                           setState(() {
                             _imageFile = null;

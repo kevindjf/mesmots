@@ -155,7 +155,9 @@ class FillBlanksGameScreen extends ConsumerWidget {
           height: 60,
           decoration: BoxDecoration(
             color: isBlank
-                ? (letter != null ? AppColors.primary.withOpacity(0.1) : AppColors.cardBackground)
+                ? (letter != null
+                    ? AppColors.primary.withOpacity(0.1)
+                    : AppColors.cardBackground)
                 : AppColors.background,
             borderRadius: BorderRadius.circular(AppDimensions.radiusM),
             border: Border.all(
@@ -168,9 +170,12 @@ class FillBlanksGameScreen extends ConsumerWidget {
               letter?.toUpperCase() ?? '_',
               style: TextStyle(
                 fontSize: AppTypography.headingMedium,
-                fontWeight: isBlank ? AppTypography.bold : AppTypography.semiBold,
+                fontWeight:
+                    isBlank ? AppTypography.bold : AppTypography.semiBold,
                 color: isBlank
-                    ? (letter != null ? AppColors.primary : AppColors.textSecondary)
+                    ? (letter != null
+                        ? AppColors.primary
+                        : AppColors.textSecondary)
                     : AppColors.textPrimary,
               ),
             ),
@@ -231,7 +236,7 @@ class FillBlanksGameScreen extends ConsumerWidget {
           letter,
           style: const TextStyle(
             fontSize: AppTypography.bodyMedium,
-            fontWeight: AppTypography.medium,
+            fontWeight: AppTypography.regular,
           ),
         ),
       ),

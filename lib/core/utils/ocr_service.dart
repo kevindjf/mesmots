@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -34,14 +35,14 @@ class OcrService {
         sourcePath: imagePath,
         compressFormat: ImageCompressFormat.jpg,
         compressQuality: 85,
-        androidUiSettings: const AndroidUiSettings(
+        androidUiSettings: AndroidUiSettings(
           toolbarTitle: 'Recadrer',
-          toolbarColor: Color(0xFF7EC8E3),
-          toolbarWidgetColor: Color(0xFFFFFFFF),
+          toolbarColor: const Color(0xFF7EC8E3),
+          toolbarWidgetColor: const Color(0xFFFFFFFF),
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
         ),
-        iosUiSettings: const IOSUiSettings(
+        iosUiSettings: IOSUiSettings(
           title: 'Recadrer',
         ),
       );

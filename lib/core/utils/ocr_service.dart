@@ -35,19 +35,10 @@ class OcrService {
         sourcePath: imagePath,
         compressFormat: ImageCompressFormat.jpg,
         compressQuality: 85,
-        androidUiSettings: AndroidUiSettings(
-          toolbarTitle: 'Recadrer',
-          toolbarColor: const Color(0xFF7EC8E3),
-          toolbarWidgetColor: const Color(0xFFFFFFFF),
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-        ),
-        iosUiSettings: IOSUiSettings(
-          title: 'Recadrer',
-        ),
       );
 
-      return croppedFile;
+      if (croppedFile == null) return null;
+      return File(croppedFile.path);
     } catch (e) {
       print('Error cropping image: $e');
       return null;

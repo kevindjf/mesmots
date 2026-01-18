@@ -325,7 +325,17 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
 
     try {
       final ocrService = ref.read(ocrServiceProvider);
-      final words = await ocrService.recognizeText(_imageFile!);
+
+      // Add timeout to prevent infinite waiting
+      final words = await ocrService.recognizeText(_imageFile!).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          print('OCR timeout after 30 seconds');
+          return <String>[];
+        },
+      );
+
+      if (!mounted) return;
 
       setState(() {
         _detectedWords = words;
@@ -338,10 +348,23 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
         }
         _wordControllers.clear();
       });
-    } catch (e) {
-      setState(() => _isProcessing = false);
+
+      // Show message if no words detected
+      if (words.isEmpty && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Aucun mot détecté. Essayez avec une photo plus nette.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Error in _recognizeText: $e');
+      print('Stack trace: $stackTrace');
 
       if (mounted) {
+        setState(() => _isProcessing = false);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erreur lors de la détection: $e'),

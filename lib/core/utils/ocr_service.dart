@@ -15,7 +15,9 @@ class OcrService {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        imageQuality: 85,
+        imageQuality: 70, // Reduced from 85 for faster processing
+        maxWidth: 1920, // Limit image size
+        maxHeight: 1920,
       );
 
       if (image == null) return null;
@@ -37,15 +39,21 @@ class OcrService {
   /// Recognize text from an image
   Future<List<String>> recognizeText(File imageFile) async {
     try {
+      print('OCR: Starting text recognition...');
       final inputImage = InputImage.fromFile(imageFile);
+
+      print('OCR: Processing image...');
       final RecognizedText recognizedText =
           await _textRecognizer.processImage(inputImage);
+
+      print('OCR: Found ${recognizedText.blocks.length} text blocks');
 
       // Extract words line by line
       final words = <String>[];
 
       for (final block in recognizedText.blocks) {
         for (final line in block.lines) {
+          print('OCR: Processing line: ${line.text}');
           // Split line text by spaces and filter
           final lineWords = line.text
               .split(RegExp(r'[\s,;]+')) // Split by space, comma, semicolon
@@ -59,9 +67,11 @@ class OcrService {
         }
       }
 
+      print('OCR: Extracted ${words.length} words');
       return words;
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error recognizing text: $e');
+      print('Stack trace: $stackTrace');
       return [];
     }
   }

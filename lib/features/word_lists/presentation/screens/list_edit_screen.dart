@@ -4,6 +4,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
+import 'package:mesmots/features/word_lists/presentation/screens/photo_capture_screen.dart';
 import 'package:mesmots/shared/widgets/app_button.dart';
 
 class ListEditScreen extends ConsumerStatefulWidget {
@@ -38,14 +39,17 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
   Widget build(BuildContext context) {
     // Load existing list data if editing
     if (_isEditing && !_dataLoaded) {
-      ref.listen(wordListProvider(widget.listId!), (previous, next) {
-        next.whenData((wordList) {
-          if (wordList != null && !_dataLoaded) {
-            _nameController.text = wordList.name;
-            _wordsController.text = wordList.words.join('\n');
-            setState(() => _dataLoaded = true);
-          }
-        });
+      final wordListAsync = ref.watch(wordListProvider(widget.listId!));
+      wordListAsync.whenData((wordList) {
+        if (wordList != null && !_dataLoaded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_dataLoaded) {
+              _nameController.text = wordList.name;
+              _wordsController.text = wordList.words.join('\n');
+              setState(() => _dataLoaded = true);
+            }
+          });
+        }
       });
     }
 
@@ -73,6 +77,18 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
               },
             ),
             const SizedBox(height: AppDimensions.spacingXl),
+            OutlinedButton.icon(
+              onPressed: _openPhotoCapture,
+              icon: const Icon(Icons.camera_alt),
+              label: const Text('Détecter les mots depuis une photo'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(
+                  double.infinity,
+                  AppDimensions.buttonMinHeight,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spacingL),
             TextFormField(
               controller: _wordsController,
               decoration: const InputDecoration(
@@ -125,6 +141,27 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
         .map((w) => w.trim())
         .where((w) => w.isNotEmpty)
         .toList();
+  }
+
+  Future<void> _openPhotoCapture() async {
+    final words = await Navigator.push<List<String>>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PhotoCaptureScreen(),
+      ),
+    );
+
+    if (words != null && words.isNotEmpty) {
+      // Add detected words to the text field
+      final currentWords = _wordsController.text.trim();
+      final newWords = words.join('\n');
+
+      if (currentWords.isEmpty) {
+        _wordsController.text = newWords;
+      } else {
+        _wordsController.text = '$currentWords\n$newWords';
+      }
+    }
   }
 
   Future<void> _saveList() async {

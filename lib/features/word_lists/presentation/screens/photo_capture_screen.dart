@@ -54,6 +54,14 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
                   CircularProgressIndicator(),
                   SizedBox(height: AppDimensions.spacingL),
                   Text('Détection des mots en cours...'),
+                  SizedBox(height: AppDimensions.spacingM),
+                  Text(
+                    'Cela peut prendre jusqu\'à 60 secondes',
+                    style: TextStyle(
+                      fontSize: AppTypography.bodySmall,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             )
@@ -328,9 +336,9 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
 
       // Add timeout to prevent infinite waiting
       final words = await ocrService.recognizeText(_imageFile!).timeout(
-        const Duration(seconds: 30),
+        const Duration(seconds: 60),
         onTimeout: () {
-          print('OCR timeout after 30 seconds');
+          print('OCR timeout after 60 seconds');
           return <String>[];
         },
       );

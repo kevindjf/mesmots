@@ -15,9 +15,9 @@ class OcrService {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        imageQuality: 70, // Reduced from 85 for faster processing
-        maxWidth: 1920, // Limit image size
-        maxHeight: 1920,
+        imageQuality: 50, // Reduced for much faster processing
+        maxWidth: 800, // Smaller size for faster OCR
+        maxHeight: 800,
       );
 
       if (image == null) return null;

@@ -5,6 +5,7 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/scramble_game_provider.dart';
+import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
@@ -32,11 +33,15 @@ class ScrambleGameScreen extends ConsumerWidget {
       body: gameStateAsync.when(
         data: (gameState) {
           if (gameState.question == null) {
-            // Game complete!
+            // Game complete! Navigate to Fill-in-the-blanks
             return SuccessOverlay(
               onNextLevel: () {
-                // TODO: Navigate to next level (Fill-in-the-blanks)
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FillBlanksGameScreen(listId: listId),
+                  ),
+                );
               },
               onBackToList: () {
                 Navigator.pop(context);

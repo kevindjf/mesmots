@@ -32,22 +32,21 @@ class OcrService {
     try {
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: imagePath,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: 'Recadrer',
-            toolbarColor: Color(0xFF7EC8E3),
-            toolbarWidgetColor: Color(0xFFFFFFFF),
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-          ),
-          IOSUiSettings(
-            title: 'Recadrer',
-          ),
-        ],
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 85,
+        androidUiSettings: const AndroidUiSettings(
+          toolbarTitle: 'Recadrer',
+          toolbarColor: Color(0xFF7EC8E3),
+          toolbarWidgetColor: Color(0xFFFFFFFF),
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        iosUiSettings: const IOSUiSettings(
+          title: 'Recadrer',
+        ),
       );
 
-      if (croppedFile == null) return null;
-      return File(croppedFile.path);
+      return croppedFile;
     } catch (e) {
       print('Error cropping image: $e');
       return null;

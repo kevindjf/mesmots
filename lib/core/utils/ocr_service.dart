@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'ocr_service.g.dart';
@@ -28,21 +26,12 @@ class OcrService {
     }
   }
 
-  /// Crop an image
+  /// Crop an image (currently disabled due to compatibility issues)
+  /// Returns the original image without cropping
   Future<File?> cropImage(String imagePath) async {
-    try {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: imagePath,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 85,
-      );
-
-      if (croppedFile == null) return null;
-      return File(croppedFile.path);
-    } catch (e) {
-      print('Error cropping image: $e');
-      return null;
-    }
+    // Image cropping temporarily disabled due to Android compatibility issues
+    // Return the original image as-is
+    return File(imagePath);
   }
 
   /// Recognize text from an image

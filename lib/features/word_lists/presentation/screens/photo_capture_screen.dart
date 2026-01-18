@@ -20,7 +20,7 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
   File? _imageFile;
   List<String> _detectedWords = [];
   bool _isProcessing = false;
-  int _currentStep = 0; // 0 = capture, 1 = crop, 2 = edit words
+  int _currentStep = 0; // 0 = capture, 1 = preview, 2 = edit words
 
   final _wordControllers = <TextEditingController>[];
 
@@ -154,13 +154,6 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AppButton(
-                text: 'Recadrer la photo',
-                icon: const Icon(Icons.crop),
-                onPressed: _cropImage,
-                isFullWidth: true,
-              ),
-              const SizedBox(height: AppDimensions.spacingM),
               AppButton(
                 text: 'Détecter les mots',
                 icon: const Icon(Icons.text_fields),
@@ -321,19 +314,6 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
       setState(() {
         _imageFile = image;
         _currentStep = 1;
-      });
-    }
-  }
-
-  Future<void> _cropImage() async {
-    if (_imageFile == null) return;
-
-    final ocrService = ref.read(ocrServiceProvider);
-    final croppedImage = await ocrService.cropImage(_imageFile!.path);
-
-    if (croppedImage != null) {
-      setState(() {
-        _imageFile = croppedImage;
       });
     }
   }

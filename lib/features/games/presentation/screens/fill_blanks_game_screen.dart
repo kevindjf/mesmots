@@ -5,6 +5,7 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/fill_blanks_game_provider.dart';
+import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
@@ -32,11 +33,15 @@ class FillBlanksGameScreen extends ConsumerWidget {
       body: gameStateAsync.when(
         data: (gameState) {
           if (gameState.question == null) {
-            // Game complete!
+            // Game complete! Navigate to Writing
             return SuccessOverlay(
               onNextLevel: () {
-                // TODO: Navigate to next level (Writing)
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WritingGameScreen(listId: listId),
+                  ),
+                );
               },
               onBackToList: () {
                 Navigator.pop(context);

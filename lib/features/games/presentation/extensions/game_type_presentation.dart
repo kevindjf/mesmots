@@ -3,6 +3,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/qcm_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
+import 'package:mesmots/features/games/presentation/screens/word_search_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 
@@ -18,6 +19,8 @@ extension GameTypePresentation on GameType {
         return Icons.extension_rounded;
       case GameType.writing:
         return Icons.edit_rounded;
+      case GameType.wordSearch:
+        return Icons.grid_on_rounded;
     }
   }
 
@@ -31,6 +34,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonPink;
       case GameType.writing:
         return AppColors.buttonMagenta;
+      case GameType.wordSearch:
+        return AppColors.buttonCoral;
     }
   }
 
@@ -44,6 +49,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonPinkShadow;
       case GameType.writing:
         return AppColors.buttonMagentaShadow;
+      case GameType.wordSearch:
+        return AppColors.buttonCoralShadow;
     }
   }
 
@@ -58,6 +65,8 @@ extension GameTypePresentation on GameType {
         return FillBlanksGameScreen(listId: listId);
       case GameType.writing:
         return WritingGameScreen(listId: listId);
+      case GameType.wordSearch:
+        return WordSearchGameScreen(listId: listId);
     }
   }
 }

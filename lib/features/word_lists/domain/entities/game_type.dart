@@ -3,7 +3,8 @@ enum GameType {
   qcm,
   scramble,
   fillBlanks,
-  writing;
+  writing,
+  wordSearch;
 
   /// Display name of the game
   String get label {
@@ -16,6 +17,8 @@ enum GameType {
         return 'Mots à trous';
       case GameType.writing:
         return 'Écriture';
+      case GameType.wordSearch:
+        return 'Mots mêlés';
     }
   }
 
@@ -30,6 +33,8 @@ enum GameType {
         return 'Complète les lettres manquantes';
       case GameType.writing:
         return 'Écris le mot en entier';
+      case GameType.wordSearch:
+        return 'Retrouve les mots cachés';
     }
   }
 }

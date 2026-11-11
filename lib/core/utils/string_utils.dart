@@ -107,4 +107,17 @@ extension FrenchStringExtension on String {
 
   /// Number of visual characters.
   int get graphemeLen => graphemeLength(this);
+
+  /// Uppercase letters used in letter grids (word search, crossword).
+  ///
+  /// Accents are kept (spelling matters); spaces, hyphens and apostrophes
+  /// are dropped.
+  List<String> get gridLetters => normalizeNFC(this)
+      .toUpperCase()
+      .characters
+      .where((c) => !_gridSeparators.contains(c))
+      .toList();
 }
+
+/// Characters ignored when placing a word in a letter grid.
+const _gridSeparators = {' ', '-', "'", '’'};

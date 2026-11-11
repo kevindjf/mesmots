@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/shared/widgets/circle_icon_button.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 
 /// Reusable 3D back button (Mr. Square style).
 ///

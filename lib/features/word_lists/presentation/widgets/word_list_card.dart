@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
-import 'package:jerevise/features/word_lists/presentation/screens/list_detail_screen.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
+import 'package:mesmots/features/word_lists/presentation/screens/list_detail_screen.dart';
 
 /// Color scheme for card variations
 class _CardColorScheme {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
 
 /// Round keypad button with 3D press effect, used in PIN input
 class KeypadButton extends StatefulWidget {

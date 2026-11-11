@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
 
 /// Reusable text input with 3D shadow effect
 class AppInput extends StatelessWidget {

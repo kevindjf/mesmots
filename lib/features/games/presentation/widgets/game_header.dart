@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
 
 class GameHeader extends StatelessWidget {
   final double progress; // 0.0 to 1.0

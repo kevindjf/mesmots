@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/core/utils/ocr_service.dart';
-import 'package:jerevise/shared/widgets/app_button.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/utils/ocr_service.dart';
+import 'package:mesmots/shared/widgets/app_button.dart';
 
 class PhotoCaptureScreen extends ConsumerStatefulWidget {
   const PhotoCaptureScreen({super.key});

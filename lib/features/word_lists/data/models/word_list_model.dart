@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
-import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
-import 'package:jerevise/features/word_lists/domain/entities/level_progress.dart';
-import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
-import 'package:jerevise/features/word_lists/domain/entities/word_status.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
 part 'word_list_model.g.dart';
 

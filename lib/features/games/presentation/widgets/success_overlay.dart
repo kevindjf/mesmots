@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/shared/widgets/colorful_button.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/shared/widgets/colorful_button.dart';
 
 class SuccessOverlay extends StatelessWidget {
   final VoidCallback? onNextLevel;

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
 
 /// Widget providing a colorful gradient background with floating shapes
 class GradientBackground extends StatelessWidget {

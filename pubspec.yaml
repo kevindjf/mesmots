@@ -1,5 +1,5 @@
-name: jerevise
-description: Application mobile d'apprentissage ludique pour enfants de 5 à 10 ans - Orthographe, Conjugaison et plus
+name: mesmots
+description: Application ludique pour apprendre les mots de dictée de la semaine (enfants de 5 à 10 ans)
 publish_to: 'none'
 version: 1.0.0+1
 

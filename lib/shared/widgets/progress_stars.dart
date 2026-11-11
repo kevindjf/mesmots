@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
 
 /// Stars indicating word progress (0, 1, or 2 stars)
 class ProgressStars extends StatelessWidget {

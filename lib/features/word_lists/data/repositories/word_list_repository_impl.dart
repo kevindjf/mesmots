@@ -1,7 +1,7 @@
-import 'package:jerevise/features/word_lists/data/datasources/word_list_local_datasource.dart';
-import 'package:jerevise/features/word_lists/data/models/word_list_model.dart';
-import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
-import 'package:jerevise/features/word_lists/domain/repositories/word_list_repository.dart';
+import 'package:mesmots/features/word_lists/data/datasources/word_list_local_datasource.dart';
+import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
+import 'package:mesmots/features/word_lists/domain/repositories/word_list_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'word_list_repository_impl.g.dart';

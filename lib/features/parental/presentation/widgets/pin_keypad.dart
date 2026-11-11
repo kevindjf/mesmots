@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/shared/widgets/keypad_button.dart';
+import 'package:mesmots/shared/widgets/keypad_button.dart';
 
 class PinKeypad extends StatelessWidget {
   final Function(int) onNumberPressed;

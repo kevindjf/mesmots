@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:jerevise/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
-import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
 
 part 'word_list_providers.g.dart';
 

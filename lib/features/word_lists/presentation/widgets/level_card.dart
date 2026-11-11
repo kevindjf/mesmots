@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
-import 'package:jerevise/features/word_lists/domain/entities/level_progress.dart';
-import 'package:jerevise/features/games/presentation/screens/qcm_game_screen.dart';
-import 'package:jerevise/features/games/presentation/screens/scramble_game_screen.dart';
-import 'package:jerevise/features/games/presentation/screens/fill_blanks_game_screen.dart';
-import 'package:jerevise/features/games/presentation/screens/writing_game_screen.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
+import 'package:mesmots/features/games/presentation/screens/qcm_game_screen.dart';
+import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
+import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
+import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
 
 /// Color scheme for level cards
 class _LevelColorScheme {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
-import 'package:jerevise/features/parental/presentation/widgets/pin_keypad.dart';
-import 'package:jerevise/shared/widgets/colorful_button.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
+import 'package:mesmots/features/parental/presentation/widgets/pin_keypad.dart';
+import 'package:mesmots/shared/widgets/colorful_button.dart';
 
 class PinInputDialog extends ConsumerStatefulWidget {
   const PinInputDialog({super.key});

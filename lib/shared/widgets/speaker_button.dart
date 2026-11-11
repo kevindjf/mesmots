@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/utils/tts_service.dart';
-import 'package:jerevise/core/utils/haptic_service.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/utils/tts_service.dart';
+import 'package:mesmots/core/utils/haptic_service.dart';
 
 /// Button to play word via TTS - style Mr. Square avec ombre 3D
 class SpeakerButton extends ConsumerStatefulWidget {

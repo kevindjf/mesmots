@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/games/presentation/providers/scramble_game_provider.dart';
-import 'package:jerevise/features/games/presentation/screens/fill_blanks_game_screen.dart';
-import 'package:jerevise/features/games/presentation/widgets/game_header.dart';
-import 'package:jerevise/features/games/presentation/widgets/success_overlay.dart';
-import 'package:jerevise/core/utils/string_utils.dart';
-import 'package:jerevise/shared/widgets/circle_icon_button.dart';
-import 'package:jerevise/shared/widgets/game_control_button.dart';
-import 'package:jerevise/shared/widgets/gradient_background.dart';
-import 'package:jerevise/shared/widgets/letter_button.dart';
-import 'package:jerevise/shared/widgets/progress_stars.dart';
-import 'package:jerevise/shared/widgets/speaker_button.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/games/presentation/providers/scramble_game_provider.dart';
+import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
+import 'package:mesmots/core/utils/string_utils.dart';
+import 'package:mesmots/shared/widgets/circle_icon_button.dart';
+import 'package:mesmots/shared/widgets/game_control_button.dart';
+import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/letter_button.dart';
+import 'package:mesmots/shared/widgets/progress_stars.dart';
+import 'package:mesmots/shared/widgets/speaker_button.dart';
 
 class ScrambleGameScreen extends ConsumerWidget {
   final String listId;

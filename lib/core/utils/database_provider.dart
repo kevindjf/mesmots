@@ -1,7 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:jerevise/features/word_lists/data/models/word_list_model.dart';
-import 'package:jerevise/features/parental/data/models/parental_settings_model.dart';
+import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
+import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
 
 part 'database_provider.g.dart';
 

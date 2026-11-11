@@ -69,7 +69,7 @@ class AppStrings {
   static const String changePin = 'Changer le code';
 
   // Onboarding
-  static const String welcomeTitle = 'Bienvenue dans JeRevise !';
+  static const String welcomeTitle = 'Bienvenue dans MesMots !';
   static const String welcomeDescription =
       'Apprends en t\'amusant !';
   static const String gamesTitle = 'Quatre jeux pour progresser';

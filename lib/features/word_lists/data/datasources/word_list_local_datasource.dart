@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
-import 'package:jerevise/features/word_lists/data/models/word_list_model.dart';
+import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:jerevise/core/utils/database_provider.dart';
+import 'package:mesmots/core/utils/database_provider.dart';
 
 part 'word_list_local_datasource.g.dart';
 

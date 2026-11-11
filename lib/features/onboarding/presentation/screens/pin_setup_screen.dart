@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
-import 'package:jerevise/features/word_lists/presentation/screens/home_screen.dart';
-import 'package:jerevise/shared/widgets/circle_icon_button.dart';
-import 'package:jerevise/shared/widgets/colorful_button.dart';
-import 'package:jerevise/shared/widgets/gradient_background.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
+import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
+import 'package:mesmots/shared/widgets/circle_icon_button.dart';
+import 'package:mesmots/shared/widgets/colorful_button.dart';
+import 'package:mesmots/shared/widgets/gradient_background.dart';
 
 class PinSetupScreen extends ConsumerStatefulWidget {
   const PinSetupScreen({super.key});
@@ -145,7 +145,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         ),
         const SizedBox(height: AppDimensions.spacingXl),
         const Text(
-          'Bienvenue dans JeRevise !',
+          'Bienvenue dans MesMots !',
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.headingLarge,

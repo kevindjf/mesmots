@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
-import 'package:jerevise/features/parental/data/models/parental_settings_model.dart';
+import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:jerevise/core/utils/database_provider.dart';
+import 'package:mesmots/core/utils/database_provider.dart';
 
 part 'parental_local_datasource.g.dart';
 

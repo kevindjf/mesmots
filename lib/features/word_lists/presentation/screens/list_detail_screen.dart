@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jerevise/core/constants/app_colors.dart';
-import 'package:jerevise/core/constants/app_dimensions.dart';
-import 'package:jerevise/core/constants/app_strings.dart';
-import 'package:jerevise/core/constants/app_typography.dart';
-import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
-import 'package:jerevise/features/word_lists/presentation/providers/word_list_providers.dart';
-import 'package:jerevise/features/word_lists/presentation/widgets/level_card.dart';
-import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
-import 'package:jerevise/features/parental/presentation/widgets/pin_input_dialog.dart';
-import 'package:jerevise/features/word_lists/presentation/screens/list_edit_screen.dart';
-import 'package:jerevise/shared/widgets/app_header.dart';
-import 'package:jerevise/shared/widgets/circle_icon_button.dart';
-import 'package:jerevise/shared/widgets/colorful_button.dart';
-import 'package:jerevise/shared/widgets/gradient_background.dart';
+import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/level_card.dart';
+import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
+import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
+import 'package:mesmots/features/word_lists/presentation/screens/list_edit_screen.dart';
+import 'package:mesmots/shared/widgets/app_header.dart';
+import 'package:mesmots/shared/widgets/circle_icon_button.dart';
+import 'package:mesmots/shared/widgets/colorful_button.dart';
+import 'package:mesmots/shared/widgets/gradient_background.dart';
 
 class ListDetailScreen extends ConsumerWidget {
   final String listId;

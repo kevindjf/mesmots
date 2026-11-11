@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:jerevise/features/parental/domain/entities/parental_settings.dart';
+import 'package:mesmots/features/parental/domain/entities/parental_settings.dart';
 
 part 'parental_settings_model.g.dart';
 

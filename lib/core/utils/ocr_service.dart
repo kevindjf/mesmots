@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jerevise/core/utils/string_utils.dart';
+import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'ocr_service.g.dart';

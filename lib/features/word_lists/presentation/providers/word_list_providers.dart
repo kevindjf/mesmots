@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:jerevise/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
 
 part 'word_list_providers.g.dart';
 
@@ -33,26 +33,17 @@ class WordListOperations extends _$WordListOperations {
     required String name,
     required List<String> words,
   }) async {
-    state = const AsyncLoading();
+    final uuid = const Uuid().v4();
+    final repository = ref.read(wordListRepositoryProvider);
 
-    try {
-      final repository = ref.read(wordListRepositoryProvider);
-      final uuid = const Uuid().v4();
+    final wordList = WordList.create(
+      id: uuid,
+      name: name,
+      words: words,
+    );
 
-      final wordList = WordList.create(
-        id: uuid,
-        name: name,
-        words: words,
-      );
-
-      await repository.create(wordList);
-
-      state = const AsyncData(null);
-      return uuid;
-    } catch (e, stack) {
-      state = AsyncError(e, stack);
-      rethrow;
-    }
+    await repository.create(wordList);
+    return uuid;
   }
 
   /// Update word list name and words

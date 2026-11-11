@@ -1,4 +1,4 @@
-import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
+import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
 
 /// Repository interface for word lists
 abstract class WordListRepository {

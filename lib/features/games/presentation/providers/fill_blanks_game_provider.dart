@@ -1,9 +1,10 @@
-import 'package:mesmots/core/utils/audio_service.dart';
-import 'package:mesmots/core/utils/haptic_service.dart';
-import 'package:mesmots/core/utils/tts_service.dart';
-import 'package:mesmots/features/games/domain/entities/game_session.dart';
-import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:jerevise/core/utils/audio_service.dart';
+import 'package:jerevise/core/utils/haptic_service.dart';
+import 'package:jerevise/core/utils/string_utils.dart';
+import 'package:jerevise/core/utils/tts_service.dart';
+import 'package:jerevise/features/games/domain/entities/game_session.dart';
+import 'package:jerevise/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'fill_blanks_game_provider.g.dart';
@@ -27,7 +28,7 @@ class FillBlanksQuestion {
     if (blankPositions.contains(position)) {
       return userInputs[position]; // Return user input or null
     }
-    return word[position]; // Return actual letter
+    return graphemeAt(word, position); // Return actual letter (grapheme-aware)
   }
 
   /// Check if position is a blank
@@ -97,10 +98,10 @@ class FillBlanksGame extends _$FillBlanksGame {
     // Generate first question
     _currentQuestion = _generateQuestion();
 
-    // Auto-play TTS
+    // Auto-play TTS (non-blocking to avoid hanging on emulators)
     if (_currentQuestion != null) {
       final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
+      tts.speak(_currentQuestion!.word).ignore();
     }
 
     return _buildState();
@@ -128,11 +129,12 @@ class FillBlanksGame extends _$FillBlanksGame {
     // Determine number of blanks based on success count
     // 0 successes: hide ~50% of letters
     // 1 success: hide ~30% of letters (easier)
+    final wordLen = word.graphemeLen;
     final blankPercentage = successCount == 0 ? 0.5 : 0.3;
-    final numBlanks = (word.length * blankPercentage).ceil().clamp(1, word.length - 1);
+    final numBlanks = (wordLen * blankPercentage).ceil().clamp(1, wordLen - 1);
 
     // Select random positions to hide (but not first letter to give a hint)
-    final availablePositions = List.generate(word.length - 1, (i) => i + 1);
+    final availablePositions = List.generate(wordLen - 1, (i) => i + 1);
     availablePositions.shuffle();
     final blankPositions = availablePositions.take(numBlanks).toList()..sort();
 
@@ -161,7 +163,7 @@ class FillBlanksGame extends _$FillBlanksGame {
 
     // Update user inputs
     final newInputs = Map<int, String>.from(_currentQuestion!.userInputs);
-    newInputs[currentBlank] = letter.toLowerCase();
+    newInputs[currentBlank] = letter.nfc.toLowerCase();
 
     _currentQuestion = FillBlanksQuestion(
       word: _currentQuestion!.word,
@@ -230,11 +232,11 @@ class FillBlanksGame extends _$FillBlanksGame {
 
     final currentWord = _currentQuestion!.word;
 
-    // Check if all blanks are correct
+    // Check if all blanks are correct (grapheme-aware comparison)
     bool isCorrect = true;
     for (final pos in _currentQuestion!.blankPositions) {
-      final userLetter = _currentQuestion!.userInputs[pos]?.toLowerCase();
-      final correctLetter = currentWord[pos].toLowerCase();
+      final userLetter = _currentQuestion!.userInputs[pos]?.nfc.toLowerCase();
+      final correctLetter = graphemeAt(currentWord, pos).nfc.toLowerCase();
       if (userLetter != correctLetter) {
         isCorrect = false;
         break;

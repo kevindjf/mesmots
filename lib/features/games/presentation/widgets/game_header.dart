@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_strings.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/shared/widgets/app_progress_bar.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_strings.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
 
 class GameHeader extends StatelessWidget {
   final double progress; // 0.0 to 1.0
   final int validatedCount;
   final int totalCount;
   final Color? progressColor;
+  final Widget? timer; // optional timer widget displayed next to percentage
 
   const GameHeader({
     super.key,
@@ -17,19 +17,27 @@ class GameHeader extends StatelessWidget {
     required this.validatedCount,
     required this.totalCount,
     this.progressColor,
+    this.timer,
   });
 
   @override
   Widget build(BuildContext context) {
+    final barColor = progressColor ?? AppColors.primary;
+
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingL),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppDimensions.paddingL,
+        vertical: AppDimensions.paddingS,
+      ),
+      padding: const EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        boxShadow: [
+        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: AppColors.primaryDark,
+            blurRadius: 0,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -42,25 +50,55 @@ class GameHeader extends StatelessWidget {
               Text(
                 '$validatedCount/$totalCount ${AppStrings.validated}',
                 style: const TextStyle(
-                  fontSize: AppTypography.bodyLarge,
+                  fontFamily: AppTypography.fontFamily,
+                  fontSize: AppTypography.bodyMedium,
                   fontWeight: AppTypography.semiBold,
                   color: AppColors.textPrimary,
                 ),
               ),
-              Text(
-                '${(progress * 100).round()}%',
-                style: const TextStyle(
-                  fontSize: AppTypography.bodyLarge,
-                  fontWeight: AppTypography.bold,
-                  color: AppColors.primary,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (timer != null) ...[
+                    timer!,
+                    const SizedBox(width: AppDimensions.spacingS),
+                  ],
+                  Text(
+                    '${(progress * 100).round()}%',
+                    style: const TextStyle(
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.bodyMedium,
+                      fontWeight: AppTypography.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: AppDimensions.spacingM),
-          AppProgressBar(
-            progress: progress,
-            color: progressColor,
+          const SizedBox(height: AppDimensions.spacingS),
+          Container(
+            height: 8,
+            decoration: BoxDecoration(
+              color: barColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: constraints.maxWidth * progress.clamp(0.0, 1.0),
+                      decoration: BoxDecoration(
+                        color: barColor,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),

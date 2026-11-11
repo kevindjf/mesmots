@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:jerevise/shared/widgets/keypad_button.dart';
 
 class PinKeypad extends StatelessWidget {
   final Function(int) onNumberPressed;
@@ -18,17 +17,24 @@ class PinKeypad extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildRow([1, 2, 3]),
-        const SizedBox(height: AppDimensions.spacingM),
+        const SizedBox(height: 16),
         _buildRow([4, 5, 6]),
-        const SizedBox(height: AppDimensions.spacingM),
+        const SizedBox(height: 16),
         _buildRow([7, 8, 9]),
-        const SizedBox(height: AppDimensions.spacingM),
+        const SizedBox(height: 16),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(width: 64, height: 64), // Empty space
-            _buildNumberButton(0),
-            _buildDeleteButton(),
+            const SizedBox(width: 70), // Empty space
+            const SizedBox(width: 20),
+            KeypadButton.number(
+              number: 0,
+              onTap: () => onNumberPressed(0),
+            ),
+            const SizedBox(width: 20),
+            KeypadButton.delete(
+              onTap: onDeletePressed,
+            ),
           ],
         ),
       ],
@@ -37,55 +43,16 @@ class PinKeypad extends StatelessWidget {
 
   Widget _buildRow(List<int> numbers) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: numbers.map(_buildNumberButton).toList(),
-    );
-  }
-
-  Widget _buildNumberButton(int number) {
-    return InkWell(
-      onTap: () => onNumberPressed(number),
-      borderRadius: BorderRadius.circular(32),
-      child: Container(
-        width: 64,
-        height: 64,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.primary,
-            width: 2,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            number.toString(),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDeleteButton() {
-    return InkWell(
-      onTap: onDeletePressed,
-      borderRadius: BorderRadius.circular(32),
-      child: Container(
-        width: 64,
-        height: 64,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.error.withOpacity(0.1),
-        ),
-        child: const Icon(
-          Icons.backspace_outlined,
-          color: AppColors.error,
-        ),
-      ),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: numbers
+          .map((n) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: KeypadButton.number(
+                  number: n,
+                  onTap: () => onNumberPressed(n),
+                ),
+              ))
+          .toList(),
     );
   }
 }

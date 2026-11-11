@@ -75,8 +75,8 @@ class GameSession {
     final newValidated = Set<String>.from(validated);
     final newPool = List<String>.from(pool);
 
-    // Increment cards presented counter (for progress bar)
-    final newCardsPresented = cardsPresented + 1;
+    // Only increment cards presented on success (for progress bar)
+    final newCardsPresented = correct ? cardsPresented + 1 : cardsPresented;
 
     if (correct) {
       // Increment success count

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
+import 'package:jerevise/features/home/presentation/screens/section_home_screen.dart';
+import 'package:jerevise/shared/widgets/circle_icon_button.dart';
+import 'package:jerevise/shared/widgets/colorful_button.dart';
+import 'package:jerevise/shared/widgets/gradient_background.dart';
 
 class PinSetupScreen extends ConsumerStatefulWidget {
   const PinSetupScreen({super.key});
@@ -27,17 +30,14 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   void _nextStep() {
     if (_currentStep == 0) {
-      // Welcome -> PIN creation
       setState(() => _currentStep = 1);
     } else if (_currentStep == 1) {
-      // PIN creation -> PIN confirmation
       if (_pinController.text.length == 4) {
         setState(() => _currentStep = 2);
       } else {
         _showError('Le code PIN doit contenir 4 chiffres');
       }
     } else if (_currentStep == 2) {
-      // PIN confirmation -> Complete
       if (_confirmPinController.text == _pinController.text) {
         _completeSetup();
       } else {
@@ -58,14 +58,11 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
     try {
       await operations.configurePin(_pinController.text);
-
-      // Activate parental mode
       ref.read(parentalModeProvider.notifier).activate();
 
       if (mounted) {
-        // Navigate to home screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const SectionHomeScreen()),
         );
       }
     } catch (e) {
@@ -76,7 +73,12 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontFamily: AppTypography.fontFamily,
+          ),
+        ),
         backgroundColor: AppColors.error,
       ),
     );
@@ -85,20 +87,34 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _currentStep > 0
-          ? AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: _previousStep,
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              if (_currentStep > 0)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingL,
+                    vertical: AppDimensions.paddingM,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleIconButton.surface(
+                        icon: Icons.arrow_back,
+                        onTap: _previousStep,
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppDimensions.paddingXl),
+                  child: _buildCurrentStep(),
+                ),
               ),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-            )
-          : null,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingXl),
-          child: _buildCurrentStep(),
+            ],
+          ),
         ),
       ),
     );
@@ -122,52 +138,39 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Spacer(),
-        const Text(
-          '🎒',
-          style: TextStyle(fontSize: 80),
+        const Icon(
+          Icons.school,
+          size: 80,
+          color: AppColors.textOnColor,
         ),
         const SizedBox(height: AppDimensions.spacingXl),
         const Text(
-          'Bienvenue dans MesMots !',
+          'Bienvenue dans JeRevise !',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.headingLarge,
             fontWeight: AppTypography.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.textOnColor,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppDimensions.spacingL),
         const Text(
-          'L\'application d\'apprentissage ludique des mots de dictée',
+          'L\'application d\'apprentissage ludique pour les enfants',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyLarge,
-            color: AppColors.textSecondary,
+            fontWeight: AppTypography.regular,
+            color: AppColors.textOnColor,
           ),
           textAlign: TextAlign.center,
         ),
         const Spacer(),
-        SizedBox(
+        ColorfulButton.orange(
+          text: 'Commencer',
+          icon: Icons.arrow_forward,
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _nextStep,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                vertical: AppDimensions.paddingL,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-              ),
-            ),
-            child: const Text(
-              'Commencer',
-              style: TextStyle(
-                fontSize: AppTypography.bodyLarge,
-                fontWeight: AppTypography.semiBold,
-              ),
-            ),
-          ),
+          onTap: _nextStep,
         ),
         const SizedBox(height: AppDimensions.spacingXl),
       ],
@@ -179,51 +182,103 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Spacer(),
-        const Icon(
-          Icons.lock_outline,
-          size: 80,
-          color: AppColors.primary,
+        Container(
+          width: 80,
+          height: 80,
+          decoration: const BoxDecoration(
+            color: AppColors.buttonBlue,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.buttonBlueShadow,
+                blurRadius: 0,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.lock_outline,
+            size: 40,
+            color: AppColors.textOnColor,
+          ),
         ),
         const SizedBox(height: AppDimensions.spacingXl),
         const Text(
           'Code Parental',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.headingLarge,
             fontWeight: AppTypography.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.textOnColor,
           ),
         ),
         const SizedBox(height: AppDimensions.spacingL),
         const Text(
           'Créez un code PIN à 4 chiffres pour protéger l\'accès aux paramètres',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyLarge,
-            color: AppColors.textSecondary,
+            fontWeight: AppTypography.regular,
+            color: AppColors.textOnColor,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppDimensions.spacingXxl),
-        TextField(
-          controller: _pinController,
-          keyboardType: TextInputType.number,
-          maxLength: 4,
-          obscureText: true,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 32,
-            letterSpacing: 16,
-            fontWeight: AppTypography.bold,
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.primaryDark,
+                blurRadius: 0,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-          decoration: const InputDecoration(
-            hintText: '••••',
-            counterText: '',
-            border: OutlineInputBorder(),
+          child: TextField(
+            controller: _pinController,
+            keyboardType: TextInputType.number,
+            maxLength: 4,
+            obscureText: true,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: AppTypography.fontFamily,
+              fontSize: 32,
+              letterSpacing: 16,
+              fontWeight: AppTypography.bold,
+              color: AppColors.textPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: '••••',
+              hintStyle: const TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                color: AppColors.textLight,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: AppColors.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.length == 4) {
+                _nextStep();
+              }
+            },
           ),
-          onChanged: (value) {
-            if (value.length == 4) {
-              _nextStep();
-            }
-          },
         ),
         const Spacer(),
         const SizedBox(height: AppDimensions.spacingXl),
@@ -236,51 +291,103 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Spacer(),
-        const Icon(
-          Icons.lock_outline,
-          size: 80,
-          color: AppColors.primary,
+        Container(
+          width: 80,
+          height: 80,
+          decoration: const BoxDecoration(
+            color: AppColors.buttonBlue,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.buttonBlueShadow,
+                blurRadius: 0,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.lock_outline,
+            size: 40,
+            color: AppColors.textOnColor,
+          ),
         ),
         const SizedBox(height: AppDimensions.spacingXl),
         const Text(
           'Confirmer le code',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.headingLarge,
             fontWeight: AppTypography.bold,
-            color: AppColors.textPrimary,
+            color: AppColors.textOnColor,
           ),
         ),
         const SizedBox(height: AppDimensions.spacingL),
         const Text(
           'Saisissez à nouveau votre code PIN',
           style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyLarge,
-            color: AppColors.textSecondary,
+            fontWeight: AppTypography.regular,
+            color: AppColors.textOnColor,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppDimensions.spacingXxl),
-        TextField(
-          controller: _confirmPinController,
-          keyboardType: TextInputType.number,
-          maxLength: 4,
-          obscureText: true,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 32,
-            letterSpacing: 16,
-            fontWeight: AppTypography.bold,
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.primaryDark,
+                blurRadius: 0,
+                offset: Offset(0, 4),
+              ),
+            ],
           ),
-          decoration: const InputDecoration(
-            hintText: '••••',
-            counterText: '',
-            border: OutlineInputBorder(),
+          child: TextField(
+            controller: _confirmPinController,
+            keyboardType: TextInputType.number,
+            maxLength: 4,
+            obscureText: true,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: AppTypography.fontFamily,
+              fontSize: 32,
+              letterSpacing: 16,
+              fontWeight: AppTypography.bold,
+              color: AppColors.textPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: '••••',
+              hintStyle: const TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                color: AppColors.textLight,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: AppColors.surface,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
+              ),
+            ),
+            onChanged: (value) {
+              if (value.length == 4) {
+                _nextStep();
+              }
+            },
           ),
-          onChanged: (value) {
-            if (value.length == 4) {
-              _nextStep();
-            }
-          },
         ),
         const Spacer(),
         const SizedBox(height: AppDimensions.spacingXl),

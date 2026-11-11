@@ -58,17 +58,4 @@ enum GameLevel {
     }
   }
 
-  /// Get level emoji
-  String get emoji {
-    switch (this) {
-      case GameLevel.qcm:
-        return '🔵';
-      case GameLevel.scramble:
-        return '🟢';
-      case GameLevel.fillBlanks:
-        return '🟠';
-      case GameLevel.writing:
-        return '🟣';
-    }
-  }
 }

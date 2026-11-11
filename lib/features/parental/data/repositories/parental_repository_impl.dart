@@ -1,7 +1,7 @@
-import 'package:mesmots/features/parental/data/datasources/parental_local_datasource.dart';
-import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
-import 'package:mesmots/features/parental/domain/entities/parental_settings.dart';
-import 'package:mesmots/features/parental/domain/repositories/parental_repository.dart';
+import 'package:jerevise/features/parental/data/datasources/parental_local_datasource.dart';
+import 'package:jerevise/features/parental/data/models/parental_settings_model.dart';
+import 'package:jerevise/features/parental/domain/entities/parental_settings.dart';
+import 'package:jerevise/features/parental/domain/repositories/parental_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'parental_repository_impl.g.dart';

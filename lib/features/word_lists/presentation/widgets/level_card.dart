@@ -1,18 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_strings.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
-import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
-import 'package:mesmots/shared/widgets/app_progress_bar.dart';
-import 'package:mesmots/shared/widgets/app_button.dart';
-import 'package:mesmots/features/games/presentation/screens/qcm_game_screen.dart';
-import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
-import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
-import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
+import 'package:jerevise/features/word_lists/domain/entities/level_progress.dart';
+import 'package:jerevise/features/games/presentation/screens/qcm_game_screen.dart';
+import 'package:jerevise/features/games/presentation/screens/scramble_game_screen.dart';
+import 'package:jerevise/features/games/presentation/screens/fill_blanks_game_screen.dart';
+import 'package:jerevise/features/games/presentation/screens/writing_game_screen.dart';
 
-class LevelCard extends StatelessWidget {
+/// Color scheme for level cards
+class _LevelColorScheme {
+  final Color cardColor;
+  final Color shadowColor;
+
+  const _LevelColorScheme({
+    required this.cardColor,
+    required this.shadowColor,
+  });
+}
+
+/// Get color scheme for each level
+_LevelColorScheme _getColorScheme(GameLevel level) {
+  switch (level) {
+    case GameLevel.qcm:
+      return const _LevelColorScheme(
+        cardColor: AppColors.buttonOrange,
+        shadowColor: AppColors.buttonOrangeShadow,
+      );
+    case GameLevel.scramble:
+      return const _LevelColorScheme(
+        cardColor: AppColors.buttonBlue,
+        shadowColor: AppColors.buttonBlueShadow,
+      );
+    case GameLevel.fillBlanks:
+      return const _LevelColorScheme(
+        cardColor: AppColors.buttonPink,
+        shadowColor: AppColors.buttonPinkShadow,
+      );
+    case GameLevel.writing:
+      return const _LevelColorScheme(
+        cardColor: AppColors.buttonMagenta,
+        shadowColor: AppColors.buttonMagentaShadow,
+      );
+  }
+}
+
+class LevelCard extends StatefulWidget {
   final GameLevel level;
   final LevelProgress progress;
   final bool isUnlocked;
@@ -27,186 +61,275 @@ class LevelCard extends StatelessWidget {
   });
 
   @override
+  State<LevelCard> createState() => _LevelCardState();
+}
+
+class _LevelCardState extends State<LevelCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.spacingL),
-      padding: const EdgeInsets.all(AppDimensions.paddingL),
-      decoration: BoxDecoration(
-        color: isUnlocked
-            ? AppColors.surface
-            : AppColors.textLight.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
-        border: Border.all(
-          color: _getLevelColor(),
-          width: 2,
-        ),
-        boxShadow: isUnlocked
-            ? [
-                BoxShadow(
-                  color: Colors.black.withOpacity(AppDimensions.shadowOpacity),
-                  blurRadius: AppDimensions.shadowBlur,
-                  offset: const Offset(0, AppDimensions.elevationM),
-                ),
-              ]
-            : null,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                level.emoji,
-                style: TextStyle(
-                  fontSize: 32,
-                  color: isUnlocked ? null : AppColors.textLight,
-                ),
-              ),
-              const SizedBox(width: AppDimensions.spacingM),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '${level.number}. ${level.name}',
-                          style: TextStyle(
-                            fontSize: AppTypography.headingSmall,
-                            fontWeight: AppTypography.semiBold,
-                            color: isUnlocked
-                                ? AppColors.textPrimary
-                                : AppColors.textLight,
-                          ),
-                        ),
-                        if (!isUnlocked) ...[
-                          const SizedBox(width: AppDimensions.spacingS),
-                          const Icon(
-                            Icons.lock,
-                            size: 20,
-                            color: AppColors.textLight,
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: AppDimensions.spacingXs),
-                    Text(
-                      level.description,
-                      style: TextStyle(
-                        fontSize: AppTypography.bodySmall,
-                        color: isUnlocked
-                            ? AppColors.textSecondary
-                            : AppColors.textLight,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppDimensions.spacingL),
-          if (isUnlocked) ...[
-            AppProgressBar(
-              progress: progress.percentage,
-              color: _getLevelColor(),
+    final colorScheme = _getColorScheme(widget.level);
+    final isCompleted = widget.progress.isCompleted;
+
+    return GestureDetector(
+      onTapDown: widget.isUnlocked ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp: widget.isUnlocked
+          ? (_) {
+              setState(() => _isPressed = false);
+              _navigateToGame(context);
+            }
+          : null,
+      onTapCancel: widget.isUnlocked ? () => setState(() => _isPressed = false) : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        margin: const EdgeInsets.only(bottom: AppDimensions.spacingL),
+        padding: const EdgeInsets.all(20),
+        transform: Matrix4.translationValues(0, _isPressed ? 3 : 0, 0),
+        decoration: BoxDecoration(
+          color: widget.isUnlocked
+              ? colorScheme.cardColor
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
+          boxShadow: [
+            BoxShadow(
+              color: widget.isUnlocked
+                  ? colorScheme.shadowColor
+                  : AppColors.primaryDark,
+              blurRadius: 0,
+              offset: Offset(0, _isPressed ? 3 : 6),
             ),
-            const SizedBox(height: AppDimensions.spacingM),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ],
+        ),
+        child: widget.isUnlocked
+            ? _buildUnlockedContent(colorScheme, isCompleted)
+            : _buildLockedContent(),
+      ),
+    );
+  }
+
+  Widget _buildUnlockedContent(_LevelColorScheme colorScheme, bool isCompleted) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header with number and title
+        Row(
+          children: [
+            // Level number badge
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.textOnColor.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+              ),
+              child: Center(
+                child: Text(
+                  '${widget.level.number}',
+                  style: const TextStyle(
+                    fontFamily: AppTypography.fontFamily,
+                    fontSize: AppTypography.headingMedium,
+                    fontWeight: AppTypography.bold,
+                    color: AppColors.textOnColor,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppDimensions.spacingM),
+
+            // Title and description
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.level.name,
+                    style: const TextStyle(
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.headingSmall,
+                      fontWeight: AppTypography.bold,
+                      color: AppColors.textOnColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    widget.level.description,
+                    style: TextStyle(
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.bodySmall,
+                      fontWeight: AppTypography.semiBold,
+                      color: AppColors.textOnColor.withValues(alpha: 0.85),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Status icon or arrow
+            if (isCompleted)
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.textOnColor.withValues(alpha: 0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check,
+                  color: AppColors.textOnColor,
+                  size: 22,
+                ),
+              )
+            else
+              const Text(
+                '→',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textOnColor,
+                ),
+              ),
+          ],
+        ),
+
+        const SizedBox(height: AppDimensions.spacingM),
+
+        // Progress bar
+        _LevelProgressBar(
+          progress: widget.progress.percentage,
+        ),
+
+        const SizedBox(height: AppDimensions.spacingS),
+
+        // Progress text
+        Text(
+          isCompleted
+              ? '✓ Niveau terminé !'
+              : '${widget.progress.percentageInt}% • ${widget.progress.validatedCount}/${widget.progress.totalWords} mots validés',
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.bodySmall,
+            fontWeight: AppTypography.semiBold,
+            color: AppColors.textOnColor.withValues(alpha: 0.9),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLockedContent() {
+    return Opacity(
+      opacity: 0.6,
+      child: Row(
+        children: [
+          // Lock icon
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.primaryDark.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.lock,
+                color: AppColors.textLight,
+                size: 24,
+              ),
+            ),
+          ),
+          const SizedBox(width: AppDimensions.spacingM),
+
+          // Title and locked message
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProgressInfo(),
-                AppButton(
-                  text: AppStrings.play,
-                  onPressed: () => _navigateToGame(context),
-                  backgroundColor: _getLevelColor(),
+                Text(
+                  '${widget.level.number}. ${widget.level.name}',
+                  style: const TextStyle(
+                    fontFamily: AppTypography.fontFamily,
+                    fontSize: AppTypography.headingSmall,
+                    fontWeight: AppTypography.bold,
+                    color: AppColors.textLight,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Termine le niveau ${widget.level.previous!.number} pour débloquer',
+                  style: const TextStyle(
+                    fontFamily: AppTypography.fontFamily,
+                    fontSize: AppTypography.bodySmall,
+                    color: AppColors.textLight,
+                  ),
                 ),
               ],
             ),
-          ] else
-            _buildLockedMessage(level.previous!),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProgressInfo() {
-    if (progress.isCompleted) {
-      return const Row(
-        children: [
-          Icon(Icons.check_circle, color: AppColors.success),
-          SizedBox(width: AppDimensions.spacingS),
-          Text(
-            AppStrings.levelUnlocked,
-            style: TextStyle(
-              fontSize: AppTypography.bodyMedium,
-              color: AppColors.success,
-              fontWeight: AppTypography.semiBold,
-            ),
           ),
         ],
-      );
-    }
-
-    final percentage = progress.percentageInt;
-    final needed = 75 - percentage;
-
-    return Text(
-      '$percentage% • ${progress.validatedCount}/${progress.totalWords} validés',
-      style: const TextStyle(
-        fontSize: AppTypography.bodyMedium,
-        color: AppColors.textSecondary,
       ),
     );
-  }
-
-  Widget _buildLockedMessage(GameLevel previousLevel) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppDimensions.spacingS),
-      child: Text(
-        '${AppStrings.levelLocked} ${previousLevel.number}',
-        style: const TextStyle(
-          fontSize: AppTypography.bodyMedium,
-          color: AppColors.textLight,
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
-  }
-
-  Color _getLevelColor() {
-    switch (level) {
-      case GameLevel.qcm:
-        return AppColors.level1;
-      case GameLevel.scramble:
-        return AppColors.level2;
-      case GameLevel.fillBlanks:
-        return AppColors.level3;
-      case GameLevel.writing:
-        return AppColors.level4;
-    }
   }
 
   void _navigateToGame(BuildContext context) {
     final Widget screen;
 
-    switch (level) {
+    switch (widget.level) {
       case GameLevel.qcm:
-        screen = QcmGameScreen(listId: listId);
+        screen = QcmGameScreen(listId: widget.listId);
         break;
       case GameLevel.scramble:
-        screen = ScrambleGameScreen(listId: listId);
+        screen = ScrambleGameScreen(listId: widget.listId);
         break;
       case GameLevel.fillBlanks:
-        screen = FillBlanksGameScreen(listId: listId);
+        screen = FillBlanksGameScreen(listId: widget.listId);
         break;
       case GameLevel.writing:
-        screen = WritingGameScreen(listId: listId);
+        screen = WritingGameScreen(listId: widget.listId);
         break;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+}
+
+/// Progress bar for level card
+class _LevelProgressBar extends StatelessWidget {
+  final double progress;
+
+  const _LevelProgressBar({
+    required this.progress,
+  });
+
+  static const double height = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.textOnColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(height / 2),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: constraints.maxWidth * progress.clamp(0.0, 1.0),
+                decoration: BoxDecoration(
+                  color: AppColors.textOnColor,
+                  borderRadius: BorderRadius.circular(height / 2),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

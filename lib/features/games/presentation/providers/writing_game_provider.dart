@@ -1,9 +1,11 @@
-import 'package:mesmots/core/utils/audio_service.dart';
-import 'package:mesmots/core/utils/haptic_service.dart';
-import 'package:mesmots/core/utils/tts_service.dart';
-import 'package:mesmots/features/games/domain/entities/game_session.dart';
-import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:characters/characters.dart';
+import 'package:jerevise/core/utils/audio_service.dart';
+import 'package:jerevise/core/utils/haptic_service.dart';
+import 'package:jerevise/core/utils/string_utils.dart';
+import 'package:jerevise/core/utils/tts_service.dart';
+import 'package:jerevise/features/games/domain/entities/game_session.dart';
+import 'package:jerevise/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'writing_game_provider.g.dart';
@@ -81,10 +83,10 @@ class WritingGame extends _$WritingGame {
     // Generate first question
     _currentQuestion = _generateQuestion();
 
-    // Auto-play TTS
+    // Auto-play TTS (non-blocking to avoid hanging on emulators)
     if (_currentQuestion != null) {
       final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
+      tts.speak(_currentQuestion!.word).ignore();
     }
 
     return _buildState();
@@ -132,6 +134,29 @@ class WritingGame extends _$WritingGame {
     state = AsyncData(_buildState());
   }
 
+  /// Add a single letter to user input
+  void addLetter(String letter) {
+    if (_currentQuestion == null) return;
+
+    _currentQuestion = _currentQuestion!.copyWith(
+      userInput: _currentQuestion!.userInput + letter,
+    );
+    state = AsyncData(_buildState());
+  }
+
+  /// Remove the last grapheme from user input
+  void removeLetter() {
+    if (_currentQuestion == null) return;
+    if (_currentQuestion!.userInput.isEmpty) return;
+
+    final graphemes = _currentQuestion!.userInput.characters.toList();
+    graphemes.removeLast();
+    _currentQuestion = _currentQuestion!.copyWith(
+      userInput: graphemes.join(),
+    );
+    state = AsyncData(_buildState());
+  }
+
   /// Clear user input
   void clearInput() {
     if (_currentQuestion == null) return;
@@ -146,10 +171,9 @@ class WritingGame extends _$WritingGame {
     if (_currentQuestion!.userInput.trim().isEmpty) return;
 
     final currentWord = _currentQuestion!.word;
-    final userAnswer = _currentQuestion!.userInput.trim().toLowerCase();
-    final correctAnswer = currentWord.toLowerCase();
+    final userAnswer = _currentQuestion!.userInput.trim();
 
-    final isCorrect = userAnswer == correctAnswer;
+    final isCorrect = normalizedEquals(userAnswer, currentWord);
 
     // Play feedback immediately (non-blocking)
     final audio = ref.read(audioServiceProvider);

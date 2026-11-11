@@ -1,4 +1,4 @@
-import 'package:mesmots/features/parental/domain/entities/parental_settings.dart';
+import 'package:jerevise/features/parental/domain/entities/parental_settings.dart';
 
 /// Repository interface for parental settings
 abstract class ParentalRepository {

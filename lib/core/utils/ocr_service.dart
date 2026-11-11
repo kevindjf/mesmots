@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jerevise/core/utils/string_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'ocr_service.g.dart';
@@ -96,8 +97,8 @@ class OcrService {
     word = word.replaceAll(RegExp(r'^[^\w\-àâäéèêëïîôùûüÿæœç]+'), '');
     word = word.replaceAll(RegExp(r'[^\w\-àâäéèêëïîôùûüÿæœç]+$'), '');
 
-    // Convert to lowercase
-    return word.toLowerCase();
+    // Convert to lowercase and normalize accents to NFC
+    return word.toLowerCase().nfc;
   }
 
   /// Dispose resources

@@ -1,5 +1,5 @@
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
-import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
+import 'package:jerevise/features/word_lists/domain/entities/level_progress.dart';
 
 /// Word list entity
 class WordList {

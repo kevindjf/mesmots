@@ -1,9 +1,10 @@
-import 'package:mesmots/core/utils/audio_service.dart';
-import 'package:mesmots/core/utils/haptic_service.dart';
-import 'package:mesmots/core/utils/tts_service.dart';
-import 'package:mesmots/features/games/domain/entities/game_session.dart';
-import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:jerevise/core/utils/audio_service.dart';
+import 'package:jerevise/core/utils/haptic_service.dart';
+import 'package:jerevise/core/utils/string_utils.dart';
+import 'package:jerevise/core/utils/tts_service.dart';
+import 'package:jerevise/features/games/domain/entities/game_session.dart';
+import 'package:jerevise/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:jerevise/features/word_lists/domain/entities/game_level.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'scramble_game_provider.g.dart';
@@ -72,10 +73,10 @@ class ScrambleGame extends _$ScrambleGame {
     // Generate first question
     _currentQuestion = _generateQuestion();
 
-    // Auto-play TTS
+    // Auto-play TTS (non-blocking to avoid hanging on emulators)
     if (_currentQuestion != null) {
       final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
+      tts.speak(_currentQuestion!.word).ignore();
     }
 
     return _buildState();
@@ -101,8 +102,8 @@ class ScrambleGame extends _$ScrambleGame {
     final word = _session!.currentWord!;
     final successCount = _session!.getSuccessCount(word);
 
-    // Scramble letters
-    final letters = word.split('');
+    // Scramble letters (use grapheme clusters for proper accent handling)
+    final letters = word.graphemes;
     letters.shuffle();
 
     // Make sure it's actually scrambled (not the same as original)
@@ -131,8 +132,8 @@ class ScrambleGame extends _$ScrambleGame {
   void addLetter(String letter) {
     if (_currentQuestion == null) return;
 
-    // Don't allow more letters than the word length
-    if (_userInput.length >= _currentQuestion!.word.length) return;
+    // Don't allow more letters than the word length (use grapheme length)
+    if (_userInput.graphemeLen >= _currentQuestion!.word.graphemeLen) return;
 
     _userInput += letter;
     state = AsyncData(_buildState());
@@ -142,7 +143,9 @@ class ScrambleGame extends _$ScrambleGame {
   void removeLetter() {
     if (_userInput.isEmpty) return;
 
-    _userInput = _userInput.substring(0, _userInput.length - 1);
+    final chars = _userInput.graphemes;
+    chars.removeLast();
+    _userInput = chars.join();
     state = AsyncData(_buildState());
   }
 
@@ -158,7 +161,7 @@ class ScrambleGame extends _$ScrambleGame {
     if (_userInput.isEmpty) return;
 
     final currentWord = _currentQuestion!.word;
-    final isCorrect = _userInput.toLowerCase() == currentWord.toLowerCase();
+    final isCorrect = normalizedEquals(_userInput, currentWord);
 
     // Play feedback immediately (non-blocking)
     final audio = ref.read(audioServiceProvider);

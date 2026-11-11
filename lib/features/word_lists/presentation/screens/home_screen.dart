@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_strings.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
-import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/list_edit_screen.dart';
-import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
-import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_strings.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
+import 'package:jerevise/features/parental/presentation/widgets/pin_input_dialog.dart';
+import 'package:jerevise/features/word_lists/presentation/providers/word_list_providers.dart';
+import 'package:jerevise/features/word_lists/presentation/screens/list_edit_screen.dart';
+import 'package:jerevise/features/word_lists/presentation/widgets/word_list_card.dart';
+import 'package:jerevise/shared/widgets/app_header.dart';
+import 'package:jerevise/shared/widgets/back_button.dart';
+import 'package:jerevise/shared/widgets/dashed_border_button.dart';
+import 'package:jerevise/shared/widgets/gradient_background.dart';
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+class OrthoHomeScreen extends ConsumerWidget {
+  const OrthoHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,29 +24,36 @@ class HomeScreen extends ConsumerWidget {
     final isParentalMode = ref.watch(parentalModeProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const Text(AppStrings.appEmoji),
-            const SizedBox(width: AppDimensions.spacingS),
-            const Text(AppStrings.appName),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              isParentalMode ? Icons.lock_open : Icons.lock_outline,
-              color: isParentalMode ? AppColors.success : AppColors.textPrimary,
-            ),
-            onPressed: () => _handleParentalMode(context, ref, parentalSettings),
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              AppHeader(
+                title: AppStrings.sectionOrtho,
+                subtitle: 'MES MOTS DE DICTÉE',
+                leading: BackButton3D(onTap: () => Navigator.pop(context)),
+                trailing: LockIconButton(
+                  isUnlocked: isParentalMode,
+                  onTap: () =>
+                      _handleParentalMode(context, ref, parentalSettings),
+                ),
+              ),
+
+              // Content
+              Expanded(
+                child: wordListsAsync.when(
+                  data: (lists) =>
+                      _buildContent(context, ref, lists, isParentalMode),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (error, stack) => Center(
+                    child: Text('${AppStrings.errorLoadingLists}: $error'),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: wordListsAsync.when(
-        data: (lists) => _buildContent(context, ref, lists, isParentalMode),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('${AppStrings.errorLoadingLists}: $error'),
         ),
       ),
     );
@@ -58,165 +69,119 @@ class HomeScreen extends ConsumerWidget {
     final activeLists = lists.where((list) => !list.isFullyCompleted).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
-    final completedLists =
-        lists.where((list) => list.isFullyCompleted).toList()
-          ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-
-    if (lists.isEmpty) {
-      return _buildEmptyState(context, ref, isParentalMode);
-    }
+    final completedLists = lists.where((list) => list.isFullyCompleted).toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
     return ListView(
-      padding: const EdgeInsets.all(AppDimensions.paddingL),
+      padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
       children: [
-        // Active lists
-        if (activeLists.isNotEmpty) ...[
-          ...activeLists.map((list) => WordListCard(wordList: list)),
-          const SizedBox(height: AppDimensions.spacingL),
-        ],
+        // Mascot section
+        const SizedBox(height: AppDimensions.spacingL),
 
-        // Completed lists section
-        if (completedLists.isNotEmpty) ...[
-          const Text(
-            AppStrings.previousLists,
-            style: TextStyle(
-              fontSize: AppTypography.headingSmall,
-              fontWeight: AppTypography.semiBold,
-              color: AppColors.textSecondary,
+        // Word lists
+        if (lists.isEmpty)
+          _buildEmptyState(context, isParentalMode)
+        else ...[
+          // Active lists
+          if (activeLists.isNotEmpty) ...[
+            for (int i = 0; i < activeLists.length; i++)
+              WordListCard(wordList: activeLists[i], colorIndex: i),
+          ],
+
+          // Completed lists section
+          if (completedLists.isNotEmpty) ...[
+            const SizedBox(height: AppDimensions.spacingL),
+            const Text(
+              AppStrings.previousLists,
+              style: TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                fontSize: AppTypography.bodyMedium,
+                fontWeight: AppTypography.bold,
+                color: AppColors.textOnColor,
+              ),
             ),
-          ),
-          const SizedBox(height: AppDimensions.spacingM),
-          ...completedLists.map((list) => WordListCard(wordList: list)),
-          const SizedBox(height: AppDimensions.spacingL),
+            const SizedBox(height: AppDimensions.spacingM),
+            for (int i = 0; i < completedLists.length; i++)
+              WordListCard(wordList: completedLists[i], colorIndex: i + activeLists.length),
+          ],
         ],
 
-        // Add new list button (only in parental mode)
-        if (isParentalMode)
-          _buildAddListButton(context)
-        else
-          _buildLockedAddButton(context, ref),
+        // Add new list button
+        const SizedBox(height: AppDimensions.spacingL),
+        _buildAddListButton(context, isParentalMode),
+        const SizedBox(height: AppDimensions.spacingXxl),
       ],
     );
   }
 
-  Widget _buildEmptyState(
-    BuildContext context,
-    WidgetRef ref,
-    bool isParentalMode,
-  ) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.paddingXl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.book_outlined,
-              size: 80,
-              color: AppColors.textLight,
+  Widget _buildEmptyState(BuildContext context, bool isParentalMode) {
+    return Column(
+      children: [
+        const SizedBox(height: AppDimensions.spacingXxl),
+        // Cute book emoji container
+        Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: AppColors.shapeLight,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
+          ),
+          child: const Center(
+            child: Icon(
+              Icons.menu_book,
+              size: 48,
+              color: AppColors.textOnColor,
             ),
-            const SizedBox(height: AppDimensions.spacingXl),
-            const Text(
-              'Aucune liste de mots',
-              style: TextStyle(
-                fontSize: AppTypography.headingMedium,
-                fontWeight: AppTypography.semiBold,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: AppDimensions.spacingM),
-            const Text(
-              'Demande à un adulte de créer ta première liste !',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: AppTypography.bodyLarge,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: AppDimensions.spacingXxl),
-            if (isParentalMode) _buildAddListButton(context),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: AppDimensions.spacingL),
+        const Text(
+          'Aucune liste de mots',
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.headingSmall,
+            fontWeight: AppTypography.bold,
+            color: AppColors.textOnColor,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingS),
+        Text(
+          isParentalMode
+              ? 'Créez votre première liste !'
+              : 'Demande à un adulte de créer ta première liste !',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.bodyMedium,
+            color: AppColors.textOnColor.withValues(alpha: 0.8),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildAddListButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ListEditScreen(),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.paddingL),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.primary,
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-          borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add, color: AppColors.primary),
-            const SizedBox(width: AppDimensions.spacingM),
-            Text(
-              AppStrings.newList,
-              style: const TextStyle(
-                fontSize: AppTypography.bodyLarge,
-                fontWeight: AppTypography.semiBold,
-                color: AppColors.primary,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLockedAddButton(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Demande à un adulte pour créer une liste'),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(AppDimensions.paddingL),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: AppColors.textLight,
-            width: 2,
-            style: BorderStyle.solid,
-          ),
-          borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add, color: AppColors.textLight),
-            const SizedBox(width: AppDimensions.spacingM),
-            Text(
-              AppStrings.newList,
-              style: const TextStyle(
-                fontSize: AppTypography.bodyLarge,
-                fontWeight: AppTypography.semiBold,
-                color: AppColors.textLight,
-              ),
-            ),
-            const SizedBox(width: AppDimensions.spacingS),
-            const Icon(Icons.lock_outline, size: 20, color: AppColors.textLight),
-          ],
-        ),
-      ),
+  Widget _buildAddListButton(BuildContext context, bool isParentalMode) {
+    return DashedBorderButton(
+      text: AppStrings.newList,
+      icon: Icons.add,
+      isLocked: !isParentalMode,
+      onTap: isParentalMode
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ListEditScreen(),
+                ),
+              );
+            }
+          : () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Demande à un adulte pour créer une liste'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
     );
   }
 
@@ -236,10 +201,10 @@ class HomeScreen extends ConsumerWidget {
     // Need to activate - check if PIN is configured
     parentalSettingsAsync.whenData((settings) async {
       if (!settings.isPinConfigured) {
-        // TODO: Navigate to PIN setup screen
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Configure le code PIN d\'abord'),
+            behavior: SnackBarBehavior.floating,
           ),
         );
         return;

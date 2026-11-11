@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:mesmots/features/parental/data/repositories/parental_repository_impl.dart';
-import 'package:mesmots/features/parental/domain/entities/parental_settings.dart';
-import 'package:mesmots/core/utils/crypto_helper.dart';
+import 'package:jerevise/features/parental/data/repositories/parental_repository_impl.dart';
+import 'package:jerevise/features/parental/domain/entities/parental_settings.dart';
+import 'package:jerevise/core/utils/crypto_helper.dart';
 
 part 'parental_providers.g.dart';
 

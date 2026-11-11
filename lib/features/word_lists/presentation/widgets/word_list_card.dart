@@ -1,137 +1,201 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/core/constants/app_strings.dart';
-import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/list_detail_screen.dart';
-import 'package:mesmots/shared/widgets/app_progress_bar.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
+import 'package:jerevise/features/word_lists/domain/entities/word_list.dart';
+import 'package:jerevise/features/word_lists/presentation/screens/list_detail_screen.dart';
 
-class WordListCard extends StatelessWidget {
+/// Color scheme for card variations
+class _CardColorScheme {
+  final Color cardColor;
+  final Color shadowColor;
+
+  const _CardColorScheme({
+    required this.cardColor,
+    required this.shadowColor,
+  });
+}
+
+/// Available color schemes for cards (style Mr. Square)
+const _colorSchemes = [
+  _CardColorScheme(
+    cardColor: AppColors.buttonOrange,
+    shadowColor: AppColors.buttonOrangeShadow,
+  ),
+  _CardColorScheme(
+    cardColor: AppColors.buttonPink,
+    shadowColor: AppColors.buttonPinkShadow,
+  ),
+  _CardColorScheme(
+    cardColor: AppColors.buttonBlue,
+    shadowColor: AppColors.buttonBlueShadow,
+  ),
+  _CardColorScheme(
+    cardColor: AppColors.buttonMagenta,
+    shadowColor: AppColors.buttonMagentaShadow,
+  ),
+  _CardColorScheme(
+    cardColor: AppColors.buttonCoral,
+    shadowColor: AppColors.buttonCoralShadow,
+  ),
+];
+
+/// Card widget displaying a word list with progress
+class WordListCard extends StatefulWidget {
   final WordList wordList;
+  final VoidCallback? onTap;
+  final int colorIndex;
 
   const WordListCard({
     super.key,
     required this.wordList,
+    this.onTap,
+    this.colorIndex = 0,
   });
 
   @override
+  State<WordListCard> createState() => _WordListCardState();
+}
+
+class _WordListCardState extends State<WordListCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final isCompleted = wordList.isFullyCompleted;
-    final currentLevel = wordList.currentLevel;
+    final isCompleted = widget.wordList.isFullyCompleted;
+    final currentLevel = widget.wordList.currentLevel;
+    final progress = widget.wordList.progress[currentLevel]?.percentage ?? 0.0;
+    final colorScheme = _colorSchemes[widget.colorIndex % _colorSchemes.length];
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ListDetailScreen(listId: wordList.id),
-          ),
-        );
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        final onTap = widget.onTap;
+        if (onTap != null) {
+          onTap();
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ListDetailScreen(listId: widget.wordList.id),
+            ),
+          );
+        }
       },
-      child: Container(
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
         margin: const EdgeInsets.only(bottom: AppDimensions.spacingL),
-        padding: const EdgeInsets.all(AppDimensions.paddingL),
+        padding: const EdgeInsets.all(20),
+        transform: Matrix4.translationValues(0, _isPressed ? 3 : 0, 0),
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+          color: colorScheme.cardColor,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
           boxShadow: [
+            // Ombre 3D colorée (style Mr. Square)
             BoxShadow(
-              color: Colors.black.withOpacity(AppDimensions.shadowOpacity),
-              blurRadius: AppDimensions.shadowBlur,
-              offset: const Offset(0, AppDimensions.elevationM),
+              color: colorScheme.shadowColor,
+              blurRadius: 0,
+              offset: Offset(0, _isPressed ? 3 : 6),
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Text(
-                  isCompleted ? '✅' : '📘',
-                  style: const TextStyle(fontSize: 24),
-                ),
-                const SizedBox(width: AppDimensions.spacingM),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        wordList.name,
-                        style: const TextStyle(
-                          fontSize: AppTypography.headingSmall,
-                          fontWeight: AppTypography.semiBold,
-                        ),
-                      ),
-                      const SizedBox(height: AppDimensions.spacingXs),
-                      Text(
-                        '${wordList.words.length} ${AppStrings.words}',
-                        style: const TextStyle(
-                          fontSize: AppTypography.bodySmall,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isCompleted)
-                  const Text(
-                    '100%',
-                    style: TextStyle(
+            // Title, subtitle and progress
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Text(
+                    widget.wordList.name,
+                    style: const TextStyle(
+                      fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodyLarge,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.success,
+                      color: AppColors.textOnColor,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-              ],
-            ),
-            if (!isCompleted) ...[
-              const SizedBox(height: AppDimensions.spacingL),
-              AppProgressBar(
-                progress: wordList.progress[currentLevel]?.percentage ?? 0.0,
-                color: _getLevelColor(currentLevel),
-              ),
-              const SizedBox(height: AppDimensions.spacingM),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                  const SizedBox(height: 2),
+                  // Subtitle
                   Text(
-                    '${currentLevel.emoji} ${currentLevel.name}',
-                    style: const TextStyle(
-                      fontSize: AppTypography.bodyMedium,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  Text(
-                    '${wordList.progress[currentLevel]?.percentageInt ?? 0}%',
-                    style: const TextStyle(
-                      fontSize: AppTypography.bodyMedium,
+                    '${widget.wordList.words.length} mots à apprendre',
+                    style: TextStyle(
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.bodySmall,
                       fontWeight: AppTypography.semiBold,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textOnColor.withValues(alpha: 0.85),
                     ),
+                  ),
+                  const SizedBox(height: AppDimensions.spacingM),
+
+                  // Progress bar
+                  WordListProgressBar(
+                    progress: progress,
+                    isCompleted: isCompleted,
                   ),
                 ],
               ),
-            ],
+            ),
+            const SizedBox(width: AppDimensions.spacingM),
+
+            // Arrow
+            const Text(
+              '→',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textOnColor,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Color _getLevelColor(level) {
-    switch (level.index) {
-      case 0:
-        return AppColors.level1;
-      case 1:
-        return AppColors.level2;
-      case 2:
-        return AppColors.level3;
-      case 3:
-        return AppColors.level4;
-      default:
-        return AppColors.primary;
-    }
+/// Progress bar for word list card
+class WordListProgressBar extends StatelessWidget {
+  final double progress;
+  final bool isCompleted;
+  final double height;
+
+  const WordListProgressBar({
+    super.key,
+    required this.progress,
+    this.isCompleted = false,
+    this.height = 4,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.textOnColor.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(height / 2),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                width: constraints.maxWidth * progress.clamp(0.0, 1.0),
+                decoration: BoxDecoration(
+                  color: AppColors.textOnColor,
+                  borderRadius: BorderRadius.circular(height / 2),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }

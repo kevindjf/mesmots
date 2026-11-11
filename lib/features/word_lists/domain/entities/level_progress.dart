@@ -1,4 +1,4 @@
-import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
+import 'package:jerevise/features/word_lists/domain/entities/word_status.dart';
 
 /// Progress for a specific game level
 class LevelProgress {

@@ -6,6 +6,7 @@ import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
 import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/list_edit_screen.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
@@ -60,14 +61,14 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildContent(
     BuildContext context,
     WidgetRef ref,
-    List lists,
+    List<WordList> lists,
     bool isParentalMode,
   ) {
     // Sort lists: active first, then completed
-    final activeLists = lists.where((list) => !list.isFullyCompleted).toList()
+    final activeLists = lists.where((list) => !list.isMastered).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
-    final completedLists = lists.where((list) => list.isFullyCompleted).toList()
+    final completedLists = lists.where((list) => list.isMastered).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
 
     return ListView(

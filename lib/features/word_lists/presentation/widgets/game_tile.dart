@@ -96,8 +96,9 @@ class _GameTileState extends State<GameTile> {
                   fontWeight: AppTypography.bold,
                   color:
                       _isEnabled ? AppColors.textOnColor : AppColors.textLight,
+                  height: 1.1,
                 ),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 2),

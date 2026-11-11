@@ -64,8 +64,7 @@ class _WordListCardState extends State<WordListCard> {
   @override
   Widget build(BuildContext context) {
     final wordList = widget.wordList;
-    final isCompleted =
-        wordList.words.isNotEmpty && wordList.masteredCount == wordList.words.length;
+    final isCompleted = wordList.isMastered;
     final progress = wordList.masteryRatio;
     final colorScheme = _colorSchemes[widget.colorIndex % _colorSchemes.length];
 

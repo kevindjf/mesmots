@@ -110,7 +110,7 @@ class ListDetailScreen extends ConsumerWidget {
                           physics: const NeverScrollableScrollPhysics(),
                           mainAxisSpacing: AppDimensions.spacingL,
                           crossAxisSpacing: AppDimensions.spacingL,
-                          childAspectRatio: 0.95,
+                          childAspectRatio: 0.82,
                           children: [
                             for (final type in GameType.values)
                               GameTile(

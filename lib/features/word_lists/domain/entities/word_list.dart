@@ -62,6 +62,9 @@ class WordList {
   double get masteryRatio =>
       words.isEmpty ? 0.0 : masteredCount / words.length;
 
+  /// Whether every word of the list is mastered
+  bool get isMastered => words.isNotEmpty && masteredCount == words.length;
+
   /// Number of completed games for a game type
   int playCountOf(GameType type) => playCount[type] ?? 0;
 

@@ -55,10 +55,13 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Future<void> _completeSetup() async {
     final operations = ref.read(parentalOperationsProvider.notifier);
+    // Read before awaiting: saving the PIN makes AppInitializer replace
+    // this screen, after which `ref` can no longer be used.
+    final parentalMode = ref.read(parentalModeProvider.notifier);
 
     try {
       await operations.configurePin(_pinController.text);
-      ref.read(parentalModeProvider.notifier).activate();
+      parentalMode.activate();
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -66,7 +69,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         );
       }
     } catch (e) {
-      _showError('Erreur lors de la configuration: $e');
+      if (mounted) _showError('Erreur lors de la configuration: $e');
     }
   }
 

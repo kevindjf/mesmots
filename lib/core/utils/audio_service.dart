@@ -7,59 +7,41 @@ part 'audio_service.g.dart';
 class AudioService {
   final AudioPlayer _player = AudioPlayer();
 
-  /// Play success sound
-  Future<void> playSuccess() async {
+  Future<void> _play(String asset) async {
     try {
-      await _player.play(AssetSource('sounds/success.mp3'));
-    } catch (e) {
-      print('Audio play error (success): $e');
+      await _player.stop();
+      await _player.play(AssetSource(asset));
+    } catch (_) {
+      // Silently ignore - sound files may be empty placeholders
     }
   }
+
+  /// Play success sound
+  Future<void> playSuccess() => _play('sounds/success.mp3');
 
   /// Play error sound
-  Future<void> playError() async {
-    try {
-      await _player.play(AssetSource('sounds/error.mp3'));
-    } catch (e) {
-      print('Audio play error (error): $e');
-    }
-  }
+  Future<void> playError() => _play('sounds/error.mp3');
 
   /// Play word validation sound
-  Future<void> playWordComplete() async {
-    try {
-      await _player.play(AssetSource('sounds/word_complete.mp3'));
-    } catch (e) {
-      print('Audio play error (word_complete): $e');
-    }
-  }
+  Future<void> playWordComplete() => _play('sounds/word_complete.mp3');
 
   /// Play level completion sound
-  Future<void> playLevelComplete() async {
-    try {
-      await _player.play(AssetSource('sounds/level_complete.mp3'));
-    } catch (e) {
-      print('Audio play error (level_complete): $e');
-    }
-  }
+  Future<void> playLevelComplete() => _play('sounds/level_complete.mp3');
 
   /// Play tap/click sound
-  Future<void> playTap() async {
-    try {
-      await _player.play(AssetSource('sounds/tap.mp3'));
-    } catch (e) {
-      print('Audio play error (tap): $e');
-    }
-  }
+  Future<void> playTap() => _play('sounds/tap.mp3');
 
   /// Play star earned sound
-  Future<void> playStar() async {
-    try {
-      await _player.play(AssetSource('sounds/star.mp3'));
-    } catch (e) {
-      print('Audio play error (star): $e');
-    }
-  }
+  Future<void> playStar() => _play('sounds/star.mp3');
+
+  /// Play brick pick sound (verb builder)
+  Future<void> playPick() => _play('sounds/pick.mp3');
+
+  /// Play brick snap sound (verb builder)
+  Future<void> playSnap() => _play('sounds/snap.mp3');
+
+  /// Play time up sound (conjugation timer)
+  Future<void> playTimeUp() => _play('sounds/time_up.mp3');
 
   void dispose() {
     _player.dispose();

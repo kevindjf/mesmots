@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/games/domain/usecases/generate_crossword.dart';
 import 'package:mesmots/features/games/presentation/extensions/game_type_presentation.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
@@ -113,12 +116,18 @@ class ListDetailScreen extends ConsumerWidget {
                               GameTile(
                                 type: type,
                                 playCount: wordList.playCountOf(type),
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => type.buildScreen(listId),
-                                  ),
-                                ),
+                                unavailableReason:
+                                    AppStrings.crosswordUnavailable,
+                                onTap: type == GameType.crossword &&
+                                        !_canPlayCrossword(wordList.words)
+                                    ? null
+                                    : () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                type.buildScreen(listId),
+                                          ),
+                                        ),
                               ),
                           ],
                         ),
@@ -265,6 +274,10 @@ class ListDetailScreen extends ConsumerWidget {
       }
     });
   }
+
+  /// Whether the words cross into a playable crossword (deterministic check)
+  bool _canPlayCrossword(List<String> words) =>
+      GenerateCrossword(random: Random(0))(words).isPlayable;
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(

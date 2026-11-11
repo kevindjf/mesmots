@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/features/games/presentation/screens/crossword_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/qcm_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
@@ -21,6 +22,8 @@ extension GameTypePresentation on GameType {
         return Icons.edit_rounded;
       case GameType.wordSearch:
         return Icons.grid_on_rounded;
+      case GameType.crossword:
+        return Icons.border_all_rounded;
     }
   }
 
@@ -36,6 +39,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonMagenta;
       case GameType.wordSearch:
         return AppColors.buttonCoral;
+      case GameType.crossword:
+        return AppColors.success;
     }
   }
 
@@ -51,6 +56,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonMagentaShadow;
       case GameType.wordSearch:
         return AppColors.buttonCoralShadow;
+      case GameType.crossword:
+        return AppColors.successShadow;
     }
   }
 
@@ -67,6 +74,8 @@ extension GameTypePresentation on GameType {
         return WritingGameScreen(listId: listId);
       case GameType.wordSearch:
         return WordSearchGameScreen(listId: listId);
+      case GameType.crossword:
+        return CrosswordGameScreen(listId: listId);
     }
   }
 }

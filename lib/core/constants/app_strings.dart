@@ -39,6 +39,12 @@ class AppStrings {
   static const String masteredWords = 'mots maîtrisés';
   static const String wordsToLearn = 'mots à apprendre';
   static const String playedTimes = 'Joué';
+  static const String crosswordUnavailable =
+      'Pas assez de lettres communes entre les mots';
+  static const String crosswordAcross = 'Horizontal';
+  static const String crosswordDown = 'Vertical';
+  static const String crosswordListen = 'Écoute le mot et écris-le';
+  static const String hint = 'Aide';
 
   // Game
   static const String validated = 'validés';

@@ -4,7 +4,8 @@ enum GameType {
   scramble,
   fillBlanks,
   writing,
-  wordSearch;
+  wordSearch,
+  crossword;
 
   /// Display name of the game
   String get label {
@@ -19,6 +20,8 @@ enum GameType {
         return 'Écriture';
       case GameType.wordSearch:
         return 'Mots mêlés';
+      case GameType.crossword:
+        return 'Mots croisés';
     }
   }
 
@@ -35,6 +38,8 @@ enum GameType {
         return 'Écris le mot en entier';
       case GameType.wordSearch:
         return 'Retrouve les mots cachés';
+      case GameType.crossword:
+        return 'Écoute et remplis la grille';
     }
   }
 }

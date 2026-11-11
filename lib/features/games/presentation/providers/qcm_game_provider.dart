@@ -5,7 +5,7 @@ import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/game_session.dart';
 import 'package:mesmots/features/games/domain/usecases/generate_distractors.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'qcm_game_provider.g.dart';
@@ -67,18 +67,8 @@ class QcmGame extends _$QcmGame {
     }
 
     // Get words that are not fully validated in QCM level
-    final progress = wordList.progress[GameLevel.qcm]!;
-    final wordsToPlay = wordList.words.where((word) {
-      final status = progress.wordStatuses[word];
-      return status == null || !status.isValidated;
-    }).toList();
-
-    if (wordsToPlay.isEmpty) {
-      // All words validated, use all words
-      _session = GameSession.initial(wordList.words);
-    } else {
-      _session = GameSession.initial(wordsToPlay);
-    }
+    // Free play: every game uses all the words of the list
+    _session = GameSession.initial(wordList.words);
 
     // Generate first question
     _currentQuestion = _generateQuestion();
@@ -161,7 +151,7 @@ class QcmGame extends _$QcmGame {
     state = AsyncData(_buildState());
 
     // Save progress to database asynchronously (non-blocking)
-    _saveProgress(isCorrect).ignore();
+    _saveProgress(currentWord, isCorrect).ignore();
 
     // Check if word is now validated
     final isValidated = isCorrect && _session!.isWordValidated(currentWord);
@@ -189,20 +179,18 @@ class QcmGame extends _$QcmGame {
     state = AsyncData(_buildState());
   }
 
-  /// Save progress to database
-  Future<void> _saveProgress(bool success) async {
-    if (_currentQuestion == null) return;
-
+  /// Save word mastery (and completed game) to database
+  Future<void> _saveProgress(String word, bool success) async {
+    final gameCompleted = _session?.isComplete ?? false;
     final repository = ref.read(wordListRepositoryProvider);
     final wordList = await repository.getById(listId);
 
     if (wordList == null) return;
 
-    final updated = wordList.updateProgress(
-      GameLevel.qcm,
-      _currentQuestion!.word,
-      success,
-    );
+    var updated = wordList.recordAttempt(word, success: success);
+    if (gameCompleted) {
+      updated = updated.recordGamePlayed(GameType.qcm);
+    }
 
     await repository.update(updated);
   }

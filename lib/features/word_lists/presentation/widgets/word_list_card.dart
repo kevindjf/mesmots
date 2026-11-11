@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/list_detail_screen.dart';
@@ -62,9 +63,10 @@ class _WordListCardState extends State<WordListCard> {
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = widget.wordList.isFullyCompleted;
-    final currentLevel = widget.wordList.currentLevel;
-    final progress = widget.wordList.progress[currentLevel]?.percentage ?? 0.0;
+    final wordList = widget.wordList;
+    final isCompleted =
+        wordList.words.isNotEmpty && wordList.masteredCount == wordList.words.length;
+    final progress = wordList.masteryRatio;
     final colorScheme = _colorSchemes[widget.colorIndex % _colorSchemes.length];
 
     return GestureDetector(
@@ -123,7 +125,7 @@ class _WordListCardState extends State<WordListCard> {
                   const SizedBox(height: 2),
                   // Subtitle
                   Text(
-                    '${widget.wordList.words.length} mots à apprendre',
+                    '${wordList.masteredCount}/${wordList.words.length} ${AppStrings.masteredWords}',
                     style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodySmall,

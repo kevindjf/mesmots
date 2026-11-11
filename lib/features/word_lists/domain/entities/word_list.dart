@@ -1,7 +1,7 @@
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
-import 'package:mesmots/features/word_lists/domain/entities/level_progress.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
-/// Word list entity
+/// Word list entity (the words of the week)
 class WordList {
   /// Unique identifier
   final String id;
@@ -18,8 +18,11 @@ class WordList {
   /// List of words
   final List<String> words;
 
-  /// Progress for each game level
-  final Map<GameLevel, LevelProgress> progress;
+  /// Global mastery for each word (key: word)
+  final Map<String, WordStatus> mastery;
+
+  /// Number of completed games per game type
+  final Map<GameType, int> playCount;
 
   const WordList({
     required this.id,
@@ -27,7 +30,8 @@ class WordList {
     required this.createdAt,
     required this.updatedAt,
     required this.words,
-    required this.progress,
+    required this.mastery,
+    required this.playCount,
   });
 
   /// Create a new word list
@@ -43,153 +47,65 @@ class WordList {
       createdAt: now,
       updatedAt: now,
       words: words,
-      progress: {
-        for (final level in GameLevel.values)
-          level: LevelProgress.initial(words),
-      },
+      mastery: {for (final word in words) word: WordStatus.initial()},
+      playCount: const {},
     );
   }
 
-  /// Get overall completion percentage across all levels
-  double get overallPercentage {
-    if (progress.isEmpty) return 0.0;
+  /// Mastery status of a word
+  WordStatus statusOf(String word) => mastery[word] ?? WordStatus.initial();
 
-    final total =
-        progress.values.map((p) => p.percentage).reduce((a, b) => a + b);
+  /// Number of mastered words
+  int get masteredCount => words.where((w) => statusOf(w).isMastered).length;
 
-    return total / progress.length;
-  }
+  /// Mastery ratio (0.0 to 1.0)
+  double get masteryRatio =>
+      words.isEmpty ? 0.0 : masteredCount / words.length;
 
-  /// Get overall completion percentage as integer (0-100)
-  int get overallPercentageInt => (overallPercentage * 100).round();
-
-  /// Check if all levels are completed
-  bool get isFullyCompleted {
-    return progress.values.every((p) => p.isCompleted);
-  }
-
-  /// Get the current/next level to play
-  GameLevel get currentLevel {
-    // Find the first level that is not completed
-    for (final level in GameLevel.values) {
-      final levelProgress = progress[level];
-      if (levelProgress == null || !levelProgress.isCompleted) {
-        return level;
-      }
-    }
-
-    // If all completed, return the last level
-    return GameLevel.writing;
-  }
-
-  /// Check if a level is unlocked
-  bool isLevelUnlocked(GameLevel level) {
-    // Level 1 is always unlocked
-    if (level == GameLevel.qcm) return true;
-
-    // Check if previous level has >= 75% completion
-    final previousLevel = level.previous;
-    if (previousLevel == null) return true;
-
-    final previousProgress = progress[previousLevel];
-    if (previousProgress == null) return false;
-
-    return previousProgress.isUnlocked;
-  }
+  /// Number of completed games for a game type
+  int playCountOf(GameType type) => playCount[type] ?? 0;
 
   /// Update word list name
   WordList updateName(String newName) {
-    return copyWith(
-      name: newName,
-      updatedAt: DateTime.now(),
-    );
+    return copyWith(name: newName, updatedAt: DateTime.now());
   }
 
-  /// Update words in the list
+  /// Update words, keeping mastery of words still present
   WordList updateWords(List<String> newWords) {
-    final now = DateTime.now();
-
-    // Update progress for all levels with new words
-    final updatedProgress = <GameLevel, LevelProgress>{};
-    for (final entry in progress.entries) {
-      updatedProgress[entry.key] = _updateLevelProgressWithWords(
-        entry.value,
-        words,
-        newWords,
-      );
-    }
-
     return copyWith(
       words: newWords,
-      updatedAt: now,
-      progress: updatedProgress,
-    );
-  }
-
-  /// Helper to update level progress when words change
-  LevelProgress _updateLevelProgressWithWords(
-    LevelProgress current,
-    List<String> oldWords,
-    List<String> newWords,
-  ) {
-    // Find added and removed words
-    final addedWords = newWords.where((w) => !oldWords.contains(w)).toList();
-    final removedWords = oldWords.where((w) => !newWords.contains(w)).toList();
-
-    var updated = current;
-
-    // Add new words
-    if (addedWords.isNotEmpty) {
-      updated = updated.addWords(addedWords);
-    }
-
-    // Remove old words
-    if (removedWords.isNotEmpty) {
-      updated = updated.removeWords(removedWords);
-    }
-
-    return updated;
-  }
-
-  /// Update progress for a specific level and word
-  WordList updateProgress(GameLevel level, String word, bool success) {
-    final levelProgress = progress[level];
-    if (levelProgress == null) return this;
-
-    final updatedLevelProgress = levelProgress.updateWordStatus(word, success);
-
-    final updatedProgress = Map<GameLevel, LevelProgress>.from(progress);
-    updatedProgress[level] = updatedLevelProgress;
-
-    return copyWith(
-      progress: updatedProgress,
+      mastery: {for (final word in newWords) word: statusOf(word)},
       updatedAt: DateTime.now(),
     );
   }
 
-  /// Reset progress for a specific level
-  WordList resetLevel(GameLevel level) {
-    final levelProgress = progress[level];
-    if (levelProgress == null) return this;
+  /// Record an attempt on a word, from any game
+  WordList recordAttempt(String word, {required bool success}) {
+    if (!words.contains(word)) return this;
 
-    final updatedProgress = Map<GameLevel, LevelProgress>.from(progress);
-    updatedProgress[level] = levelProgress.reset();
-
+    final current = statusOf(word);
     return copyWith(
-      progress: updatedProgress,
+      mastery: {
+        ...mastery,
+        word: success ? current.recordSuccess() : current.recordError(),
+      },
       updatedAt: DateTime.now(),
     );
   }
 
-  /// Reset all progress
+  /// Record a completed game
+  WordList recordGamePlayed(GameType type) {
+    return copyWith(
+      playCount: {...playCount, type: playCountOf(type) + 1},
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  /// Reset mastery and play counts
   WordList resetAllProgress() {
-    final updatedProgress = <GameLevel, LevelProgress>{};
-    for (final level in GameLevel.values) {
-      updatedProgress[level] = LevelProgress.initial(words);
-    }
-
     return copyWith(
-      progress: updatedProgress,
+      mastery: {for (final word in words) word: WordStatus.initial()},
+      playCount: const {},
       updatedAt: DateTime.now(),
     );
   }
@@ -200,7 +116,8 @@ class WordList {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? words,
-    Map<GameLevel, LevelProgress>? progress,
+    Map<String, WordStatus>? mastery,
+    Map<GameType, int>? playCount,
   }) {
     return WordList(
       id: id ?? this.id,
@@ -208,30 +125,10 @@ class WordList {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       words: words ?? this.words,
-      progress: progress ?? this.progress,
+      mastery: mastery ?? this.mastery,
+      playCount: playCount ?? this.playCount,
     );
   }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is WordList &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name &&
-          createdAt == other.createdAt &&
-          updatedAt == other.updatedAt &&
-          words == other.words &&
-          progress == other.progress;
-
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      name.hashCode ^
-      createdAt.hashCode ^
-      updatedAt.hashCode ^
-      words.hashCode ^
-      progress.hashCode;
 
   @override
   String toString() => 'WordList(id: $id, name: $name, words: ${words.length})';

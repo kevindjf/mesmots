@@ -33,28 +33,21 @@ class AppStrings {
   static const String deleteList = 'Supprimer la liste';
   static const String confirmDelete = 'Es-tu sûr de vouloir supprimer cette liste ?';
 
-  // Levels
-  static const String level1Name = 'Découverte';
-  static const String level2Name = 'Reconstruction';
-  static const String level3Name = 'Mots à trous';
-  static const String level4Name = 'Écriture';
-
-  static const String level1Description = 'Choisis la bonne orthographe';
-  static const String level2Description = 'Remets les lettres dans l\'ordre';
-  static const String level3Description = 'Complète les lettres manquantes';
-  static const String level4Description = 'Écris le mot en entier';
-
-  static const String levelUnlocked = 'Niveau suivant débloqué';
-  static const String levelLocked = 'Atteindre 75% au niveau';
-  static const String percentToUnlock = 'pour débloquer';
+  // Games
+  static const String chooseGame = 'CHOISIS TON JEU';
+  static const String myWords = 'MES MOTS';
+  static const String masteredWords = 'mots maîtrisés';
+  static const String wordsToLearn = 'mots à apprendre';
+  static const String playedTimes = 'Joué';
 
   // Game
   static const String validated = 'validés';
   static const String tapToReplay = '(touche pour réécouter)';
-  static const String nextLevel = 'Niveau suivant';
+  static const String playAgain = 'Rejouer';
+  static const String otherGame = 'Choisir un autre jeu';
   static const String backToList = 'Retour à la liste';
   static const String congratulations = 'Bravo !';
-  static const String allWordsValidated = 'Tu as validé tous les mots !';
+  static const String allWordsValidated = 'Tu as joué avec tous tes mots !';
 
   // Parental
   static const String parentalMode = 'Mode parent';
@@ -72,7 +65,7 @@ class AppStrings {
   static const String welcomeTitle = 'Bienvenue dans MesMots !';
   static const String welcomeDescription =
       'Apprends en t\'amusant !';
-  static const String gamesTitle = 'Quatre jeux pour progresser';
+  static const String gamesTitle = 'Plein de jeux pour apprendre';
   static const String gamesDescription =
       'De la découverte à l\'écriture complète';
   static const String parentalTitle = 'Espace parent sécurisé';

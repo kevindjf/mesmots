@@ -33,8 +33,13 @@ class WritingGameScreen extends ConsumerWidget {
             data: (gameState) {
               if (gameState.question == null) {
                 return SuccessOverlay(
-                  onNextLevel: () {
-                    Navigator.pop(context);
+                  onReplay: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WritingGameScreen(listId: listId),
+                      ),
+                    );
                   },
                   onBackToList: () {
                     Navigator.pop(context);

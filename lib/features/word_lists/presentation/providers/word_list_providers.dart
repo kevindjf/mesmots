@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
 
 part 'word_list_providers.g.dart';
 
@@ -83,48 +82,6 @@ class WordListOperations extends _$WordListOperations {
     state = await AsyncValue.guard(() async {
       final repository = ref.read(wordListRepositoryProvider);
       await repository.delete(id);
-    });
-  }
-
-  /// Update progress for a word in a specific level
-  Future<void> updateProgress({
-    required String listId,
-    required GameLevel level,
-    required String word,
-    required bool success,
-  }) async {
-    state = const AsyncLoading();
-
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(wordListRepositoryProvider);
-      final current = await repository.getById(listId);
-
-      if (current == null) {
-        throw Exception('Word list not found');
-      }
-
-      final updated = current.updateProgress(level, word, success);
-      await repository.update(updated);
-    });
-  }
-
-  /// Reset progress for a specific level
-  Future<void> resetLevel({
-    required String listId,
-    required GameLevel level,
-  }) async {
-    state = const AsyncLoading();
-
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(wordListRepositoryProvider);
-      final current = await repository.getById(listId);
-
-      if (current == null) {
-        throw Exception('Word list not found');
-      }
-
-      final updated = current.resetLevel(level);
-      await repository.update(updated);
     });
   }
 

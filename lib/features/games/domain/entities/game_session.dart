@@ -99,11 +99,6 @@ class GameSession {
       // Increment consecutive errors
       newConsecutiveErrors[word] = (newConsecutiveErrors[word] ?? 0) + 1;
 
-      // Check if need to reset success count (2 consecutive errors)
-      if (newConsecutiveErrors[word]! >= 2) {
-        newSuccessCount[word] = 0;
-      }
-
       // Remove current word (will be re-added after shuffle)
       newPool.remove(word);
       newPool.add(word);

@@ -50,7 +50,7 @@ class AppInitializer extends ConsumerWidget {
     return parentalSettingsAsync.when(
       data: (settings) {
         // If PIN is not configured, show onboarding
-        if (settings == null || !settings.isPinConfigured) {
+        if (!settings.isPinConfigured) {
           return const PinSetupScreen();
         }
         // Otherwise, show home screen

@@ -1,0 +1,35 @@
+/// Available learning games. All games are always playable, in any order.
+enum GameType {
+  qcm,
+  scramble,
+  fillBlanks,
+  writing;
+
+  /// Display name of the game
+  String get label {
+    switch (this) {
+      case GameType.qcm:
+        return 'Le bon mot';
+      case GameType.scramble:
+        return 'Lettres mélangées';
+      case GameType.fillBlanks:
+        return 'Mots à trous';
+      case GameType.writing:
+        return 'Écriture';
+    }
+  }
+
+  /// Short description of the game
+  String get description {
+    switch (this) {
+      case GameType.qcm:
+        return 'Choisis la bonne orthographe';
+      case GameType.scramble:
+        return 'Remets les lettres dans l\'ordre';
+      case GameType.fillBlanks:
+        return 'Complète les lettres manquantes';
+      case GameType.writing:
+        return 'Écris le mot en entier';
+    }
+  }
+}

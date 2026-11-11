@@ -4,7 +4,7 @@ import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/game_session.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'fill_blanks_game_provider.g.dart';
@@ -82,18 +82,8 @@ class FillBlanksGame extends _$FillBlanksGame {
     }
 
     // Get words that are not fully validated in FillBlanks level
-    final progress = wordList.progress[GameLevel.fillBlanks]!;
-    final wordsToPlay = wordList.words.where((word) {
-      final status = progress.wordStatuses[word];
-      return status == null || !status.isValidated;
-    }).toList();
-
-    if (wordsToPlay.isEmpty) {
-      // All words validated, use all words
-      _session = GameSession.initial(wordList.words);
-    } else {
-      _session = GameSession.initial(wordsToPlay);
-    }
+    // Free play: every game uses all the words of the list
+    _session = GameSession.initial(wordList.words);
 
     // Generate first question
     _currentQuestion = _generateQuestion();
@@ -262,7 +252,7 @@ class FillBlanksGame extends _$FillBlanksGame {
     state = AsyncData(_buildState());
 
     // Save progress to database asynchronously (non-blocking)
-    _saveProgress(isCorrect).ignore();
+    _saveProgress(currentWord, isCorrect).ignore();
 
     // Check if word is now validated
     final isValidated = isCorrect && _session!.isWordValidated(currentWord);
@@ -290,20 +280,18 @@ class FillBlanksGame extends _$FillBlanksGame {
     state = AsyncData(_buildState());
   }
 
-  /// Save progress to database
-  Future<void> _saveProgress(bool success) async {
-    if (_currentQuestion == null) return;
-
+  /// Save word mastery (and completed game) to database
+  Future<void> _saveProgress(String word, bool success) async {
+    final gameCompleted = _session?.isComplete ?? false;
     final repository = ref.read(wordListRepositoryProvider);
     final wordList = await repository.getById(listId);
 
     if (wordList == null) return;
 
-    final updated = wordList.updateProgress(
-      GameLevel.fillBlanks,
-      _currentQuestion!.word,
-      success,
-    );
+    var updated = wordList.recordAttempt(word, success: success);
+    if (gameCompleted) {
+      updated = updated.recordGamePlayed(GameType.fillBlanks);
+    }
 
     await repository.update(updated);
   }

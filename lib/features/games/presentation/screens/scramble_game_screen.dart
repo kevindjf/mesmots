@@ -5,7 +5,6 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/scramble_game_provider.dart';
-import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
@@ -35,11 +34,11 @@ class ScrambleGameScreen extends ConsumerWidget {
             data: (gameState) {
               if (gameState.question == null) {
                 return SuccessOverlay(
-                  onNextLevel: () {
+                  onReplay: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FillBlanksGameScreen(listId: listId),
+                        builder: (context) => ScrambleGameScreen(listId: listId),
                       ),
                     );
                   },

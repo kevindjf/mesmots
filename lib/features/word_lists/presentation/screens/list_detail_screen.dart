@@ -4,9 +4,11 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/features/word_lists/domain/entities/game_level.dart';
+import 'package:mesmots/features/games/presentation/extensions/game_type_presentation.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
-import 'package:mesmots/features/word_lists/presentation/widgets/level_card.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/game_tile.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/word_mastery_chip.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
 import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/list_edit_screen.dart';
@@ -96,40 +98,46 @@ class ListDetailScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: AppDimensions.spacingXl),
 
-                        const Text(
-                          'CHOISIS TON ENTRAÎNEMENT',
-                          style: TextStyle(
-                            fontFamily: AppTypography.fontFamily,
-                            fontSize: AppTypography.bodySmall,
-                            fontWeight: AppTypography.bold,
-                            color: AppColors.textOnColor,
-                            letterSpacing: 1.0,
-                          ),
+                        const _SectionTitle(AppStrings.chooseGame),
+                        const SizedBox(height: AppDimensions.spacingL),
+                        GridView.count(
+                          crossAxisCount:
+                              MediaQuery.sizeOf(context).width >= 600 ? 3 : 2,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: AppDimensions.spacingL,
+                          crossAxisSpacing: AppDimensions.spacingL,
+                          childAspectRatio: 0.95,
+                          children: [
+                            for (final type in GameType.values)
+                              GameTile(
+                                type: type,
+                                playCount: wordList.playCountOf(type),
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => type.buildScreen(listId),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppDimensions.spacingXl),
+                        _SectionTitle(
+                          '${AppStrings.myWords} • ${wordList.masteredCount}/${wordList.words.length} ${AppStrings.masteredWords}',
                         ),
                         const SizedBox(height: AppDimensions.spacingL),
-
-                        ...GameLevel.values.map((level) {
-                          final progress = wordList.progress[level]!;
-                          final isUnlocked = wordList.isLevelUnlocked(level);
-                          return LevelCard(
-                            level: level,
-                            progress: progress,
-                            isUnlocked: isUnlocked,
-                            listId: listId,
-                          );
-                        }),
-
-                        const SizedBox(height: AppDimensions.spacingL),
-
-                        // View words button
-                        ColorfulButton(
-                          text: AppStrings.viewWords,
-                          icon: Icons.list,
-                          color: AppColors.surface,
-                          shadowColor: AppColors.primaryDark,
-                          textColor: AppColors.primary,
-                          width: double.infinity,
-                          onTap: () => _showWordsDialog(context, wordList.words),
+                        Wrap(
+                          spacing: AppDimensions.spacingS,
+                          runSpacing: AppDimensions.spacingM,
+                          children: [
+                            for (final word in wordList.words)
+                              WordMasteryChip(
+                                word: word,
+                                status: wordList.statusOf(word),
+                              ),
+                          ],
                         ),
 
                         const SizedBox(height: AppDimensions.spacingXxl),
@@ -258,84 +266,6 @@ class ListDetailScreen extends ConsumerWidget {
     });
   }
 
-  void _showWordsDialog(BuildContext context, List<String> words) {
-    final colors = [
-      AppColors.buttonOrange,
-      AppColors.buttonPink,
-      AppColors.buttonBlue,
-      AppColors.buttonMagenta,
-      AppColors.buttonCoral,
-    ];
-
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingXl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                'Liste des mots',
-                style: TextStyle(
-                  fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.headingMedium,
-                  fontWeight: AppTypography.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: AppDimensions.spacingL),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 400),
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    spacing: AppDimensions.spacingS,
-                    runSpacing: AppDimensions.spacingS,
-                    children: words.asMap().entries.map((entry) {
-                      final color = colors[entry.key % colors.length];
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppDimensions.paddingM,
-                          vertical: AppDimensions.paddingS,
-                        ),
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-                        ),
-                        child: Text(
-                          entry.value,
-                          style: const TextStyle(
-                            fontFamily: AppTypography.fontFamily,
-                            fontSize: AppTypography.bodyMedium,
-                            fontWeight: AppTypography.semiBold,
-                            color: AppColors.textOnColor,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppDimensions.spacingL),
-              ColorfulButton(
-                text: AppStrings.close,
-                color: AppColors.primary,
-                shadowColor: AppColors.primaryDark,
-                width: double.infinity,
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -411,5 +341,25 @@ class ListDetailScreen extends ConsumerWidget {
         Navigator.pop(context);
       }
     }
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontFamily: AppTypography.fontFamily,
+        fontSize: AppTypography.bodySmall,
+        fontWeight: AppTypography.bold,
+        color: AppColors.textOnColor,
+        letterSpacing: 1.0,
+      ),
+    );
   }
 }

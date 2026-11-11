@@ -59,12 +59,6 @@ class AppColors {
   static const Color iconBlue = Color(0xFF4ECDC4); // Icône turquoise
   static const Color iconBackground = Color(0xFFE0F7F5); // Fond icône turquoise clair
 
-  // Level colors
-  static const Color level1 = Color(0xFFFFA726); // Orange - QCM
-  static const Color level2 = Color(0xFF66BB6A); // Vert - Mélangé
-  static const Color level3 = Color(0xFFFF7B9C); // Rose - Trous
-  static const Color level4 = Color(0xFFAB47BC); // Violet - Écriture
-
   // Shadow
   static const Color shadowColor = Color(0x25000000); // Ombre légère
 }

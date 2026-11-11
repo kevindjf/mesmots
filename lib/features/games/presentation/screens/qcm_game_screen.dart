@@ -5,7 +5,6 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/qcm_game_provider.dart';
-import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
 import 'package:mesmots/shared/widgets/app_card.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
@@ -41,11 +40,11 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
             data: (gameState) {
               if (gameState.question == null) {
                 return SuccessOverlay(
-                  onNextLevel: () {
+                  onReplay: () {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ScrambleGameScreen(listId: widget.listId),
+                        builder: (context) => QcmGameScreen(listId: widget.listId),
                       ),
                     );
                   },

@@ -6,12 +6,12 @@ import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 
 class SuccessOverlay extends StatelessWidget {
-  final VoidCallback? onNextLevel;
+  final VoidCallback onReplay;
   final VoidCallback onBackToList;
 
   const SuccessOverlay({
     super.key,
-    this.onNextLevel,
+    required this.onReplay,
     required this.onBackToList,
   });
 
@@ -90,20 +90,18 @@ class SuccessOverlay extends StatelessWidget {
             const SizedBox(height: AppDimensions.spacingXxl),
 
             // Buttons
-            if (onNextLevel != null) ...[
-              ColorfulButton(
-                text: AppStrings.nextLevel,
-                icon: Icons.arrow_forward,
-                color: AppColors.success,
-                shadowColor: const Color(0xFF3D8B40),
-                width: double.infinity,
-                onTap: onNextLevel,
-              ),
-              const SizedBox(height: AppDimensions.spacingL),
-            ],
             ColorfulButton(
-              text: AppStrings.backToList,
-              icon: Icons.arrow_back,
+              text: AppStrings.playAgain,
+              icon: Icons.replay,
+              color: AppColors.success,
+              shadowColor: AppColors.successShadow,
+              width: double.infinity,
+              onTap: onReplay,
+            ),
+            const SizedBox(height: AppDimensions.spacingL),
+            ColorfulButton(
+              text: AppStrings.otherGame,
+              icon: Icons.grid_view_rounded,
               color: AppColors.surface,
               shadowColor: AppColors.primaryDark,
               textColor: AppColors.primary,

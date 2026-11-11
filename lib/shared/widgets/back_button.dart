@@ -24,15 +24,6 @@ class BackButton3D extends StatelessWidget {
     this.size = 44,
   });
 
-  /// Themed back button for conjugation section headers.
-  const BackButton3D.conjugation({
-    super.key,
-    required this.onTap,
-    this.size = 36,
-  })  : color = AppColors.surface,
-        shadowColor = AppColors.sectionConjugShadow,
-        iconColor = AppColors.sectionConjug;
-
   @override
   Widget build(BuildContext context) {
     return CircleIconButton(

@@ -3,37 +3,7 @@ class AppStrings {
   AppStrings._();
 
   // App
-  static const String appName = 'JeRevise';
-
-
-  // Sections
-  static const String sectionOrtho = 'Orthographe';
-  static const String sectionOrthoDesc = 'Apprends tes mots de dictée';
-  static const String sectionConjug = 'Conjugaison';
-  static const String sectionConjugDesc = 'Maîtrise les verbes';
-  static const String sectionMaths = 'Mathématiques';
-  static const String sectionMathsDesc = 'Deviens un pro du calcul';
-
-  // Maths games
-  static const String mathsDuelExpress = 'Duel Express';
-  static const String mathsDuelExpressDesc = 'Calcul mental contre la montre !\nRéponds vite et bien.';
-  static const String mathsBalance = 'Balance Magique';
-  static const String mathsBalanceDesc = 'Équilibre la balance !\nTrouve la bonne combinaison.';
-  static const String mathsCascade = 'Cascade';
-  static const String mathsCascadeDesc = 'Range les nombres dans l\'ordre !\nDu plus petit au plus grand.';
-  static const String mathsChantier = 'Le Chantier';
-  static const String mathsChantierDesc = 'Résous des problèmes pour construire !\nÉtape par étape.';
-  static const String mathsSelectDifficulty = 'Choisis ton niveau';
-  static const String mathsSelectOperations = 'Choisis les opérations';
-  static const String mathsTimePerQuestion = 'Temps par question';
-  static const String mathsQuestionCount = 'Nombre de questions';
-  static const String mathsAscending = 'Ordre croissant';
-  static const String mathsDescending = 'Ordre décroissant';
-  static const String mathsStart = 'C\'est parti !';
-  static const String mathsScore = 'Score';
-  static const String mathsReplay = 'Rejouer';
-  static const String mathsNewGame = 'Nouveau jeu';
-  static const String mathsMenu = 'Menu maths';
+  static const String appName = 'MesMots';
 
   // Common
   static const String cancel = 'Annuler';

@@ -34,14 +34,6 @@ class AudioService {
   /// Play star earned sound
   Future<void> playStar() => _play('sounds/star.mp3');
 
-  /// Play brick pick sound (verb builder)
-  Future<void> playPick() => _play('sounds/pick.mp3');
-
-  /// Play brick snap sound (verb builder)
-  Future<void> playSnap() => _play('sounds/snap.mp3');
-
-  /// Play time up sound (conjugation timer)
-  Future<void> playTimeUp() => _play('sounds/time_up.mp3');
 
   void dispose() {
     _player.dispose();

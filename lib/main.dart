@@ -4,7 +4,7 @@ import 'package:jerevise/core/theme/app_theme.dart';
 import 'package:jerevise/core/constants/app_strings.dart';
 import 'package:jerevise/core/utils/database_provider.dart';
 import 'package:jerevise/core/utils/tts_service.dart';
-import 'package:jerevise/features/home/presentation/screens/section_home_screen.dart';
+import 'package:jerevise/features/word_lists/presentation/screens/home_screen.dart';
 import 'package:jerevise/features/onboarding/presentation/screens/pin_setup_screen.dart';
 import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
 
@@ -53,8 +53,8 @@ class AppInitializer extends ConsumerWidget {
         if (settings == null || !settings.isPinConfigured) {
           return const PinSetupScreen();
         }
-        // Otherwise, show section home screen
-        return const SectionHomeScreen();
+        // Otherwise, show home screen
+        return const HomeScreen();
       },
       loading: () => const Scaffold(
         body: Center(

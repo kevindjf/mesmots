@@ -4,7 +4,7 @@ import 'package:jerevise/core/constants/app_colors.dart';
 import 'package:jerevise/core/constants/app_dimensions.dart';
 import 'package:jerevise/core/constants/app_typography.dart';
 import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
-import 'package:jerevise/features/home/presentation/screens/section_home_screen.dart';
+import 'package:jerevise/features/word_lists/presentation/screens/home_screen.dart';
 import 'package:jerevise/shared/widgets/circle_icon_button.dart';
 import 'package:jerevise/shared/widgets/colorful_button.dart';
 import 'package:jerevise/shared/widgets/gradient_background.dart';
@@ -62,7 +62,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const SectionHomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
         );
       }
     } catch (e) {

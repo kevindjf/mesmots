@@ -65,20 +65,6 @@ class AppColors {
   static const Color level3 = Color(0xFFFF7B9C); // Rose - Trous
   static const Color level4 = Color(0xFFAB47BC); // Violet - Écriture
 
-  // Section colors
-  static const Color sectionOrtho = Color(0xFFFFA726);
-  static const Color sectionOrthoShadow = Color(0xFFE69500);
-  static const Color sectionConjug = Color(0xFF42A5F5);
-  static const Color sectionConjugShadow = Color(0xFF2889D9);
-  static const Color sectionMaths = Color(0xFF66BB6A);
-  static const Color sectionMathsShadow = Color(0xFF4D9950);
-
-  // Verb group colors (conjugation)
-  static const Color verbGroupException = Color(0xFFFF9800); // Orange
-  static const Color verbGroup1 = Color(0xFFE91E63); // Pink
-  static const Color verbGroup2 = Color(0xFF2196F3); // Blue
-  static const Color verbGroup3 = Color(0xFF9C27B0); // Purple
-
   // Shadow
   static const Color shadowColor = Color(0x25000000); // Ombre légère
 }

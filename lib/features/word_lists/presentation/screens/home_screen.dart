@@ -10,12 +10,11 @@ import 'package:jerevise/features/word_lists/presentation/providers/word_list_pr
 import 'package:jerevise/features/word_lists/presentation/screens/list_edit_screen.dart';
 import 'package:jerevise/features/word_lists/presentation/widgets/word_list_card.dart';
 import 'package:jerevise/shared/widgets/app_header.dart';
-import 'package:jerevise/shared/widgets/back_button.dart';
 import 'package:jerevise/shared/widgets/dashed_border_button.dart';
 import 'package:jerevise/shared/widgets/gradient_background.dart';
 
-class OrthoHomeScreen extends ConsumerWidget {
-  const OrthoHomeScreen({super.key});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,9 +29,8 @@ class OrthoHomeScreen extends ConsumerWidget {
             children: [
               // Header
               AppHeader(
-                title: AppStrings.sectionOrtho,
+                title: AppStrings.appName,
                 subtitle: 'MES MOTS DE DICTÉE',
-                leading: BackButton3D(onTap: () => Navigator.pop(context)),
                 trailing: LockIconButton(
                   isUnlocked: isParentalMode,
                   onTap: () =>

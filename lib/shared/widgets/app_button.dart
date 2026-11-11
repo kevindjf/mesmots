@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_typography.dart';
 
 /// Primary application button
 class AppButton extends StatelessWidget {

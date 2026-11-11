@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
-import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:jerevise/core/constants/app_colors.dart';
+import 'package:jerevise/core/constants/app_dimensions.dart';
 
-/// Standard application card
+/// Standard application card with 3D shadow
 class AppCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? padding;
-  final double? elevation;
 
   const AppCard({
     super.key,
@@ -16,7 +15,6 @@ class AppCard extends StatelessWidget {
     this.onTap,
     this.backgroundColor,
     this.padding,
-    this.elevation,
   });
 
   @override
@@ -25,11 +23,11 @@ class AppCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withOpacity(AppDimensions.shadowOpacity),
-            blurRadius: AppDimensions.shadowBlur,
-            offset: const Offset(0, AppDimensions.elevationM),
+            color: AppColors.primaryDark,
+            blurRadius: 0,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -40,9 +38,8 @@ class AppCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return InkWell(
+      return GestureDetector(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
         child: card,
       );
     }
@@ -51,8 +48,8 @@ class AppCard extends StatelessWidget {
   }
 }
 
-/// Cream-colored card for game elements
-class GameCard extends StatelessWidget {
+/// Game card with 3D shadow and state feedback
+class GameCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final bool isSelected;
@@ -70,51 +67,59 @@ class GameCard extends StatelessWidget {
     this.padding,
   });
 
+  @override
+  State<GameCard> createState() => _GameCardState();
+}
+
+class _GameCardState extends State<GameCard> {
+  bool _isPressed = false;
+
   Color get _backgroundColor {
-    if (isCorrect) return AppColors.success;
-    if (isIncorrect) return AppColors.error;
-    if (isSelected) return AppColors.primary.withOpacity(0.2);
-    return AppColors.cardBackground;
+    if (widget.isCorrect) return AppColors.success;
+    if (widget.isIncorrect) return AppColors.error;
+    if (widget.isSelected) return AppColors.primary.withValues(alpha: 0.2);
+    return AppColors.surface;
+  }
+
+  Color get _shadowColor {
+    if (widget.isCorrect) return const Color(0xFF3D8B40);
+    if (widget.isIncorrect) return const Color(0xFFCC3B3B);
+    if (widget.isSelected) return AppColors.primaryDark;
+    return AppColors.primaryDark;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: BoxDecoration(
-        color: _backgroundColor,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-        border: Border.all(
-          color: isSelected
-              ? AppColors.primary
-              : isCorrect
-                  ? AppColors.success
-                  : isIncorrect
-                      ? AppColors.error
-                      : Colors.transparent,
-          width: isSelected || isCorrect || isIncorrect ? 3 : 0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(AppDimensions.shadowOpacity),
-            blurRadius: AppDimensions.shadowBlur,
-            offset: const Offset(0, AppDimensions.elevationS),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
+    return GestureDetector(
+      onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
+      onTapUp: widget.onTap != null
+          ? (_) {
+              setState(() => _isPressed = false);
+              widget.onTap!();
+            }
+          : null,
+      onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
+        decoration: BoxDecoration(
+          color: _backgroundColor,
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-          child: Padding(
-            padding: padding ??
-                const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                  vertical: AppDimensions.paddingM,
-                ),
-            child: child,
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: _shadowColor,
+              blurRadius: 0,
+              offset: Offset(0, _isPressed ? 2 : 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: widget.padding ??
+              const EdgeInsets.symmetric(
+                horizontal: AppDimensions.paddingL,
+                vertical: AppDimensions.paddingM,
+              ),
+          child: widget.child,
         ),
       ),
     );

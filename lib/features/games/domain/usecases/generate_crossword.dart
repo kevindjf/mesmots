@@ -31,7 +31,7 @@ class GenerateCrossword {
     if (entries.isEmpty) return Crossword.empty;
 
     List<PlacedWord> best = const [];
-    var bestArea = 1 << 30;
+    int? bestArea;
 
     for (var attempt = 0; attempt < _attempts; attempt++) {
       final order = List.of(entries)..shuffle(_random);
@@ -41,7 +41,8 @@ class GenerateCrossword {
       final placed = _build(order);
       final area = _area(placed);
       if (placed.length > best.length ||
-          (placed.length == best.length && area < bestArea)) {
+          (placed.length == best.length &&
+              (bestArea == null || area < bestArea))) {
         best = placed;
         bestArea = area;
       }
@@ -86,8 +87,9 @@ class GenerateCrossword {
   }
 
   PlacedWord? _bestPlacement(_Grid grid, String word, List<String> letters) {
+    // Avoid bit shifts for sentinels: on the web they yield unsigned values.
     PlacedWord? best;
-    var bestScore = -1 << 30;
+    int? bestScore;
 
     for (final cell in grid.letters.entries) {
       for (var i = 0; i < letters.length; i++) {
@@ -115,7 +117,7 @@ class GenerateCrossword {
               bounds.rows * bounds.cols -
               (bounds.rows - bounds.cols).abs() * 2 +
               _random.nextInt(3);
-          if (score > bestScore) {
+          if (bestScore == null || score > bestScore) {
             bestScore = score;
             best = candidate;
           }

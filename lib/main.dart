@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/theme/app_theme.dart';
-import 'package:mesmots/core/constants/app_strings.dart';
-import 'package:mesmots/core/utils/database_provider.dart';
-import 'package:mesmots/core/utils/tts_service.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
-import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
-import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
+import 'package:jerevise/core/theme/app_theme.dart';
+import 'package:jerevise/core/constants/app_strings.dart';
+import 'package:jerevise/core/utils/database_provider.dart';
+import 'package:jerevise/core/utils/tts_service.dart';
+import 'package:jerevise/features/home/presentation/screens/section_home_screen.dart';
+import 'package:jerevise/features/onboarding/presentation/screens/pin_setup_screen.dart';
+import 'package:jerevise/features/parental/presentation/providers/parental_providers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +20,13 @@ void main() async {
 
   runApp(
     const ProviderScope(
-      child: MesMotsApp(),
+      child: JeReviseApp(),
     ),
   );
 }
 
-class MesMotsApp extends StatelessWidget {
-  const MesMotsApp({super.key});
+class JeReviseApp extends StatelessWidget {
+  const JeReviseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +53,8 @@ class AppInitializer extends ConsumerWidget {
         if (settings == null || !settings.isPinConfigured) {
           return const PinSetupScreen();
         }
-        // Otherwise, show home screen
-        return const HomeScreen();
+        // Otherwise, show section home screen
+        return const SectionHomeScreen();
       },
       loading: () => const Scaffold(
         body: Center(

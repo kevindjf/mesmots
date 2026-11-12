@@ -128,6 +128,7 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
                         for (var i = 0; i < state.grid.words.length; i++)
                           WordToFindChip(
                             word: state.grid.words[i].word,
+                            letterCount: state.grid.words[i].length,
                             foundColor: state.found.containsKey(i)
                                 ? i.foundWordColor
                                 : null,

@@ -3,7 +3,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 
-/// Control button for game screens (Effacer, Retour, Valider)
+/// Control button for game screens (Effacer, Aide, Valider)
 /// Style Mr. Square with 3D shadow effect
 class GameControlButton extends StatefulWidget {
   final IconData icon;
@@ -55,14 +55,16 @@ class _GameControlButtonState extends State<GameControlButton> {
     return Opacity(
       opacity: widget.isEnabled ? 1.0 : 0.4,
       child: GestureDetector(
-        onTapDown: widget.isEnabled ? (_) => setState(() => _isPressed = true) : null,
+        onTapDown:
+            widget.isEnabled ? (_) => setState(() => _isPressed = true) : null,
         onTapUp: widget.isEnabled
             ? (_) {
                 setState(() => _isPressed = false);
                 widget.onTap();
               }
             : null,
-        onTapCancel: widget.isEnabled ? () => setState(() => _isPressed = false) : null,
+        onTapCancel:
+            widget.isEnabled ? () => setState(() => _isPressed = false) : null,
         child: Column(
           children: [
             AnimatedContainer(
@@ -94,7 +96,8 @@ class _GameControlButtonState extends State<GameControlButton> {
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodySmall,
                 fontWeight: AppTypography.semiBold,
-                color: widget.isPrimary ? AppColors.success : AppColors.primary,
+                // Labels sit on the turquoise background: white stays readable.
+                color: AppColors.textOnColor,
               ),
             ),
           ],

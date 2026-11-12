@@ -28,14 +28,16 @@ Les mots sont lus à voix haute (synthèse vocale). Les accents sont conservés 
 
 ### Pour l'adulte
 
-1. Au premier lancement, créer le code PIN parental.
-2. Toucher le cadenas et saisir le code pour passer en mode parent.
-3. Créer une liste (saisie manuelle ou photo de la liste avec reconnaissance de texte).
+1. Au premier lancement, créer le code PIN parental : l'espace parent s'ouvre directement.
+2. Ensuite, toucher le cadenas de l'accueil et saisir le code pour ouvrir l'**espace parent**.
+3. Dans l'espace parent : créer, modifier ou supprimer une liste (saisie manuelle ou photo avec reconnaissance de texte) et choisir les **jeux autorisés** pour chaque liste (tous par défaut).
+
+Les écrans de l'enfant n'affichent aucune action de gestion.
 
 ### Pour l'enfant
 
 1. Choisir la liste de la semaine.
-2. Choisir un jeu, jouer, rejouer, changer de jeu.
+2. Choisir un jeu parmi ceux autorisés, jouer, rejouer, changer de jeu.
 
 ## 🏗️ Architecture
 
@@ -47,7 +49,7 @@ lib/
 ├── features/
 │   ├── word_lists/  # Listes de mots, maîtrise par mot, écrans d'accueil et de liste
 │   ├── games/       # Les 6 jeux (générateurs de grilles en Dart pur dans domain/usecases)
-│   ├── parental/    # Code PIN et mode parent
+│   ├── parental/    # Code PIN et espace parent
 │   └── onboarding/  # Premier lancement
 ├── shared/widgets/  # Widgets réutilisables (style « Mr. Square »)
 └── main.dart

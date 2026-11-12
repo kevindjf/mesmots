@@ -45,6 +45,8 @@ void main() {
     final tts = MockTtsService();
     final haptic = MockHapticService();
     when(audio.playSuccess).thenAnswer((_) async {});
+    when(audio.playStar).thenAnswer((_) async {});
+    when(audio.playError).thenAnswer((_) async {});
     when(audio.playLevelComplete).thenAnswer((_) async {});
     when(() => tts.speak(any())).thenAnswer((_) async {});
     when(haptic.success).thenAnswer((_) async {});
@@ -79,7 +81,7 @@ void main() {
       final letter = state.crossword.solution[free[i]]!;
       final isLast = i == free.length - 1;
       game().typeLetter(wrongLast && isLast
-          ? (letter == 'Z' ? 'y' : 'z')
+          ? (letter == 'z' ? 'y' : 'z')
           : letter.toLowerCase());
     }
   }
@@ -110,25 +112,49 @@ void main() {
     expect(current().selectedEntry, isNot(first));
   });
 
-  test('a wrong word is flagged and can be corrected', () async {
+  test('a wrong word shows its wrong letters, then erases only them',
+      () async {
     // Arrange
     await load();
     final index = current().selectedEntry;
+    final free =
+        current().selected.cells.where(current().isEditable).toList();
 
     // Act
     typeSelectedWord(wrongLast: true);
+    final shown = current();
+    game().typeLetter('a'); // ignored while the mistake is shown
+    await Future<void>.delayed(
+      CrosswordGame.errorPause + const Duration(milliseconds: 50),
+    );
 
     // Assert
-    expect(current().wrongEntry, index);
-    expect(current().solved, isNot(contains(index)));
+    expect(shown.wrongCells, {free.last});
+    expect(shown.solved, isNot(contains(index)));
+    expect(current().isShowingMistake, isFalse);
+    expect(current().inputs.containsKey(free.last), isFalse);
+    expect(current().inputs.containsKey(free.first), isTrue);
+    expect(current().cursor, free.last);
+    expect(stored.statusOf(current().selected.word).consecutiveErrors, 1);
 
-    // Act: erase and retype the last letter
-    game().deleteLetter();
-    final cursor = current().cursor!;
-    game().typeLetter(current().crossword.solution[cursor]!.toLowerCase());
+    // Act: type the right letter
+    game().typeLetter(current().crossword.solution[free.last]!);
 
     // Assert
     expect(current().solved, contains(index));
+  });
+
+  test('a word found without mistake lights a star', () async {
+    // Arrange
+    await load();
+    final word = current().selected.word;
+
+    // Act
+    typeSelectedWord();
+    await Future<void>.delayed(Duration.zero);
+
+    // Assert
+    expect(stored.statusOf(word).successCount, 1);
   });
 
   test('hint reveals the right letter and locks it', () async {

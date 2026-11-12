@@ -25,9 +25,7 @@ class CrosswordBoard extends StatelessWidget {
         builder: (context, constraints) {
           final cellSize = constraints.maxWidth / crossword.cols;
           final selectedCells = state.selected.cells.toSet();
-          final wrongCells = state.wrongEntry == null
-              ? const <GridPoint>{}
-              : crossword.entries[state.wrongEntry!].cells.toSet();
+          final wrongCells = state.wrongCells;
 
           return Column(
             children: [
@@ -66,7 +64,7 @@ class CrosswordBoard extends StatelessWidget {
       background = AppColors.success;
       textColor = AppColors.textOnColor;
     } else if (wrongCells.contains(point)) {
-      background = AppColors.buttonCoral;
+      background = AppColors.error;
       textColor = AppColors.textOnColor;
     } else if (point == state.cursor) {
       background = AppColors.buttonOrange;

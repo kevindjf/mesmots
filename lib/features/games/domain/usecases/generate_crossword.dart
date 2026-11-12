@@ -14,8 +14,9 @@ class GenerateCrossword {
   static const int maxDimension = 13;
   static const int _attempts = 40;
 
-  /// Letters missing from the in-app keyboard, always given
-  static const Set<String> _notTypeable = {'Œ', 'Æ', 'Ÿ', 'Ü', 'Ö', 'Ä'};
+  /// Letters missing from the in-app keyboard, always given (œ and æ are
+  /// on the keyboard when the list uses them).
+  static const Set<String> _notTypeable = {'ÿ', 'ü', 'ö', 'ä'};
 
   final Random _random;
 
@@ -26,7 +27,11 @@ class GenerateCrossword {
       for (final word in words.toSet())
         if (word.gridLetters.length >= 2 &&
             word.gridLetters.length <= maxDimension)
-          (word: word, letters: word.gridLetters),
+          // Lowercase, like the words the child learns.
+          (
+            word: word,
+            letters: [for (final l in word.gridLetters) l.toLowerCase()],
+          ),
     ];
     if (entries.isEmpty) return Crossword.empty;
 

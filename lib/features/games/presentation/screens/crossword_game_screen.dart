@@ -10,7 +10,7 @@ import 'package:mesmots/features/games/presentation/widgets/crossword_board.dart
 import 'package:mesmots/features/games/presentation/widgets/crossword_clue_chip.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
-import 'package:mesmots/shared/widgets/azerty_keyboard.dart';
+import 'package:mesmots/shared/widgets/child_keyboard.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
@@ -210,9 +210,13 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingS,
           ),
-          child: AzertyKeyboard(
-            onLetterTap: game.typeLetter,
-            onBackspace: game.deleteLetter,
+          child: ChildKeyboard(
+            accents: state.keys.accents,
+            hasSpace: state.keys.hasSpace,
+            hasHyphen: state.keys.hasHyphen,
+            hasApostrophe: state.keys.hasApostrophe,
+            onLetter: state.isShowingMistake ? null : game.typeLetter,
+            onBackspace: state.isShowingMistake ? null : game.deleteLetter,
           ),
         ),
         const SizedBox(height: AppDimensions.spacingM),

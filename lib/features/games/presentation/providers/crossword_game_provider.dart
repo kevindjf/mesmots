@@ -5,9 +5,11 @@ import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/crossword.dart';
 import 'package:mesmots/features/games/domain/entities/grid_point.dart';
 import 'package:mesmots/features/games/domain/usecases/generate_crossword.dart';
+import 'package:mesmots/features/games/domain/usecases/keyboard_for_words.dart';
 import 'package:mesmots/features/games/presentation/providers/progress_recorder.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'crossword_game_provider.g.dart';
@@ -31,8 +33,12 @@ class CrosswordGameState {
   /// Cell receiving the next letter
   final GridPoint? cursor;
 
-  /// Entry just checked as wrong (used to shake it), if any
-  final int? wrongEntry;
+  /// Wrong letters of the word just checked, shown in red before being
+  /// erased. Typing waits meanwhile.
+  final Set<GridPoint> wrongCells;
+
+  /// Extra keys the keyboard needs for the words (accents, space…).
+  final KeyboardKeys keys;
 
   const CrosswordGameState({
     required this.crossword,
@@ -41,7 +47,8 @@ class CrosswordGameState {
     required this.solved,
     required this.selectedEntry,
     required this.cursor,
-    this.wrongEntry,
+    required this.keys,
+    this.wrongCells = const {},
   });
 
   int get totalCount => crossword.entries.length;
@@ -54,6 +61,9 @@ class CrosswordGameState {
   bool isSolvedCell(GridPoint point) =>
       crossword.entriesAt(point).any(solved.contains);
 
+  /// Whether a mistake is being shown.
+  bool get isShowingMistake => wrongCells.isNotEmpty;
+
   bool isEditable(GridPoint point) =>
       !locked.contains(point) && !isSolvedCell(point);
 
@@ -64,7 +74,7 @@ class CrosswordGameState {
     int? selectedEntry,
     GridPoint? cursor,
     bool clearCursor = false,
-    int? wrongEntry,
+    Set<GridPoint>? wrongCells,
     bool clearWrong = false,
   }) {
     return CrosswordGameState(
@@ -74,14 +84,22 @@ class CrosswordGameState {
       solved: solved ?? this.solved,
       selectedEntry: selectedEntry ?? this.selectedEntry,
       cursor: clearCursor ? null : cursor ?? this.cursor,
-      wrongEntry: clearWrong ? null : wrongEntry ?? this.wrongEntry,
+      keys: keys,
+      wrongCells: clearWrong ? const {} : wrongCells ?? this.wrongCells,
     );
   }
 }
 
 @riverpod
 class CrosswordGame extends _$CrosswordGame {
+  static const errorPause = Duration(milliseconds: 1500);
+
   late ProgressRecorder _recorder;
+  late Map<String, int> _stars;
+
+  /// Entries that had a mistake: no star when finally found.
+  final _mistakes = <int>{};
+  bool _disposed = false;
 
   @override
   Future<CrosswordGameState> build(String listId) async {
@@ -91,6 +109,8 @@ class CrosswordGame extends _$CrosswordGame {
       throw Exception('Word list not found');
     }
     _recorder = ProgressRecorder(repository, listId);
+    ref.onDispose(() => _disposed = true);
+    _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
 
     final crossword = GenerateCrossword()(wordList.words);
     if (!crossword.isPlayable) {
@@ -98,7 +118,8 @@ class CrosswordGame extends _$CrosswordGame {
     }
 
     final inputs = {
-      for (final point in crossword.prefilled) point: crossword.solution[point]!,
+      for (final point in crossword.prefilled)
+        point: crossword.solution[point]!,
     };
     final initial = CrosswordGameState(
       crossword: crossword,
@@ -111,6 +132,7 @@ class CrosswordGame extends _$CrosswordGame {
       },
       selectedEntry: 0,
       cursor: null,
+      keys: keyboardForWords([for (final e in crossword.entries) e.word]),
     );
     final first = _firstUnsolved(initial) ?? 0;
     final state = _select(initial, first);
@@ -152,7 +174,9 @@ class CrosswordGame extends _$CrosswordGame {
     final changedEntry = index != current.selectedEntry;
     final updated = current.copyWith(
       selectedEntry: index,
-      cursor: current.isEditable(point) ? point : _nextEditable(current, index, point),
+      cursor: current.isEditable(point)
+          ? point
+          : _nextEditable(current, index, point),
       clearWrong: true,
     );
     state = AsyncData(updated);
@@ -169,11 +193,11 @@ class CrosswordGame extends _$CrosswordGame {
   void typeLetter(String letter) {
     final current = _current;
     final cursor = current?.cursor;
-    if (current == null || cursor == null) return;
+    if (current == null || cursor == null || current.isShowingMistake) return;
 
     ref.read(hapticServiceProvider).selectionClick();
     final typed = current.copyWith(
-      inputs: {...current.inputs, cursor: letter.nfc.toUpperCase()},
+      inputs: {...current.inputs, cursor: letter.nfc.toLowerCase()},
       clearWrong: true,
     );
     final checked = _checkEntries(typed, cursor);
@@ -190,7 +214,7 @@ class CrosswordGame extends _$CrosswordGame {
   /// Erase the letter under the cursor, or the previous one
   void deleteLetter() {
     final current = _current;
-    if (current == null) return;
+    if (current == null || current.isShowingMistake) return;
 
     final cells = current.selected.cells;
     var index = current.cursor == null
@@ -221,12 +245,12 @@ class CrosswordGame extends _$CrosswordGame {
   /// Reveal the right letter in the cursor cell (or the first wrong one)
   void revealLetter() {
     final current = _current;
-    if (current == null) return;
+    if (current == null || current.isShowingMistake) return;
 
     final cells = current.selected.cells;
     final solution = current.crossword.solution;
-    final target = current.cursor ??
-        cells.where(current.isEditable).firstOrNull;
+    final target =
+        current.cursor ?? cells.where(current.isEditable).firstOrNull;
     if (target == null) return;
 
     final revealed = current.copyWith(
@@ -246,7 +270,8 @@ class CrosswordGame extends _$CrosswordGame {
   }
 
   /// Check every entry crossing [point] once it is fully filled
-  CrosswordGameState _checkEntries(CrosswordGameState current, GridPoint point) {
+  CrosswordGameState _checkEntries(
+      CrosswordGameState current, GridPoint point) {
     var result = current;
     for (final index in current.crossword.entriesAt(point)) {
       if (result.solved.contains(index)) continue;
@@ -260,23 +285,65 @@ class CrosswordGame extends _$CrosswordGame {
         result = result.copyWith(solved: {...result.solved, index});
         _onSolved(entry, result);
       } else {
-        result = result.copyWith(wrongEntry: index);
-        ref.read(hapticServiceProvider).error();
-        _recorder.recordAttempt(entry.word, success: false);
+        final wrong = {
+          for (final c in entry.cells)
+            if (result.inputs[c] != current.crossword.solution[c]) c,
+        };
+        result = result.copyWith(wrongCells: {...result.wrongCells, ...wrong});
+        _onWrong(index, entry, wrong);
       }
     }
     return result;
   }
 
   void _onSolved(CrosswordEntry entry, CrosswordGameState result) {
+    final index = result.crossword.entries.indexOf(entry);
+    final audio = ref.read(audioServiceProvider);
     ref.read(hapticServiceProvider).success();
-    ref.read(audioServiceProvider).playSuccess();
-    _recorder.recordAttempt(entry.word, success: true);
+    if (_mistakes.contains(index)) {
+      audio.playSuccess();
+    } else {
+      // Found without mistake: a mastery star, with a sparkle if it lights.
+      final before = _stars[entry.word] ?? 0;
+      _stars[entry.word] = (before + 1).clamp(0, WordStatus.masteryThreshold);
+      _stars[entry.word]! > before ? audio.playStar() : audio.playSuccess();
+      _recorder.recordAttempt(entry.word, success: true);
+    }
 
     if (result.isComplete) {
       ref.read(audioServiceProvider).playLevelComplete();
       _recorder.recordGamePlayed(GameType.crossword);
     }
+  }
+
+  /// A filled word is wrong: red letters, error sound, the word read
+  /// again; after a pause the wrong letters are erased, the right ones stay.
+  void _onWrong(int index, CrosswordEntry entry, Set<GridPoint> wrong) {
+    if (_mistakes.add(index)) {
+      _recorder.recordAttempt(entry.word, success: false);
+    }
+    ref.read(hapticServiceProvider).error();
+    ref.read(audioServiceProvider).playError();
+    ref.read(ttsServiceProvider).speak(entry.word).ignore();
+    Future.delayed(errorPause, () => _eraseMistakes(wrong));
+  }
+
+  /// Erase the [wrong] letters (still editable) and put the cursor on the
+  /// first one of the selected word.
+  void _eraseMistakes(Set<GridPoint> wrong) {
+    final current = _current;
+    if (_disposed || current == null) return;
+    final toErase = wrong.where(current.isEditable).toSet();
+    final firstWrong =
+        current.selected.cells.where(toErase.contains).firstOrNull;
+    state = AsyncData(
+      current.copyWith(
+        inputs: Map.of(current.inputs)
+          ..removeWhere((point, _) => toErase.contains(point)),
+        cursor: firstWrong ?? current.cursor,
+        clearWrong: true,
+      ),
+    );
   }
 
   void _moveToNextWord() {

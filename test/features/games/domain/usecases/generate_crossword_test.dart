@@ -65,7 +65,7 @@ void main() {
       }
     });
 
-    test('every word gets its first letter, and Œ is always given', () {
+    test('every word gets its first letter', () {
       // Arrange
       final generate = GenerateCrossword(random: Random(4));
 
@@ -80,10 +80,6 @@ void main() {
           isFalse,
           reason: '${entry.word} must keep letters to find',
         );
-      }
-      final heart = crossword.entries.where((e) => e.word == 'cœur');
-      if (heart.isNotEmpty) {
-        expect(crossword.prefilled, contains(heart.first.cells[1]));
       }
     });
 

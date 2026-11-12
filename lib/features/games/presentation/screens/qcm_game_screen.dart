@@ -5,13 +5,14 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/qcm_game_provider.dart';
-import 'package:mesmots/shared/widgets/app_card.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/qcm_option_card.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 
 class QcmGameScreen extends ConsumerStatefulWidget {
   final String listId;
@@ -26,9 +27,6 @@ class QcmGameScreen extends ConsumerStatefulWidget {
 }
 
 class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
-  String? _selectedAnswer;
-  bool _showFeedback = false;
-
   @override
   Widget build(BuildContext context) {
     final gameStateAsync = ref.watch(qcmGameProvider(widget.listId));
@@ -44,7 +42,8 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => QcmGameScreen(listId: widget.listId),
+                        builder: (context) =>
+                            QcmGameScreen(listId: widget.listId),
                       ),
                     );
                   },
@@ -54,7 +53,8 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                 );
               }
 
-              final gameProvider = ref.read(qcmGameProvider(widget.listId).notifier);
+              final gameProvider =
+                  ref.read(qcmGameProvider(widget.listId).notifier);
               final question = gameState.question!;
 
               return Column(
@@ -109,7 +109,8 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
 
                           // Stars
                           AnimatedProgressStars(
-                            count: question.successCount,
+                            count: question.stars,
+                            max: WordStatus.masteryThreshold,
                             size: AppDimensions.iconL,
                           ),
                           const SizedBox(height: AppDimensions.spacingXxl),
@@ -122,13 +123,18 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                               mainAxisSpacing: AppDimensions.spacingL,
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              children: question.options.map((option) {
-                                return _buildOptionCard(
-                                  option.text,
-                                  option.isCorrect,
-                                  gameProvider,
-                                );
-                              }).toList(),
+                              children: [
+                                for (final option in question.options)
+                                  QcmOptionCard(
+                                    text: option.text,
+                                    isCorrect: option.isCorrect,
+                                    isAnswered: question.isAnswered,
+                                    isSelected:
+                                        question.selected == option.text,
+                                    onTap: () =>
+                                        gameProvider.answer(option.text),
+                                  ),
+                              ],
                             ),
                           ),
                         ],
@@ -151,52 +157,6 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOptionCard(
-    String text,
-    bool isCorrect,
-    QcmGame gameProvider,
-  ) {
-    final isSelected = _selectedAnswer == text;
-    final showCorrect = _showFeedback && isCorrect;
-    final showIncorrect = _showFeedback && isSelected && !isCorrect;
-
-    return GameCard(
-      isSelected: isSelected && !_showFeedback,
-      isCorrect: showCorrect,
-      isIncorrect: showIncorrect,
-      onTap: _showFeedback
-          ? null
-          : () {
-              setState(() {
-                _selectedAnswer = text;
-                _showFeedback = true;
-              });
-
-              gameProvider.answer(text);
-
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (mounted) {
-                  setState(() {
-                    _selectedAnswer = null;
-                    _showFeedback = false;
-                  });
-                }
-              });
-            },
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontFamily: AppTypography.fontFamily,
-            fontSize: AppTypography.headingSmall,
-            fontWeight: AppTypography.semiBold,
-          ),
-          textAlign: TextAlign.center,
         ),
       ),
     );

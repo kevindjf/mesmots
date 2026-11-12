@@ -41,9 +41,11 @@ class ProgressStars extends StatelessWidget {
   }
 }
 
-/// Animated stars (for celebrations)
+/// Row of [max] stars, [count] of them lit. When [count] grows, the newly
+/// lit stars pop in.
 class AnimatedProgressStars extends StatefulWidget {
-  final int count; // 0, 1, or 2
+  final int count;
+  final int max;
   final double size;
   final Color? activeColor;
   final Color? inactiveColor;
@@ -51,6 +53,7 @@ class AnimatedProgressStars extends StatefulWidget {
   const AnimatedProgressStars({
     super.key,
     required this.count,
+    this.max = 2,
     this.size = AppDimensions.iconM,
     this.activeColor,
     this.inactiveColor,
@@ -62,40 +65,38 @@ class AnimatedProgressStars extends StatefulWidget {
 
 class _AnimatedProgressStarsState extends State<AnimatedProgressStars>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 600),
+    vsync: this,
+    value: 1,
+  );
+  late final Animation<double> _pop = TweenSequence<double>([
+    TweenSequenceItem(tween: Tween<double>(begin: 0, end: 1.5), weight: 40),
+    TweenSequenceItem(
+      tween: Tween<double>(begin: 1.5, end: 1)
+          .chain(CurveTween(curve: Curves.elasticOut)),
+      weight: 60,
+    ),
+  ]).animate(_controller);
+
+  /// Stars lit before the last change: they don't animate.
+  late int _previousCount = widget.count;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.elasticOut,
-      ),
-    );
-
-    _controller.forward();
+  void didUpdateWidget(AnimatedProgressStars oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.count > oldWidget.count) {
+      _previousCount = oldWidget.count;
+      _controller.forward(from: 0);
+    } else if (widget.count != oldWidget.count) {
+      _previousCount = widget.count;
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(AnimatedProgressStars oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.count != widget.count) {
-      _controller.reset();
-      _controller.forward();
-    }
   }
 
   @override
@@ -106,23 +107,22 @@ class _AnimatedProgressStarsState extends State<AnimatedProgressStars>
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildAnimatedStar(0, active, inactive),
-        const SizedBox(width: AppDimensions.spacingXs),
-        _buildAnimatedStar(1, active, inactive),
+        for (var i = 0; i < widget.max; i++) ...[
+          if (i > 0) const SizedBox(width: AppDimensions.spacingXs),
+          _buildStar(i, active, inactive),
+        ],
       ],
     );
   }
 
-  Widget _buildAnimatedStar(int index, Color active, Color inactive) {
+  Widget _buildStar(int index, Color active, Color inactive) {
     final isActive = widget.count > index;
-
-    return ScaleTransition(
-      scale: isActive ? _scaleAnimation : const AlwaysStoppedAnimation(1.0),
-      child: Icon(
-        isActive ? Icons.star : Icons.star_border,
-        color: isActive ? active : inactive,
-        size: widget.size,
-      ),
+    final isNew = isActive && index >= _previousCount;
+    final icon = Icon(
+      isActive ? Icons.star_rounded : Icons.star_outline_rounded,
+      color: isActive ? active : inactive,
+      size: widget.size,
     );
+    return isNew ? ScaleTransition(scale: _pop, child: icon) : icon;
   }
 }

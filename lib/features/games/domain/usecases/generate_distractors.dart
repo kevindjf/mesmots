@@ -1,209 +1,181 @@
 import 'dart:math';
 
-/// Use case to generate plausible distractors (wrong answers) for QCM
+/// Generates plausible misspellings of a French word, for "Le bon mot".
+///
+/// A good distractor sounds like the word, so the child has to look at the
+/// spelling: "écolle", "ecole", "maizon", "poison". Each distractor applies
+/// one spelling change that keeps (roughly) the same sound:
+/// - sounds written several ways (o/au/eau, é/er/ez, ai/è, an/en, in/ain…),
+/// - consonants that sound alike (c/k/qu, s/ss/c/ç, s/z, g/j, f/ph),
+/// - doubled or single consonants (never at the start of the word),
+/// - accents, silent letters at the end, silent h.
 class GenerateDistractors {
-  final Random _random = Random();
+  /// Number of distractors wanted (the right answer makes 4 options).
+  static const count = 3;
 
-  /// Generate 3 unique distractors for a word
+  static const _v = 'aeiouyéèêëàâîïôûù';
+
+  static final List<_Rule> _rules = [
+    // o / au / eau
+    _Rule(r'eau', ['au', 'o']),
+    _Rule(r'(?<![eo])au', ['o', 'eau']),
+    _Rule(r'(?<![aeo])o(?![uinm])', ['au']),
+    _Rule(r'(?<![aeo])o$', ['eau', 'ot']),
+    // è / ai / ei / ê / é
+    _Rule(r'ai(?![nm])', ['è', 'ei']),
+    _Rule(r'ei(?![nm])', ['ai']),
+    _Rule(r'è', ['ai', 'ê']),
+    _Rule(r'ê', ['è', 'ai']),
+    _Rule(r'é$', ['er', 'ez', 'ée']),
+    _Rule(r'é(?!$)', ['e', 'è']),
+    _Rule(r'er$', ['é', 'ez']),
+    _Rule(r'et$', ['ait', 'è']),
+    // Nasal sounds
+    _Rule(r'an', ['en']),
+    _Rule(r'en', ['an']),
+    _Rule(r'am(?=[bp])', ['em']),
+    _Rule(r'em(?=[bp])', ['am']),
+    _Rule(r'ain', ['in', 'ein']),
+    _Rule(r'ein', ['ain', 'in']),
+    _Rule(r'(?<![aeo])in(?![V])', ['ain', 'ein']),
+    // Consonants that sound alike
+    _Rule(r'n(?=[bp])', ['m']),
+    _Rule(r'm(?=[bp])', ['n']),
+    _Rule(r'ph', ['f']),
+    _Rule(r'f', ['ph']),
+    _Rule(r'qu(?=[eiéèêy])', ['k']),
+    _Rule(r'qu(?=[aoô])', ['c', 'k']),
+    _Rule(r'c(?=[aoôu])', ['k', 'qu']),
+    _Rule(r'c(?=[eiéèêy])', ['s', 'ss']),
+    _Rule(r'ç', ['s', 'ss']),
+    _Rule(r'ss(?=[eiéèêy])', ['c']),
+    _Rule(r'ss', ['s']),
+    _Rule(r'(?<=[V])s(?=[V])', ['z']),
+    _Rule(r'(?<=[V])z(?=[V])', ['s']),
+    _Rule(r'g(?=[eiéèêy])', ['j']),
+    _Rule(r'j(?=[eiéèê])', ['g']),
+    _Rule(r'ge(?=[aoôu])', ['j']),
+    _Rule(r'gn', ['ni']),
+    _Rule(r'ill', ['y', 'il']),
+    // Silent h
+    _Rule(r'^h', ['']),
+    _Rule(r'^(?=[aeiouéè])', ['h']),
+    // Double / single consonants, never at the start
+    _Rule(r'(?<=.)([bcdfglmnprt])\1', [r'$1']),
+    _Rule(r'(?<=[V])([lmnprtf])(?=[V])', [r'$1$1']),
+    // Accents
+    _Rule(r'(?<=^|[^V])e(?=[^V])', ['é', 'è']),
+    // Tiny words ("le", "de")
+    _Rule(r'^([^V])e$', [r'$1é', r'$1eu']),
+    _Rule(r'à', ['a']),
+    _Rule(r'â', ['a']),
+    _Rule(r'ô', ['o']),
+    _Rule(r'î', ['i']),
+    _Rule(r'û', ['u']),
+    // Silent endings
+    _Rule(r'(?<=[V][^V])e$', ['']),
+    _Rule(r'(?<=[V])r$', ['re']),
+    _Rule(r'(?<=[V])l$', ['le']),
+    _Rule(r'(?<![ae][ou])(?<=[aiouy])$', ['t', 'd']),
+    _Rule(r'(?<=[^V])s$', ['', 'x']),
+    _Rule(r'(?<=[V])t$', ['d', 's', '']),
+    _Rule(r'(?<=[V])d$', ['t', '']),
+    _Rule(r'(?<=[V])x$', ['s', '']),
+    _Rule(r'(?<=[V])s$', ['t', '']),
+  ];
+
+  final Random _random;
+
+  GenerateDistractors([Random? random]) : _random = random ?? Random();
+
+  /// Up to [count] distinct misspellings of [word], in random order.
+  /// Very short words may get fewer.
   List<String> call(String word) {
-    final distractors = <String>{};
-    int attempts = 0;
-    const maxAttempts = 50; // Prevent infinite loops
+    final byRule = variantsByRule(word)
+        .values
+        .map((v) => v.toList()..shuffle(_random))
+        .toList()
+      ..shuffle(_random);
 
-    // Try different error types until we have 3 unique distractors
-    while (distractors.length < 3 && attempts < maxAttempts) {
-      attempts++;
-      String distractor;
-
-      // Prioritize phonetic errors (most pedagogical)
-      if (distractors.isEmpty) {
-        distractor = _phoneticError(word);
-      } else if (distractors.length == 1) {
-        distractor = _doubleLetterError(word);
-      } else {
-        // Mix of other errors
-        final errorType = _random.nextInt(3);
-        switch (errorType) {
-          case 0:
-            distractor = _accentError(word);
-            break;
-          case 1:
-            distractor = _finalLetterError(word);
-            break;
-          default:
-            distractor = _randomError(word);
+    // Take one variant per rule first, so the errors are of different kinds.
+    final picked = <String>[];
+    for (var round = 0; picked.length < count; round++) {
+      var added = false;
+      for (final variants in byRule) {
+        if (round < variants.length && !picked.contains(variants[round])) {
+          picked.add(variants[round]);
+          added = true;
+          if (picked.length == count) break;
         }
       }
-
-      // Ensure distractor is different from original and unique
-      if (distractor != word && distractor.isNotEmpty) {
-        distractors.add(distractor);
-      }
+      if (!added) break;
     }
 
-    // If we couldn't generate 3 unique distractors, add simple fallbacks
-    while (distractors.length < 3) {
-      final fallback = _generateFallbackDistractor(word, distractors.length);
-      if (fallback != word && !distractors.contains(fallback)) {
-        distractors.add(fallback);
-      } else {
-        // Last resort: add numbered suffix
-        distractors.add('$word${distractors.length + 1}');
-      }
+    if (picked.length < count) {
+      picked.addAll(
+        _fallbacks(word)
+            .where((f) => !picked.contains(f))
+            .take(count - picked.length),
+      );
     }
-
-    return distractors.toList()..shuffle();
+    return picked..shuffle(_random);
   }
 
-  /// Generate simple fallback distractors for very short words
-  String _generateFallbackDistractor(String word, int index) {
-    switch (index) {
-      case 0:
-        return word.length > 1 ? word.substring(1) + word[0] : word + 'x';
-      case 1:
-        return word + (word.endsWith('e') ? 's' : 'e');
-      case 2:
-        return word.length > 1
-            ? word[0] + word.substring(1).toUpperCase()
-            : word.toUpperCase();
-      default:
-        return word + index.toString();
+  /// Every plausible misspelling of [word], grouped by the rule producing it.
+  Map<int, Set<String>> variantsByRule(String word) {
+    final result = <int, Set<String>>{};
+    for (var i = 0; i < _rules.length; i++) {
+      final variants =
+          _rules[i].apply(word).where((v) => _isAcceptable(v, word)).toSet();
+      if (variants.isNotEmpty) result[i] = variants;
     }
+    return result;
   }
 
-  /// Generate phonetic errors (eau/au/o, ai/é/è, etc.)
-  String _phoneticError(String word) {
-    final phoneticRules = {
-      'eau': ['au', 'o', 'aux'],
-      'au': ['eau', 'o'],
-      'ai': ['é', 'è', 'ait'],
-      'é': ['ai', 'è', 'er'],
-      'è': ['ai', 'é', 'ê'],
-      'an': ['en'],
-      'en': ['an'],
-      'in': ['ain', 'ein'],
-      'ain': ['in', 'ein'],
-      'ph': ['f'],
-      'f': ['ph'],
-      'ss': ['s', 'c'],
-      's': ['ss', 'c'],
-      'c': ['ss', 's', 'qu'],
-      'qu': ['k', 'c'],
-      'tion': ['sion', 'ssion'],
-    };
-
-    // Try to find and apply a phonetic rule
-    for (final entry in phoneticRules.entries) {
-      if (word.contains(entry.key)) {
-        final replacements = entry.value;
-        final replacement =
-            replacements[_random.nextInt(replacements.length)];
-        return word.replaceFirst(entry.key, replacement);
-      }
-    }
-
-    // Fallback to another error type
-    return _doubleLetterError(word);
+  bool _isAcceptable(String variant, String word) {
+    if (variant == word || variant.length < 2) return false;
+    // No tripled letters ("pommme"), no doubled first letter ("mmaison").
+    if (RegExp(r'(.)\1\1').hasMatch(variant)) return false;
+    if (variant.length > 1 && variant[0] == variant[1]) return false;
+    return true;
   }
 
-  /// Generate double letter errors (mm→m, nn→n, etc.)
-  String _doubleLetterError(String word) {
-    final doubles = ['mm', 'nn', 'tt', 'll', 'ss', 'pp', 'rr', 'cc'];
-
-    // Try to remove a double letter
-    for (final double in doubles) {
-      if (word.contains(double)) {
-        return word.replaceFirst(double, double[0]);
-      }
-    }
-
-    // Try to add a double letter
-    final singles = ['m', 'n', 't', 'l', 's', 'p', 'r', 'c'];
-    for (final single in singles) {
-      if (word.contains(single) && !word.contains(single + single)) {
-        return word.replaceFirst(single, single + single);
-      }
-    }
-
-    return _accentError(word);
-  }
-
-  /// Generate accent errors (é→e/è/ê, à→a, etc.)
-  String _accentError(String word) {
-    final accentRules = {
-      'é': ['e', 'è', 'ê'],
-      'è': ['e', 'é', 'ê'],
-      'ê': ['e', 'é', 'è'],
-      'à': ['a'],
-      'â': ['a'],
-      'ù': ['u'],
-      'û': ['u'],
-      'î': ['i'],
-      'ï': ['i'],
-      'ô': ['o'],
-    };
-
-    for (final entry in accentRules.entries) {
-      if (word.contains(entry.key)) {
-        final replacements = entry.value;
-        final replacement =
-            replacements[_random.nextInt(replacements.length)];
-        return word.replaceFirst(entry.key, replacement);
-      }
-    }
-
-    // Try reverse: add accents
-    final reverseRules = {
-      'e': ['é', 'è', 'ê'],
-      'a': ['à', 'â'],
-      'u': ['ù', 'û'],
-      'i': ['î', 'ï'],
-      'o': ['ô'],
-    };
-
-    for (final entry in reverseRules.entries) {
-      if (word.contains(entry.key)) {
-        final replacements = entry.value;
-        final replacement =
-            replacements[_random.nextInt(replacements.length)];
-        return word.replaceFirst(entry.key, replacement);
-      }
-    }
-
-    return _finalLetterError(word);
-  }
-
-  /// Generate final letter errors (add/remove 'e' or 's')
-  String _finalLetterError(String word) {
-    if (word.endsWith('e')) {
-      return word.substring(0, word.length - 1);
-    } else if (!word.endsWith('s')) {
-      return word + 's';
-    } else if (word.endsWith('s')) {
-      return word.substring(0, word.length - 1);
-    } else {
-      return word + 'e';
+  /// Last resort for words with few spelling traps: double a consonant
+  /// between two vowels ("bonjour" -> "bonnjour" is avoided: n is not
+  /// between vowels).
+  Iterable<String> _fallbacks(String word) sync* {
+    for (var i = 1; i < word.length - 1; i++) {
+      final c = word[i];
+      final between = _v.contains(word[i - 1]) && _v.contains(word[i + 1]);
+      if (!between || !'bcdfglmnprst'.contains(c)) continue;
+      final doubled = word.substring(0, i) + c + word.substring(i);
+      if (_isAcceptable(doubled, word)) yield doubled;
     }
   }
+}
 
-  /// Random error as fallback
-  String _randomError(String word) {
-    if (word.length < 3) return word + 'e';
+/// Replaces one occurrence of [pattern] by each of [replacements].
+/// `$1` in a replacement stands for the first group of the match.
+class _Rule {
+  final RegExp pattern;
+  final List<String> replacements;
 
-    final pos = 1 + _random.nextInt(word.length - 2);
-    final char = word[pos];
+  /// In [pattern], `V` stands for any vowel.
+  _Rule(String pattern, this.replacements)
+      : pattern = RegExp(
+          pattern.replaceAll('V', GenerateDistractors._v),
+          unicode: true,
+        );
 
-    // Replace a letter with a similar one
-    const substitutions = {
-      'a': 'e',
-      'e': 'a',
-      'i': 'y',
-      'y': 'i',
-      'o': 'au',
-      'u': 'ou',
-    };
-
-    final replacement = substitutions[char] ?? char;
-    return word.substring(0, pos) + replacement + word.substring(pos + 1);
+  Iterable<String> apply(String word) sync* {
+    for (final match in pattern.allMatches(word)) {
+      for (final replacement in replacements) {
+        final text = replacement.replaceAll(
+          r'$1',
+          match.groupCount >= 1 ? match.group(1) ?? '' : '',
+        );
+        yield word.substring(0, match.start) + text + word.substring(match.end);
+      }
+    }
   }
 }

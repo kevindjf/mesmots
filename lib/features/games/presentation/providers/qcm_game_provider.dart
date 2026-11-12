@@ -4,8 +4,10 @@ import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/game_session.dart';
 import 'package:mesmots/features/games/domain/usecases/generate_distractors.dart';
+import 'package:mesmots/features/games/presentation/providers/progress_recorder.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'qcm_game_provider.g.dart';
@@ -25,13 +27,29 @@ class QcmOption {
 class QcmQuestion {
   final String word;
   final List<QcmOption> options;
-  final int successCount;
+
+  /// Mastery stars of the word (same stars as on the list screen).
+  final int stars;
+
+  /// Option chosen by the child, while its answer is shown.
+  final String? selected;
 
   const QcmQuestion({
     required this.word,
     required this.options,
-    required this.successCount,
+    required this.stars,
+    this.selected,
   });
+
+  /// True while the answer is shown: options can't be tapped.
+  bool get isAnswered => selected != null;
+
+  QcmQuestion answered(String option, {required int stars}) => QcmQuestion(
+        word: word,
+        options: options,
+        stars: stars,
+        selected: option,
+      );
 }
 
 /// QCM game state with question and session info
@@ -49,16 +67,24 @@ class QcmGameState {
   });
 }
 
-/// QCM game provider
+/// "Le bon mot": hear the word, pick the right spelling.
+///
+/// Each word must be found twice in a game (repetition helps memorizing).
+/// After a mistake, the right spelling stays highlighted and is read aloud
+/// before moving on.
 @riverpod
 class QcmGame extends _$QcmGame {
+  static const _successPause = Duration(milliseconds: 900);
+  static const _errorPause = Duration(milliseconds: 1800);
+
+  late ProgressRecorder _recorder;
+  late Map<String, int> _stars;
   GameSession? _session;
   QcmQuestion? _currentQuestion;
   final _distractorGenerator = GenerateDistractors();
 
   @override
   FutureOr<QcmGameState> build(String listId) async {
-    // Load word list and initialize session
     final repository = ref.read(wordListRepositoryProvider);
     final wordList = await repository.getById(listId);
 
@@ -66,23 +92,16 @@ class QcmGame extends _$QcmGame {
       throw Exception('Word list not found');
     }
 
-    // Get words that are not fully validated in QCM level
+    _recorder = ProgressRecorder(repository, listId);
+    _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
     // Free play: every game uses all the words of the list
     _session = GameSession.initial(wordList.words);
-
-    // Generate first question
     _currentQuestion = _generateQuestion();
-
-    // Auto-play TTS (non-blocking to avoid hanging on emulators)
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      tts.speak(_currentQuestion!.word).ignore();
-    }
+    _speakCurrentWord();
 
     return _buildState();
   }
 
-  /// Build current game state
   QcmGameState _buildState() {
     return QcmGameState(
       question: _currentQuestion,
@@ -92,107 +111,74 @@ class QcmGame extends _$QcmGame {
     );
   }
 
-  /// Generate a question for current word
   QcmQuestion? _generateQuestion() {
-    if (_session == null || _session!.currentWord == null) {
-      return null;
-    }
+    final word = _session?.currentWord;
+    if (word == null) return null;
 
-    final word = _session!.currentWord!;
-    final successCount = _session!.getSuccessCount(word);
-
-    // Generate 3 distractors
-    final distractors = _distractorGenerator.call(word);
-
-    // Create options: correct word + 3 distractors
     final options = [
       QcmOption(text: word, isCorrect: true),
-      ...distractors.map((d) => QcmOption(text: d, isCorrect: false)),
+      ..._distractorGenerator(word).map(
+        (d) => QcmOption(text: d, isCorrect: false),
+      ),
     ]..shuffle();
 
-    return QcmQuestion(
-      word: word,
-      options: options,
-      successCount: successCount,
-    );
+    return QcmQuestion(word: word, options: options, stars: _stars[word] ?? 0);
+  }
+
+  void _speakCurrentWord() {
+    final word = _currentQuestion?.word;
+    // Non-blocking to avoid hanging on emulators
+    if (word != null) ref.read(ttsServiceProvider).speak(word).ignore();
   }
 
   /// Replay TTS for current word
   Future<void> replayWord() async {
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
-    }
+    final word = _currentQuestion?.word;
+    if (word != null) await ref.read(ttsServiceProvider).speak(word);
   }
 
-  /// Answer the current question
+  /// Answer the current question. Ignored while an answer is shown.
   Future<void> answer(String selectedAnswer) async {
-    if (_session == null || _currentQuestion == null) return;
+    final question = _currentQuestion;
+    if (_session == null || question == null || question.isAnswered) return;
 
-    final currentWord = _currentQuestion!.word;
-    final isCorrect = normalizedEquals(selectedAnswer, currentWord);
-
-    // Play feedback immediately (non-blocking)
+    final word = question.word;
+    final isCorrect = normalizedEquals(selectedAnswer, word);
     final audio = ref.read(audioServiceProvider);
     final haptic = ref.read(hapticServiceProvider);
 
     if (isCorrect) {
-      haptic.success(); // Non-blocking
-      audio.playSuccess(); // Non-blocking
+      final before = _stars[word] ?? 0;
+      _stars[word] = (before + 1).clamp(0, WordStatus.masteryThreshold);
+      haptic.success();
+      // A sparkle when a star lights up, the usual chime otherwise.
+      _stars[word]! > before ? audio.playStar() : audio.playSuccess();
     } else {
-      haptic.error(); // Non-blocking
-      audio.playError(); // Non-blocking
+      haptic.error();
+      audio.playError();
+      // Let the child hear the right word while seeing its spelling.
+      ref.read(ttsServiceProvider).speak(word).ignore();
     }
 
-    // Update session immediately
     _session = _session!.answer(isCorrect);
-
-    // Update state immediately so UI refreshes (progress bar updates)
+    _currentQuestion =
+        question.answered(selectedAnswer, stars: _stars[word] ?? 0);
     state = AsyncData(_buildState());
 
-    // Save progress to database asynchronously (non-blocking)
-    _saveProgress(currentWord, isCorrect).ignore();
+    _recorder.recordAttempt(word, success: isCorrect);
+    if (_session!.isComplete) _recorder.recordGamePlayed(GameType.qcm);
 
-    // Check if word is now validated
-    final isValidated = isCorrect && _session!.isWordValidated(currentWord);
+    await Future.delayed(isCorrect ? _successPause : _errorPause);
 
-    // Wait for feedback delay
-    await Future.delayed(Duration(milliseconds: isValidated ? 800 : 500));
-
-    // Play celebration if word validated
-    if (isValidated) {
-      audio.playWordComplete(); // Non-blocking
-      haptic.success(); // Non-blocking
-      await Future.delayed(const Duration(milliseconds: 400));
+    if (_session!.isComplete) {
+      audio.playLevelComplete();
+    } else if (isCorrect && _session!.isWordValidated(word)) {
+      audio.playWordComplete();
     }
 
-    // Generate next question
     _currentQuestion = _generateQuestion();
-
-    // Auto-play TTS for next word (non-blocking for UI)
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      tts.speak(_currentQuestion!.word).ignore();
-    }
-
-    // Update state with new question
+    _speakCurrentWord();
     state = AsyncData(_buildState());
-  }
-
-  /// Save word mastery (and completed game) to database
-  Future<void> _saveProgress(String word, bool success) async {
-    final gameCompleted = _session?.isComplete ?? false;
-    final repository = ref.read(wordListRepositoryProvider);
-    final wordList = await repository.getById(listId);
-
-    if (wordList == null) return;
-
-    var updated = wordList.recordAttempt(word, success: success);
-    if (gameCompleted) {
-      updated = updated.recordGamePlayed(GameType.qcm);
-    }
-
-    await repository.update(updated);
   }
 
   /// Get current game session

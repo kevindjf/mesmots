@@ -104,9 +104,13 @@ class GameSession {
       newPool.add(word);
     }
 
-    // Shuffle pool for random order (except if validated)
+    // Shuffle pool for random order, but never ask the same word twice
+    // in a row: the child should not just repeat the answer just seen.
     if (newPool.isNotEmpty) {
       newPool.shuffle();
+      if (newPool.length > 1 && newPool.first == word) {
+        newPool.add(newPool.removeAt(0));
+      }
     }
 
     return GameSession(

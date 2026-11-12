@@ -10,6 +10,9 @@ enum LetterSlotState {
   /// Waiting for a letter.
   empty,
 
+  /// A letter of the word given by the game (not to find).
+  given,
+
   /// Holds a letter the child can take back.
   filled,
 
@@ -23,7 +26,7 @@ enum LetterSlotState {
   wrong,
 }
 
-/// One box of the answer in "Lettres mélangées".
+/// One letter box of a word puzzle ("Lettres mélangées", "Mots à trous").
 class LetterSlot extends StatelessWidget {
   final String? letter;
   final LetterSlotState state;
@@ -45,6 +48,12 @@ class LetterSlot extends StatelessWidget {
           AppColors.surface.withValues(alpha: 0.35),
           Colors.transparent,
           AppColors.textPrimary,
+        ),
+      // Plain white letters: clearly not a box to fill.
+      LetterSlotState.given => (
+          Colors.transparent,
+          Colors.transparent,
+          AppColors.textOnColor,
         ),
       LetterSlotState.filled => (
           AppColors.surface,
@@ -77,6 +86,9 @@ class LetterSlot extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+          border: state == LetterSlotState.empty
+              ? Border.all(color: AppColors.surface, width: 2)
+              : null,
           boxShadow: [
             BoxShadow(color: shadow, blurRadius: 0, offset: const Offset(0, 3)),
           ],

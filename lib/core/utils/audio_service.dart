@@ -4,15 +4,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'audio_service.g.dart';
 
 /// Audio service for playing sound effects
+///
+/// One player per sound, so a sound never cuts another one
+/// (e.g. the word fanfare right after the success chime).
 class AudioService {
-  final AudioPlayer _player = AudioPlayer();
+  final _players = <String, AudioPlayer>{};
 
   Future<void> _play(String asset) async {
     try {
-      await _player.stop();
-      await _player.play(AssetSource(asset));
+      final player = _players.putIfAbsent(
+        asset,
+        () => AudioPlayer()..setPlayerMode(PlayerMode.lowLatency),
+      );
+      await player.stop();
+      await player.play(AssetSource(asset));
     } catch (_) {
-      // Silently ignore - sound files may be empty placeholders
+      // Sound is a bonus: never break the game for it.
     }
   }
 
@@ -34,9 +41,10 @@ class AudioService {
   /// Play star earned sound
   Future<void> playStar() => _play('sounds/star.mp3');
 
-
   void dispose() {
-    _player.dispose();
+    for (final player in _players.values) {
+      player.dispose();
+    }
   }
 }
 

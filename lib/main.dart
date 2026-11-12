@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/utils/audio_service.dart';
 import 'package:mesmots/core/theme/app_theme.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/utils/database_provider.dart';
@@ -45,6 +46,8 @@ class AppInitializer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Load the sound effects now, so the first one of a game is heard.
+    ref.watch(audioServiceProvider);
     final parentalSettingsAsync = ref.watch(parentalSettingsProvider);
 
     return parentalSettingsAsync.when(

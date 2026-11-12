@@ -41,7 +41,7 @@ for name, (notes, decay) in SOUNDS.items():
     expr = '+'.join(note(t0, f, d, v, decay) for t0, f, d, v in notes)
     subprocess.run([
         'ffmpeg', '-y', '-loglevel', 'error',
-        '-f', 'lavfi', '-i', f"aevalsrc='0.6*({expr})':s=44100:d={length:.2f}",
+        '-f', 'lavfi', '-i', f"aevalsrc='0.95*({expr})':s=44100:d={length:.2f}",
         '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '96k',
         f'assets/sounds/{name}.mp3',
     ], check=True)

@@ -11,6 +11,9 @@ class LetterButton extends StatefulWidget {
   final double size;
   final double fontSize;
 
+  /// Show the letter in capitals (keyboard keys) or as written (spelling).
+  final bool uppercase;
+
   const LetterButton({
     super.key,
     required this.letter,
@@ -18,6 +21,7 @@ class LetterButton extends StatefulWidget {
     this.isDisabled = false,
     this.size = 52,
     this.fontSize = AppTypography.headingMedium,
+    this.uppercase = true,
   });
 
   /// Smaller variant for keyboard layout
@@ -28,7 +32,8 @@ class LetterButton extends StatefulWidget {
     this.isDisabled = false,
     double? size,
   })  : size = size ?? 34,
-        fontSize = AppTypography.bodyMedium;
+        fontSize = AppTypography.bodyMedium,
+        uppercase = true;
 
   @override
   State<LetterButton> createState() => _LetterButtonState();
@@ -72,14 +77,13 @@ class _LetterButtonState extends State<LetterButton> {
         ),
         child: Center(
           child: Text(
-            widget.letter.toUpperCase(),
+            widget.uppercase ? widget.letter.toUpperCase() : widget.letter,
             style: TextStyle(
               fontFamily: AppTypography.fontFamily,
               fontSize: widget.fontSize,
               fontWeight: AppTypography.bold,
-              color: widget.isDisabled
-                  ? AppColors.textLight
-                  : AppColors.primary,
+              color:
+                  widget.isDisabled ? AppColors.textLight : AppColors.primary,
             ),
           ),
         ),

@@ -1,236 +1,237 @@
-import 'package:characters/characters.dart';
 import 'package:mesmots/core/utils/audio_service.dart';
 import 'package:mesmots/core/utils/haptic_service.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/games/domain/entities/game_session.dart';
+import 'package:mesmots/features/games/domain/usecases/compare_spelling.dart';
+import 'package:mesmots/features/games/domain/usecases/keyboard_for_words.dart';
+import 'package:mesmots/features/games/presentation/providers/progress_recorder.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'writing_game_provider.g.dart';
 
-/// Writing question state
+/// Where the child is in the current word.
+enum WritingPhase {
+  /// Typing the word (or copying it after a mistake).
+  typing,
+
+  /// Word right: shown in green before the next one.
+  correct,
+
+  /// Word wrong: letters marked green/red, right spelling shown.
+  wrong,
+}
+
 class WritingQuestion {
   final String word;
-  final String userInput;
-  final int successCount;
+  final String input;
+  final WritingPhase phase;
+
+  /// After a mistake, the child copies the word with the model shown.
+  final bool isCopying;
+
+  /// For each typed letter, whether it's right (shown when [phase] is
+  /// [WritingPhase.wrong]).
+  final List<bool> marks;
 
   const WritingQuestion({
     required this.word,
-    required this.userInput,
-    required this.successCount,
+    this.input = '',
+    this.phase = WritingPhase.typing,
+    this.isCopying = false,
+    this.marks = const [],
   });
 
+  bool get canType => phase == WritingPhase.typing;
+
   WritingQuestion copyWith({
-    String? word,
-    String? userInput,
-    int? successCount,
+    String? input,
+    WritingPhase? phase,
+    bool? isCopying,
+    List<bool>? marks,
   }) {
     return WritingQuestion(
-      word: word ?? this.word,
-      userInput: userInput ?? this.userInput,
-      successCount: successCount ?? this.successCount,
+      word: word,
+      input: input ?? this.input,
+      phase: phase ?? this.phase,
+      isCopying: isCopying ?? this.isCopying,
+      marks: marks ?? this.marks,
     );
   }
 }
 
-/// Writing game state
 class WritingGameState {
   final WritingQuestion? question;
+
+  /// Mastery stars of the current word (same stars as on the list screen).
+  final int stars;
+  final KeyboardKeys keys;
   final double progress;
   final int validatedCount;
   final int totalCount;
 
   const WritingGameState({
     required this.question,
+    required this.stars,
+    required this.keys,
     required this.progress,
     required this.validatedCount,
     required this.totalCount,
   });
 }
 
-/// Writing game provider
+/// "Écriture": hear the word and type it entirely.
+///
+/// After a mistake, the typed word is shown letter by letter (right letters
+/// green, wrong ones red) with the right spelling, then the child copies
+/// the word with the model shown. A copied word gives no star and comes
+/// back later. Each word must be written twice without mistake in a game.
 @riverpod
 class WritingGame extends _$WritingGame {
-  GameSession? _session;
-  WritingQuestion? _currentQuestion;
+  static const successPause = Duration(milliseconds: 1200);
+  static const errorPause = Duration(milliseconds: 2500);
+
+  late ProgressRecorder _recorder;
+  late Map<String, int> _stars;
+  late KeyboardKeys _keys;
+  late GameSession _session;
+  WritingQuestion? _question;
+  bool _disposed = false;
 
   @override
-  FutureOr<WritingGameState> build(String listId) async {
-    // Load word list and initialize session
+  Future<WritingGameState> build(String listId) async {
     final repository = ref.read(wordListRepositoryProvider);
     final wordList = await repository.getById(listId);
+    if (wordList == null) throw Exception('Word list not found');
 
-    if (wordList == null) {
-      throw Exception('Word list not found');
-    }
-
-    // Get words that are not fully validated in Writing level
+    _recorder = ProgressRecorder(repository, listId);
+    ref.onDispose(() => _disposed = true);
+    _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
+    _keys = keyboardForWords(wordList.words);
     // Free play: every game uses all the words of the list
     _session = GameSession.initial(wordList.words);
-
-    // Generate first question
-    _currentQuestion = _generateQuestion();
-
-    // Auto-play TTS (non-blocking to avoid hanging on emulators)
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      tts.speak(_currentQuestion!.word).ignore();
-    }
-
+    _nextQuestion();
     return _buildState();
   }
 
-  /// Build current game state
   WritingGameState _buildState() {
+    final word = _question?.word;
     return WritingGameState(
-      question: _currentQuestion,
-      progress: _session?.progress ?? 0.0,
-      validatedCount: _session?.validatedCount ?? 0,
-      totalCount: _session?.totalWords ?? 0,
+      question: _question,
+      stars: word == null ? 0 : _stars[word] ?? 0,
+      keys: _keys,
+      progress: _session.progress,
+      validatedCount: _session.validatedCount,
+      totalCount: _session.totalWords,
     );
   }
 
-  /// Generate a question for current word
-  WritingQuestion? _generateQuestion() {
-    if (_session == null || _session!.currentWord == null) {
-      return null;
-    }
-
-    final word = _session!.currentWord!;
-    final successCount = _session!.getSuccessCount(word);
-
-    return WritingQuestion(
-      word: word,
-      userInput: '',
-      successCount: successCount,
-    );
+  void _publish() {
+    if (!_disposed) state = AsyncData(_buildState());
   }
 
-  /// Replay TTS for current word
+  void _nextQuestion() {
+    final word = _session.currentWord;
+    _question = word == null ? null : WritingQuestion(word: word);
+    if (word != null) ref.read(ttsServiceProvider).speak(word).ignore();
+  }
+
   Future<void> replayWord() async {
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      await tts.speak(_currentQuestion!.word);
+    final word = _question?.word;
+    if (word != null) await ref.read(ttsServiceProvider).speak(word);
+  }
+
+  void type(String letter) {
+    final q = _question;
+    if (q == null || !q.canType) return;
+    // Room for a few extra letters, not for endless typing.
+    if (q.input.graphemeLen >= q.word.graphemeLen + 5) return;
+    _question = q.copyWith(input: q.input + letter);
+    ref.read(hapticServiceProvider).selectionClick();
+    _publish();
+  }
+
+  void backspace() {
+    final q = _question;
+    if (q == null || !q.canType || q.input.isEmpty) return;
+    _question = q.copyWith(input: (q.input.graphemes..removeLast()).join());
+    _publish();
+  }
+
+  /// Help: keep the right beginning of the input and add the next right
+  /// letter. No penalty.
+  void hint() {
+    final q = _question;
+    if (q == null || !q.canType) return;
+    final typed = q.input.nfc.graphemes;
+    final word = q.word.graphemes;
+    var right = 0;
+    while (right < typed.length &&
+        right < word.length &&
+        typed[right].toLowerCase() == word[right].toLowerCase()) {
+      right++;
     }
+    if (right >= word.length) return;
+    _question = q.copyWith(input: word.take(right + 1).join());
+    _publish();
   }
 
-  /// Update user input
-  void updateInput(String input) {
-    if (_currentQuestion == null) return;
+  Future<void> submit() async {
+    final q = _question;
+    if (q == null || !q.canType || q.input.trim().isEmpty) return;
 
-    _currentQuestion = _currentQuestion!.copyWith(userInput: input);
-    state = AsyncData(_buildState());
-  }
-
-  /// Add a single letter to user input
-  void addLetter(String letter) {
-    if (_currentQuestion == null) return;
-
-    _currentQuestion = _currentQuestion!.copyWith(
-      userInput: _currentQuestion!.userInput + letter,
-    );
-    state = AsyncData(_buildState());
-  }
-
-  /// Remove the last grapheme from user input
-  void removeLetter() {
-    if (_currentQuestion == null) return;
-    if (_currentQuestion!.userInput.isEmpty) return;
-
-    final graphemes = _currentQuestion!.userInput.characters.toList();
-    graphemes.removeLast();
-    _currentQuestion = _currentQuestion!.copyWith(
-      userInput: graphemes.join(),
-    );
-    state = AsyncData(_buildState());
-  }
-
-  /// Clear user input
-  void clearInput() {
-    if (_currentQuestion == null) return;
-
-    _currentQuestion = _currentQuestion!.copyWith(userInput: '');
-    state = AsyncData(_buildState());
-  }
-
-  /// Submit answer
-  Future<void> submitAnswer() async {
-    if (_session == null || _currentQuestion == null) return;
-    if (_currentQuestion!.userInput.trim().isEmpty) return;
-
-    final currentWord = _currentQuestion!.word;
-    final userAnswer = _currentQuestion!.userInput.trim();
-
-    final isCorrect = normalizedEquals(userAnswer, currentWord);
-
-    // Play feedback immediately (non-blocking)
+    final word = q.word;
+    final isRight = normalizedEquals(q.input.trim(), word);
     final audio = ref.read(audioServiceProvider);
     final haptic = ref.read(hapticServiceProvider);
 
-    if (isCorrect) {
+    if (isRight) {
+      final firstTry = !q.isCopying;
+      final before = _stars[word] ?? 0;
+      if (firstTry) {
+        _stars[word] = (before + 1).clamp(0, WordStatus.masteryThreshold);
+        _recorder.recordAttempt(word, success: true);
+      }
+      _session = _session.answer(firstTry);
+      if (_session.isComplete) _recorder.recordGamePlayed(GameType.writing);
+
       haptic.success();
-      audio.playSuccess();
+      (_stars[word] ?? 0) > before ? audio.playStar() : audio.playSuccess();
+      _question = q.copyWith(phase: WritingPhase.correct);
+      _publish();
+
+      await Future.delayed(successPause);
+      if (_disposed) return;
+      if (_session.isComplete) {
+        audio.playLevelComplete();
+      } else if (firstTry && _session.isWordValidated(word)) {
+        audio.playWordComplete();
+      }
+      _nextQuestion();
+      _publish();
     } else {
+      if (!q.isCopying) _recorder.recordAttempt(word, success: false);
       haptic.error();
       audio.playError();
+      ref.read(ttsServiceProvider).speak(word).ignore();
+      _question = q.copyWith(
+        phase: WritingPhase.wrong,
+        marks: markTypedLetters(q.input, word),
+      );
+      _publish();
+
+      await Future.delayed(errorPause);
+      if (_disposed) return;
+      _question = q.copyWith(
+        input: '',
+        phase: WritingPhase.typing,
+        isCopying: true,
+        marks: const [],
+      );
+      _publish();
     }
-
-    // Update session immediately
-    _session = _session!.answer(isCorrect);
-
-    // Update state immediately so UI refreshes (progress bar updates)
-    state = AsyncData(_buildState());
-
-    // Save progress to database asynchronously (non-blocking)
-    _saveProgress(currentWord, isCorrect).ignore();
-
-    // Check if word is now validated
-    final isValidated = isCorrect && _session!.isWordValidated(currentWord);
-
-    // Wait for feedback delay
-    await Future.delayed(Duration(milliseconds: isValidated ? 800 : 500));
-
-    // Play celebration if word validated
-    if (isValidated) {
-      audio.playWordComplete();
-      haptic.success();
-      await Future.delayed(const Duration(milliseconds: 400));
-    }
-
-    // Generate next question
-    _currentQuestion = _generateQuestion();
-
-    // Auto-play TTS for next word (non-blocking for UI)
-    if (_currentQuestion != null) {
-      final tts = ref.read(ttsServiceProvider);
-      tts.speak(_currentQuestion!.word).ignore();
-    }
-
-    // Update state with new question
-    state = AsyncData(_buildState());
   }
-
-  /// Save word mastery (and completed game) to database
-  Future<void> _saveProgress(String word, bool success) async {
-    final gameCompleted = _session?.isComplete ?? false;
-    final repository = ref.read(wordListRepositoryProvider);
-    final wordList = await repository.getById(listId);
-
-    if (wordList == null) return;
-
-    var updated = wordList.recordAttempt(word, success: success);
-    if (gameCompleted) {
-      updated = updated.recordGamePlayed(GameType.writing);
-    }
-
-    await repository.update(updated);
-  }
-
-  /// Get current game session
-  GameSession? get session => _session;
-
-  /// Check if game is complete
-  bool get isComplete => _session?.isComplete ?? true;
 }

@@ -47,6 +47,7 @@ class AppStrings {
   static const String hint = 'Aide';
   static const String erase = 'Effacer';
   static const String clearAll = 'Tout effacer';
+  static const String copyTheWord = 'Recopie le mot :';
 
   // Game
   static const String validated = 'validés';

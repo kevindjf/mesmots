@@ -5,7 +5,7 @@ class PlacedWord {
   /// Original word, as written in the list
   final String word;
 
-  /// Grid letters of the word (uppercase, separators removed)
+  /// Grid letters of the word (separators removed)
   final List<String> letters;
 
   /// First cell of the word

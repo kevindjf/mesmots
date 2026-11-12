@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/features/games/domain/entities/letter_puzzle.dart';
+import 'package:mesmots/features/games/domain/usecases/letter_confusions.dart';
 
 /// Builds a "Mots à trous" puzzle: the blanks are on the word's spelling
 /// difficulties, and the tiles mix the right letters with letters children
@@ -29,46 +30,6 @@ class GenerateBlanks {
       RegExp(pattern, unicode: true),
   ];
 
-  /// Letters children write instead of the right one.
-  static const Map<String, List<String>> _confusions = {
-    'é': ['e', 'è', 'ê'],
-    'è': ['é', 'e', 'ê'],
-    'ê': ['è', 'é', 'e'],
-    'ë': ['e', 'é'],
-    'e': ['é', 'è', 'a'],
-    'a': ['e', 'à', 'o'],
-    'à': ['a', 'â'],
-    'â': ['a', 'à'],
-    'i': ['y', 'î', 'e'],
-    'î': ['i', 'ï'],
-    'ï': ['i', 'î'],
-    'o': ['au', 'ô', 'a'],
-    'ô': ['o'],
-    'u': ['o', 'û'],
-    'û': ['u'],
-    'ù': ['u'],
-    'y': ['i'],
-    'c': ['k', 's', 'ç'],
-    'ç': ['c', 's'],
-    'k': ['c', 'q'],
-    'q': ['c', 'k'],
-    's': ['z', 'c', 'x'],
-    'z': ['s'],
-    'x': ['s'],
-    't': ['d', 's'],
-    'd': ['t'],
-    'm': ['n'],
-    'n': ['m'],
-    'p': ['b'],
-    'b': ['p', 'd'],
-    'g': ['j'],
-    'j': ['g'],
-    'f': ['v', 'p'],
-    'v': ['f'],
-    'h': ['e', 'a'],
-    'l': ['r'],
-    'r': ['l'],
-  };
 
   final Random _random;
 
@@ -127,7 +88,7 @@ class GenerateBlanks {
   List<String> decoysFor(List<String> needed) {
     final wanted = needed.length >= 4 ? 2 : 3;
     final candidates = <String>{
-      for (final letter in needed) ...?_confusions[letter.toLowerCase()],
+      for (final letter in needed) ...?letterConfusions[letter.toLowerCase()],
     }..removeWhere((c) => c.length != 1 || needed.contains(c));
 
     final decoys = candidates.toList()..shuffle(_random);

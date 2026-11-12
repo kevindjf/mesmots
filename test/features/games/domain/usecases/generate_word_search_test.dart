@@ -45,9 +45,9 @@ void main() {
 
       // Assert
       final letters = {for (final w in grid.words) w.word: w.letters.join()};
-      expect(letters['garçon'], 'GARÇON');
-      expect(letters['grand-mère'], 'GRANDMÈRE');
-      expect(letters['aujourd\'hui'], 'AUJOURDHUI');
+      expect(letters['garçon'], 'garçon');
+      expect(letters['grand-mère'], 'grandmère');
+      expect(letters['aujourd\'hui'], 'aujourdhui');
     });
 
     test('grid is square and stays within bounds', () {

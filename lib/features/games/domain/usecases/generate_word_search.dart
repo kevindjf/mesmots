@@ -4,17 +4,20 @@ import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/features/games/domain/entities/grid_point.dart';
 import 'package:mesmots/features/games/domain/entities/placed_word.dart';
 import 'package:mesmots/features/games/domain/entities/word_search_grid.dart';
+import 'package:mesmots/features/games/domain/usecases/letter_confusions.dart';
 
 /// Builds a word search grid from a word list.
 ///
 /// Words are placed left-to-right or top-to-bottom only (readable for
-/// 5-10 year olds). Accents are kept, and filler letters include letters
-/// from the words so accented letters are not a giveaway.
+/// 5-10 year olds). Letters are lowercase with their accents. Filler
+/// letters come from the words and the letters children confuse them with
+/// (e/é/è, s/ss/c…), so a word can't be spotted by a rare letter and the
+/// grid holds near-words that must be read carefully.
 class GenerateWordSearch {
   static const int minSize = 8;
   static const int maxSize = 12;
   static const int _attemptsPerWord = 200;
-  static const String _alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  static const String _alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
   final Random _random;
 
@@ -24,7 +27,11 @@ class GenerateWordSearch {
     final entries = <({String word, List<String> letters})>[
       for (final word in words.toSet())
         if (word.gridLetters.length >= 2)
-          (word: word, letters: word.gridLetters),
+          // Lowercase, like the words the child learns.
+          (
+            word: word,
+            letters: [for (final l in word.gridLetters) l.toLowerCase()],
+          ),
     ]..sort((a, b) => b.letters.length.compareTo(a.letters.length));
 
     if (entries.isEmpty) {
@@ -120,9 +127,17 @@ class GenerateWordSearch {
     }
 
     final wordLetters = [for (final w in placed) ...w.letters];
+    final traps = [
+      for (final letter in wordLetters.toSet())
+        ...?letterConfusions[letter]?.where((c) => c.length == 1),
+    ];
     String filler() {
-      if (wordLetters.isNotEmpty && _random.nextDouble() < 0.3) {
+      final roll = _random.nextDouble();
+      if (wordLetters.isNotEmpty && roll < 0.5) {
         return wordLetters[_random.nextInt(wordLetters.length)];
+      }
+      if (traps.isNotEmpty && roll < 0.8) {
+        return traps[_random.nextInt(traps.length)];
       }
       return _alphabet[_random.nextInt(_alphabet.length)];
     }

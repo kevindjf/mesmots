@@ -56,7 +56,18 @@ class AppStrings {
   static const String allWordsValidated = 'Tu as joué avec tous tes mots !';
 
   // Parental
-  static const String parentalMode = 'Mode parent';
+  static const String parentSpace = 'Espace parent';
+  static const String parentSpaceIntro =
+      'Les listes créées ici apparaissent sur l\'écran de l\'enfant.';
+  static const String parentLists = 'LISTES DE MOTS';
+  static const String parentNoList = 'Aucune liste pour l\'instant';
+  static const String allowedGames = 'JEUX AUTORISÉS';
+  static const String allowedGamesHint =
+      'L\'enfant ne verra que les jeux cochés pour cette liste.';
+  static const String atLeastOneGame = 'Choisis au moins un jeu';
+  static const String games = 'jeux';
+  static const String askAdultForList =
+      'Demande à un adulte d\'ajouter ta liste avec le cadenas en haut.';
   static const String enterPin = 'Entre ton code PIN';
   static const String createPin = 'Crée ton code PIN';
   static const String confirmPin = 'Confirme ton code PIN';

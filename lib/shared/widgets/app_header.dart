@@ -118,14 +118,12 @@ class AppLogo extends StatelessWidget {
   }
 }
 
-/// Lock icon button for parental mode with 3D style
+/// Lock icon button opening the parent space, with 3D style
 class LockIconButton extends StatefulWidget {
-  final bool isUnlocked;
   final VoidCallback? onTap;
 
   const LockIconButton({
     super.key,
-    this.isUnlocked = false,
     this.onTap,
   });
 
@@ -162,9 +160,9 @@ class _LockIconButtonState extends State<LockIconButton> {
             ),
           ],
         ),
-        child: Icon(
-          widget.isUnlocked ? Icons.lock_open_outlined : Icons.lock_outline,
-          color: widget.isUnlocked ? AppColors.success : AppColors.primary,
+        child: const Icon(
+          Icons.lock_outline,
+          color: AppColors.primary,
           size: AppDimensions.iconM,
         ),
       ),

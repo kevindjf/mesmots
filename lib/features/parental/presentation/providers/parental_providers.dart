@@ -12,18 +12,11 @@ Stream<ParentalSettings> parentalSettings(ParentalSettingsRef ref) {
   return repository.watch();
 }
 
-/// Provider for parental mode state (whether parent is currently authenticated)
-@riverpod
-class ParentalMode extends _$ParentalMode {
-  @override
-  bool build() => false; // Not authenticated by default
-
-  void activate() => state = true;
-  void deactivate() => state = false;
-}
-
-/// Provider for parental operations
-@riverpod
+/// Provider for parental operations.
+///
+/// Kept alive: saving the PIN during onboarding replaces the calling screen,
+/// and an auto-disposed notifier would fail while the save is in progress.
+@Riverpod(keepAlive: true)
 class ParentalOperations extends _$ParentalOperations {
   @override
   FutureOr<void> build() {

@@ -4,7 +4,10 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
+import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/game_toggle_tile.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/photo_capture_screen.dart';
 import 'package:mesmots/shared/widgets/app_input.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
@@ -29,6 +32,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
   final _wordController = TextEditingController();
   final _wordFocusNode = FocusNode();
   final List<String> _words = [];
+  final Set<GameType> _enabledGames = {...WordList.allGames};
   bool _isLoading = false;
   bool _dataLoaded = false;
 
@@ -54,6 +58,9 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
               _nameController.text = wordList.name;
               setState(() {
                 _words.addAll(wordList.words);
+                _enabledGames
+                  ..clear()
+                  ..addAll(wordList.enabledGames);
                 _dataLoaded = true;
               });
             }
@@ -115,6 +122,8 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
                     ],
 
                     const SizedBox(height: AppDimensions.spacingXl),
+                    _buildAllowedGames(),
+                    const SizedBox(height: AppDimensions.spacingXl),
 
                     // Save button
                     if (_words.isNotEmpty)
@@ -168,6 +177,56 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildAllowedGames() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          AppStrings.allowedGames,
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.bodySmall,
+            fontWeight: AppTypography.bold,
+            color: AppColors.textOnColor,
+            letterSpacing: 1.0,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingXs),
+        Text(
+          AppStrings.allowedGamesHint,
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.bodySmall,
+            fontWeight: AppTypography.semiBold,
+            color: AppColors.textOnColor.withValues(alpha: 0.85),
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingM),
+        for (final type in GameType.values)
+          GameToggleTile(
+            type: type,
+            isEnabled: _enabledGames.contains(type),
+            onChanged: (enabled) => _toggleGame(type, enabled),
+          ),
+      ],
+    );
+  }
+
+  void _toggleGame(GameType type, bool enabled) {
+    if (!enabled && _enabledGames.length == 1) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(AppStrings.atLeastOneGame),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      enabled ? _enabledGames.add(type) : _enabledGames.remove(type);
+    });
   }
 
   Widget _buildWordsHeader() {
@@ -290,11 +349,13 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
           id: widget.listId!,
           name: name,
           words: _words,
+          enabledGames: _enabledGames,
         );
       } else {
         await operations.createList(
           name: name,
           words: _words,
+          enabledGames: _enabledGames,
         );
       }
 
@@ -311,7 +372,6 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
         Navigator.pop(context);
       }
     } catch (e) {
-      print(e);
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(

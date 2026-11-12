@@ -4,14 +4,11 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
-import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
-import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
+import 'package:mesmots/features/parental/presentation/screens/parent_space_screen.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/list_edit_screen.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
 import 'package:mesmots/shared/widgets/app_header.dart';
-import 'package:mesmots/shared/widgets/dashed_border_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -20,8 +17,6 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wordListsAsync = ref.watch(wordListsProvider);
-    final parentalSettings = ref.watch(parentalSettingsProvider);
-    final isParentalMode = ref.watch(parentalModeProvider);
 
     return Scaffold(
       body: GradientBackground(
@@ -33,17 +28,14 @@ class HomeScreen extends ConsumerWidget {
                 title: AppStrings.appName,
                 subtitle: 'MES MOTS DE DICTÉE',
                 trailing: LockIconButton(
-                  isUnlocked: isParentalMode,
-                  onTap: () =>
-                      _handleParentalMode(context, ref, parentalSettings),
+                  onTap: () => ParentSpaceScreen.open(context),
                 ),
               ),
 
               // Content
               Expanded(
                 child: wordListsAsync.when(
-                  data: (lists) =>
-                      _buildContent(context, ref, lists, isParentalMode),
+                  data: (lists) => _buildContent(lists),
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(
@@ -58,12 +50,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    List<WordList> lists,
-    bool isParentalMode,
-  ) {
+  Widget _buildContent(List<WordList> lists) {
     // Sort lists: active first, then completed
     final activeLists = lists.where((list) => !list.isMastered).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -79,7 +66,7 @@ class HomeScreen extends ConsumerWidget {
 
         // Word lists
         if (lists.isEmpty)
-          _buildEmptyState(context, isParentalMode)
+          _buildEmptyState()
         else ...[
           // Active lists
           if (activeLists.isNotEmpty) ...[
@@ -101,19 +88,18 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppDimensions.spacingM),
             for (int i = 0; i < completedLists.length; i++)
-              WordListCard(wordList: completedLists[i], colorIndex: i + activeLists.length),
+              WordListCard(
+                  wordList: completedLists[i],
+                  colorIndex: i + activeLists.length),
           ],
         ],
 
-        // Add new list button
-        const SizedBox(height: AppDimensions.spacingL),
-        _buildAddListButton(context, isParentalMode),
         const SizedBox(height: AppDimensions.spacingXxl),
       ],
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, bool isParentalMode) {
+  Widget _buildEmptyState() {
     return Column(
       children: [
         const SizedBox(height: AppDimensions.spacingXxl),
@@ -145,9 +131,7 @@ class HomeScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppDimensions.spacingS),
         Text(
-          isParentalMode
-              ? 'Créez votre première liste !'
-              : 'Demande à un adulte de créer ta première liste !',
+          AppStrings.askAdultForList,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
@@ -157,67 +141,5 @@ class HomeScreen extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildAddListButton(BuildContext context, bool isParentalMode) {
-    return DashedBorderButton(
-      text: AppStrings.newList,
-      icon: Icons.add,
-      isLocked: !isParentalMode,
-      onTap: isParentalMode
-          ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ListEditScreen(),
-                ),
-              );
-            }
-          : () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Demande à un adulte pour créer une liste'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-    );
-  }
-
-  Future<void> _handleParentalMode(
-    BuildContext context,
-    WidgetRef ref,
-    AsyncValue<dynamic> parentalSettingsAsync,
-  ) async {
-    final isParentalMode = ref.read(parentalModeProvider);
-
-    if (isParentalMode) {
-      // Deactivate parental mode
-      ref.read(parentalModeProvider.notifier).deactivate();
-      return;
-    }
-
-    // Need to activate - check if PIN is configured
-    parentalSettingsAsync.whenData((settings) async {
-      if (!settings.isPinConfigured) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Configure le code PIN d\'abord'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        return;
-      }
-
-      // Show PIN dialog
-      final result = await showDialog<bool>(
-        context: context,
-        builder: (context) => const PinInputDialog(),
-      );
-
-      if (result == true) {
-        ref.read(parentalModeProvider.notifier).activate();
-      }
-    });
   }
 }

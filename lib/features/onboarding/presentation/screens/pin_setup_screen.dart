@@ -4,7 +4,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
+import 'package:mesmots/features/parental/presentation/screens/parent_space_screen.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
@@ -55,19 +55,17 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Future<void> _completeSetup() async {
     final operations = ref.read(parentalOperationsProvider.notifier);
-    // Read before awaiting: saving the PIN makes AppInitializer replace
-    // this screen, after which `ref` can no longer be used.
-    final parentalMode = ref.read(parentalModeProvider.notifier);
+    // Read before awaiting: saving the PIN makes AppInitializer replace this
+    // screen with the home screen, after which `context` is unmounted.
+    final navigator = Navigator.of(context);
 
     try {
       await operations.configurePin(_pinController.text);
-      parentalMode.activate();
-
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      }
+      // The adult just chose the PIN: open the parent space so they can
+      // create the first list right away.
+      navigator.push(
+        MaterialPageRoute(builder: (_) => const ParentSpaceScreen()),
+      );
     } catch (e) {
       if (mounted) _showError('Erreur lors de la configuration: $e');
     }
@@ -217,7 +215,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         ),
         const SizedBox(height: AppDimensions.spacingL),
         const Text(
-          'Créez un code PIN à 4 chiffres pour protéger l\'accès aux paramètres',
+          'Créez un code PIN à 4 chiffres pour protéger l\'espace parent',
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyLarge,

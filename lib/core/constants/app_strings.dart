@@ -79,15 +79,28 @@ class AppStrings {
   static const String changePin = 'Changer le code';
 
   // Onboarding
-  static const String welcomeTitle = 'Bienvenue dans MesMots !';
-  static const String welcomeDescription =
-      'Apprends en t\'amusant !';
-  static const String gamesTitle = 'Plein de jeux pour apprendre';
-  static const String gamesDescription =
-      'De la découverte à l\'écriture complète';
-  static const String parentalTitle = 'Espace parent sécurisé';
-  static const String parentalDescription =
-      'Gérez les listes de mots avec un code PIN';
+  static const String welcomeTiles = 'MES MOTS';
+  static const String welcomeTagline = 'Les mots de la semaine, en jouant !';
+  static const String welcomeAudience =
+      'Quelques secondes pour tout préparer, c\'est parti !';
+  static const String start = 'Commencer';
+  static const String skip = 'Passer';
+  static const String tourListTitle = 'Vous ajoutez la liste';
+  static const String tourListText =
+      'Tapez les mots de la semaine ou prenez la liste en photo.';
+  static const String tourGamesTitle = 'Votre enfant joue';
+  static const String tourGamesText =
+      '6 jeux, dans l\'ordre qu\'il veut, quand il veut. Pas de niveau à débloquer.';
+  static const String tourStarsTitle = 'Il gagne des étoiles';
+  static const String tourStarsText =
+      'Chaque réussite donne une étoile au mot. À 3 étoiles, il est maîtrisé. Les erreurs ne retirent rien.';
+  static const String createMyCode = 'Créer mon code';
+  static const List<String> tourExampleWords = ['maison', 'école', 'soleil'];
+  static const String createPinTitle = 'Votre code parent';
+  static const String createPinText =
+      '4 chiffres pour ouvrir l\'espace parent. Votre enfant ne doit pas le connaître.';
+  static const String confirmPinTitle = 'Encore une fois';
+  static const String confirmPinText = 'Saisissez le même code pour confirmer.';
 
   // Errors
   static const String errorGeneric = 'Une erreur est survenue';

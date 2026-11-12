@@ -5,7 +5,7 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
-import 'package:mesmots/features/parental/presentation/widgets/pin_keypad.dart';
+import 'package:mesmots/features/parental/presentation/widgets/pin_entry.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 
 class PinInputDialog extends ConsumerStatefulWidget {
@@ -16,9 +16,6 @@ class PinInputDialog extends ConsumerStatefulWidget {
 }
 
 class _PinInputDialogState extends ConsumerState<PinInputDialog> {
-  String _pin = '';
-  String? _errorMessage;
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -53,27 +50,22 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
             const SizedBox(height: 8),
 
             // Subtitle
-            Text(
-              _errorMessage ?? 'Entre le code pour continuer',
+            const Text(
+              'Entre le code pour continuer',
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyMedium,
                 fontWeight: AppTypography.semiBold,
-                color: _errorMessage != null
-                    ? AppColors.error
-                    : AppColors.textSecondary,
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 24),
 
-            // PIN dots
-            _buildPinDisplay(),
-            const SizedBox(height: 32),
-
-            // Keypad
-            PinKeypad(
-              onNumberPressed: _onNumberPressed,
-              onDeletePressed: _onDeletePressed,
+            PinEntry(
+              validate: (pin) =>
+                  ref.read(parentalOperationsProvider.notifier).verifyPin(pin),
+              onAccepted: (_) => Navigator.pop(context, true),
+              errorMessage: AppStrings.wrongPin,
             ),
             const SizedBox(height: 24),
 
@@ -89,61 +81,5 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
         ),
       ),
     );
-  }
-
-  Widget _buildPinDisplay() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (index) {
-        final isFilled = index < _pin.length;
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isFilled ? AppColors.primary : AppColors.textLight,
-          ),
-        );
-      }),
-    );
-  }
-
-  void _onNumberPressed(int number) {
-    if (_pin.length < 4) {
-      setState(() {
-        _pin += number.toString();
-        _errorMessage = null;
-      });
-
-      if (_pin.length == 4) {
-        _verifyPin();
-      }
-    }
-  }
-
-  void _onDeletePressed() {
-    if (_pin.isNotEmpty) {
-      setState(() {
-        _pin = _pin.substring(0, _pin.length - 1);
-        _errorMessage = null;
-      });
-    }
-  }
-
-  Future<void> _verifyPin() async {
-    final operations = ref.read(parentalOperationsProvider.notifier);
-    final isValid = await operations.verifyPin(_pin);
-
-    if (!mounted) return;
-
-    if (isValid) {
-      Navigator.pop(context, true);
-    } else {
-      setState(() {
-        _pin = '';
-        _errorMessage = AppStrings.wrongPin;
-      });
-    }
   }
 }

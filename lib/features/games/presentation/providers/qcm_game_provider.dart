@@ -78,6 +78,9 @@ class QcmGame extends _$QcmGame {
   static const _errorPause = Duration(milliseconds: 1800);
 
   late ProgressRecorder _recorder;
+
+  /// Set when the game screen is closed, possibly during a pause.
+  bool _disposed = false;
   late Map<String, int> _stars;
   GameSession? _session;
   QcmQuestion? _currentQuestion;
@@ -93,6 +96,7 @@ class QcmGame extends _$QcmGame {
     }
 
     _recorder = ProgressRecorder(repository, listId);
+    ref.onDispose(() => _disposed = true);
     _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
     // Free play: every game uses all the words of the list
     _session = GameSession.initial(wordList.words);
@@ -169,6 +173,7 @@ class QcmGame extends _$QcmGame {
     if (_session!.isComplete) _recorder.recordGamePlayed(GameType.qcm);
 
     await Future.delayed(isCorrect ? _successPause : _errorPause);
+    if (_disposed) return;
 
     if (_session!.isComplete) {
       audio.playLevelComplete();

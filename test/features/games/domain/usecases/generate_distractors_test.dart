@@ -64,7 +64,8 @@ void main() {
     // Assert
     expect(allVariants('maison'), contains('maizon'));
     expect(allVariants('école'), containsAll(['ecole', 'écolle', 'ékole']));
-    expect(allVariants('poisson'), contains('poison'));
+    expect(allVariants('poisson'), containsAll(['poison', 'poissont']));
+    expect(generate('poisson').length, 3);
     expect(allVariants('chapeau'), containsAll(['chapo', 'chapau']));
     expect(allVariants('jardin'), containsAll(['jardain', 'jardein']));
     expect(allVariants('garçon'), contains('garson'));

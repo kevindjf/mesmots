@@ -31,6 +31,9 @@ class GenerateDistractors {
     _Rule(r'er$', ['é', 'ez']),
     _Rule(r'et$', ['ait', 'è']),
     // Nasal sounds
+    _Rule(r'on$', ['ont', 'om']),
+    _Rule(r'an$', ['ant', 'en']),
+    _Rule(r'oi', ['oa']),
     _Rule(r'an', ['en']),
     _Rule(r'en', ['an']),
     _Rule(r'am(?=[bp])', ['em']),

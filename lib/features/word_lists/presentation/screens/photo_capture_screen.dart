@@ -278,17 +278,8 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
                       );
                     }
 
-                    // Ensure we have a controller for this index
-                    while (_wordControllers.length <= index) {
-                      _wordControllers.add(TextEditingController());
-                    }
-
-                    if (_wordControllers[index].text.isEmpty) {
-                      _wordControllers[index].text = _detectedWords[index];
-                    }
-
                     return ListTile(
-                      key: ValueKey(_detectedWords[index] + index.toString()),
+                      key: ObjectKey(_wordControllers[index]),
                       leading: const Icon(Icons.drag_handle),
                       title: TextField(
                         controller: _wordControllers[index],
@@ -349,11 +340,14 @@ class _PhotoCaptureScreenState extends ConsumerState<PhotoCaptureScreen> {
         _currentStep = 2;
         _isProcessing = false;
 
-        // Reset controllers
+        // One controller per word, created now: the list is built lazily,
+        // so words never scrolled into view would otherwise be lost on save.
         for (final controller in _wordControllers) {
           controller.dispose();
         }
-        _wordControllers.clear();
+        _wordControllers
+          ..clear()
+          ..addAll(words.map((w) => TextEditingController(text: w)));
       });
 
       // Show message if no words detected

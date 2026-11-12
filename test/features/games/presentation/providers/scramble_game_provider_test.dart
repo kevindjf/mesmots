@@ -97,6 +97,25 @@ void main() {
     expect(question().letterAt(1), 'h');
   });
 
+  test('Effacer removes the last letter placed, not a locked one', () async {
+    // Arrange
+    await start();
+    final tiles = tilesFor('chat');
+    game().hint(); // "c" locked in slot 0
+    game().placeTile(tiles[1]);
+    game().placeTile(tiles[2]);
+
+    // Act
+    game().removeLast();
+    game().removeLast();
+    game().removeLast();
+
+    // Assert
+    expect(question().letterAt(0), 'c');
+    expect(question().letterAt(1), isNull);
+    expect(question().letterAt(2), isNull);
+  });
+
   test('checks the word when the last slot is filled', () async {
     // Arrange
     await start();

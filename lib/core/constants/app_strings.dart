@@ -45,6 +45,7 @@ class AppStrings {
   static const String crosswordDown = 'Vertical';
   static const String crosswordListen = 'Écoute le mot et écris-le';
   static const String hint = 'Aide';
+  static const String erase = 'Effacer';
   static const String clearAll = 'Tout effacer';
 
   // Game

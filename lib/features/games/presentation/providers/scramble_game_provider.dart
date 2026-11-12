@@ -213,6 +213,18 @@ class ScrambleGame extends _$ScrambleGame {
     _emit();
   }
 
+  /// Send the last letter placed (not locked) back to the tiles.
+  void removeLast() {
+    final q = _question;
+    if (q == null) return;
+    for (var slot = q.slots.length - 1; slot >= 0; slot--) {
+      if (q.slots[slot] != null && !q.lockedSlots.contains(slot)) {
+        removeSlot(slot);
+        return;
+      }
+    }
+  }
+
   /// Send every letter that isn't locked back to the tiles.
   void clearAll() {
     final q = _question;

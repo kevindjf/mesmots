@@ -152,6 +152,12 @@ class ScrambleGameScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               GameControlButton(
+                                icon: Icons.backspace_outlined,
+                                label: AppStrings.erase,
+                                onTap: game.removeLast,
+                                isEnabled: question.canPlay && hasFreeSlot,
+                              ),
+                              GameControlButton(
                                 icon: Icons.refresh,
                                 label: AppStrings.clearAll,
                                 onTap: game.clearAll,

@@ -24,6 +24,9 @@ class WordList {
   /// Number of completed games per game type
   final Map<GameType, int> playCount;
 
+  /// Games the adult allows for this list (all by default)
+  final Set<GameType> enabledGames;
+
   const WordList({
     required this.id,
     required this.name,
@@ -32,13 +35,18 @@ class WordList {
     required this.words,
     required this.mastery,
     required this.playCount,
+    this.enabledGames = allGames,
   });
+
+  /// Every game, the default selection
+  static const Set<GameType> allGames = {...GameType.values};
 
   /// Create a new word list
   factory WordList.create({
     required String id,
     required String name,
     required List<String> words,
+    Set<GameType> enabledGames = allGames,
   }) {
     final now = DateTime.now();
     return WordList(
@@ -49,6 +57,7 @@ class WordList {
       words: words,
       mastery: {for (final word in words) word: WordStatus.initial()},
       playCount: const {},
+      enabledGames: enabledGames,
     );
   }
 
@@ -59,14 +68,31 @@ class WordList {
   int get masteredCount => words.where((w) => statusOf(w).isMastered).length;
 
   /// Mastery ratio (0.0 to 1.0)
-  double get masteryRatio =>
-      words.isEmpty ? 0.0 : masteredCount / words.length;
+  double get masteryRatio => words.isEmpty ? 0.0 : masteredCount / words.length;
 
   /// Whether every word of the list is mastered
   bool get isMastered => words.isNotEmpty && masteredCount == words.length;
 
   /// Number of completed games for a game type
   int playCountOf(GameType type) => playCount[type] ?? 0;
+
+  /// Whether the child can play this game with the list
+  bool isGameEnabled(GameType type) => enabledGames.contains(type);
+
+  /// Enabled games in display order
+  List<GameType> get availableGames =>
+      GameType.values.where(isGameEnabled).toList();
+
+  /// Update the allowed games. At least one game must stay enabled.
+  WordList updateEnabledGames(Set<GameType> games) {
+    if (games.isEmpty) {
+      throw ArgumentError.value(games, 'games', 'At least one game required');
+    }
+    return copyWith(
+      enabledGames: Set.unmodifiable(games),
+      updatedAt: DateTime.now(),
+    );
+  }
 
   /// Update word list name
   WordList updateName(String newName) {
@@ -121,6 +147,7 @@ class WordList {
     List<String>? words,
     Map<String, WordStatus>? mastery,
     Map<GameType, int>? playCount,
+    Set<GameType>? enabledGames,
   }) {
     return WordList(
       id: id ?? this.id,
@@ -130,6 +157,7 @@ class WordList {
       words: words ?? this.words,
       mastery: mastery ?? this.mastery,
       playCount: playCount ?? this.playCount,
+      enabledGames: enabledGames ?? this.enabledGames,
     );
   }
 

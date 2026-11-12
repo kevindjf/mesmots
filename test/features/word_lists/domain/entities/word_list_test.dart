@@ -92,4 +92,35 @@ void main() {
       expect(updated.mastery.containsKey('été'), isFalse);
     });
   });
+
+  group('enabled games', () {
+    test('a new list allows every game', () {
+      // Arrange & Act
+      final list = WordList.create(id: '1', name: 'S1', words: ['chat']);
+
+      // Assert
+      expect(list.availableGames, GameType.values);
+    });
+
+    test('updateEnabledGames keeps display order', () {
+      // Arrange
+      final list = WordList.create(id: '1', name: 'S1', words: ['chat']);
+
+      // Act
+      final updated =
+          list.updateEnabledGames({GameType.crossword, GameType.qcm});
+
+      // Assert
+      expect(updated.availableGames, [GameType.qcm, GameType.crossword]);
+      expect(updated.isGameEnabled(GameType.writing), isFalse);
+    });
+
+    test('updateEnabledGames refuses an empty selection', () {
+      // Arrange
+      final list = WordList.create(id: '1', name: 'S1', words: ['chat']);
+
+      // Act & Assert
+      expect(() => list.updateEnabledGames({}), throwsArgumentError);
+    });
+  });
 }

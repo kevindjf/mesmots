@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
+import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 
 part 'word_list_providers.g.dart';
@@ -31,6 +32,7 @@ class WordListOperations extends _$WordListOperations {
   Future<String> createList({
     required String name,
     required List<String> words,
+    Set<GameType> enabledGames = WordList.allGames,
   }) async {
     final uuid = const Uuid().v4();
     final repository = ref.read(wordListRepositoryProvider);
@@ -39,6 +41,7 @@ class WordListOperations extends _$WordListOperations {
       id: uuid,
       name: name,
       words: words,
+      enabledGames: enabledGames,
     );
 
     await repository.create(wordList);
@@ -50,6 +53,7 @@ class WordListOperations extends _$WordListOperations {
     required String id,
     String? name,
     List<String>? words,
+    Set<GameType>? enabledGames,
   }) async {
     state = const AsyncLoading();
 
@@ -69,6 +73,10 @@ class WordListOperations extends _$WordListOperations {
 
       if (words != null) {
         updated = updated.updateWords(words);
+      }
+
+      if (enabledGames != null) {
+        updated = updated.updateEnabledGames(enabledGames);
       }
 
       await repository.update(updated);

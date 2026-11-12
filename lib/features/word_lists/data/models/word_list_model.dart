@@ -38,6 +38,11 @@ class WordListModel extends HiveObject {
   @HiveField(27)
   Map<String, int>? playCounts;
 
+  /// Allowed game type names. Null means every game (records saved before
+  /// this field existed).
+  @HiveField(28)
+  List<String>? enabledGames;
+
   WordListModel();
 
   WordListModel.fromEntity(WordList entity) {
@@ -46,13 +51,18 @@ class WordListModel extends HiveObject {
     createdAt = entity.createdAt;
     updatedAt = entity.updatedAt;
     words = List.of(entity.words);
-    masterySuccess =
-        words.map((w) => entity.statusOf(w).successCount).toList();
+    masterySuccess = words.map((w) => entity.statusOf(w).successCount).toList();
     masteryErrors =
         words.map((w) => entity.statusOf(w).consecutiveErrors).toList();
     playCounts = {
       for (final entry in entity.playCount.entries) entry.key.name: entry.value,
     };
+    enabledGames = entity.enabledGames.length == GameType.values.length
+        ? null
+        : [
+            for (final type in GameType.values)
+              if (entity.isGameEnabled(type)) type.name,
+          ];
   }
 
   WordList toEntity() {
@@ -82,6 +92,17 @@ class WordListModel extends HiveObject {
         for (final type in GameType.values)
           if (playCounts?[type.name] != null) type: playCounts![type.name]!,
       },
+      enabledGames: _decodeEnabledGames(),
     );
+  }
+
+  Set<GameType> _decodeEnabledGames() {
+    final names = enabledGames;
+    if (names == null) return WordList.allGames;
+    final games = {
+      for (final type in GameType.values)
+        if (names.contains(type.name)) type,
+    };
+    return games.isEmpty ? WordList.allGames : games;
   }
 }

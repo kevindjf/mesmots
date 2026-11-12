@@ -1,4 +1,5 @@
-/// Available learning games. All games are always playable, in any order.
+/// Available learning games. Every enabled game is always playable, in any
+/// order; the adult chooses which games each list offers.
 enum GameType {
   qcm,
   scramble,

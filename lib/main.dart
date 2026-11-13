@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/utils/audio_service.dart';
-import 'package:mesmots/core/theme/app_theme.dart';
+import 'package:mesmots/features/appearance/presentation/extensions/appearance_theme.dart';
+import 'package:mesmots/features/appearance/presentation/providers/appearance_providers.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/utils/database_provider.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
@@ -26,14 +27,17 @@ void main() async {
   );
 }
 
-class MesMotsApp extends StatelessWidget {
+class MesMotsApp extends ConsumerWidget {
   const MesMotsApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appearance = ref.watch(appearanceProvider);
     return MaterialApp(
       title: AppStrings.appName,
-      theme: AppTheme.lightTheme,
+      theme: appearance.themeData,
+      darkTheme: appearance.darkThemeData,
+      themeMode: appearance.themeMode,
       home: const AppInitializer(),
       debugShowCheckedModeBanner: false,
     );

@@ -63,4 +63,22 @@ class AppColors {
 
   // Shadow
   static const Color shadowColor = Color(0x25000000); // Ombre légère
+
+  // Light theme (white background)
+  static const Color anthracite = Color(0xFF3A3D4A); // Tuile anthracite
+  static const Color anthraciteShadow = Color(0xFF1F2129); // Ombre anthracite
+  static const Color lightSlot = Color(0xFFF3F4F7); // Case vide claire
+  static const Color lightSlotBorder = Color(0xFFD1D5DB); // Bord case vide
+  static const Color lightDisabled = Color(0xFFECEDF1); // Tuile désactivée
+
+  // Dark theme (night blue background)
+  static const Color nightGradientStart = Color(0xFF232739); // Gradient haut
+  static const Color nightGradientEnd = Color(0xFF1B1E2B); // Gradient bas
+  static const Color nightCard = Color(0xFF2A2E40); // Carte sombre
+  static const Color nightLine = Color(0xFF3A3F55); // Bordure sombre
+  static const Color nightText = Color(0xFFF2F3F7); // Texte clair
+  static const Color nightTextMuted = Color(0xFFA9AEC2); // Texte clair atténué
+  static const Color nightMuted = Color(0xFF555B75); // Bord / désactivé sombre
+  static const Color nightStar = Color(0xFF6E7390); // Étoile vide sombre
+  static const Color offWhiteShadow = Color(0xFFD9DBE3); // Ombre blanc cassé
 }

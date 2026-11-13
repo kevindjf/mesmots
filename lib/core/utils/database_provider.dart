@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mesmots/features/word_lists/data/models/word_list_model.dart';
+import 'package:mesmots/features/appearance/data/repositories/appearance_repository_impl.dart';
 import 'package:mesmots/features/parental/data/models/parental_settings_model.dart';
 
 part 'database_provider.g.dart';
@@ -16,6 +17,9 @@ Future<void> initializeDatabase() async {
   if (!Hive.isAdapterRegistered(1)) {
     Hive.registerAdapter(ParentalSettingsModelAdapter());
   }
+
+  // Opened now: the theme is read synchronously for the first frame.
+  await Hive.openBox<dynamic>(AppearanceRepositoryImpl.boxName);
 }
 
 @riverpod
@@ -33,4 +37,3 @@ Future<Box<ParentalSettingsModel>> parentalSettingsBox(
   ref.onDispose(() => box.close());
   return box;
 }
-

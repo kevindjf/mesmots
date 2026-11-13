@@ -1,64 +1,97 @@
-# Publication Google Play (test interne)
+# Publication Google Play
 
-Objectif : installer MesMots sur une tablette gérée par Family Link via un **test interne** Google Play, sans mode développeur ni APK.
+## Mettre à jour l'app (le cas courant)
+
+1. Écrire les notes de version dans `docs/play/release-notes.txt` (500 caractères max, en français, pour les utilisateurs).
+2. Lancer :
+
+```bash
+tool/publish.sh patch
+```
+
+C'est tout. Le script :
+
+- passe la version à la suivante dans `pubspec.yaml` et commite ce changement ;
+- construit l'app **depuis ce commit**, dans un dossier temporaire : le travail non commité n'est jamais publié ;
+- lance `flutter analyze` et `flutter test` (s'arrête en cas d'échec) ;
+- produit `build/release/MesMots-<version>.aab` et pose le tag `v<version>` ;
+- envoie le bundle sur Google Play, en **test interne** (disponible tout de suite) et en **test ouvert** (après examen de Google, en général quelques heures à quelques jours).
+
+Le commit et le tag restent locaux : `git push --follow-tags` quand tu veux.
+
+### Options
+
+| Commande | Effet |
+|---|---|
+| `tool/publish.sh patch` | 1.1.1 → 1.1.2 (corrections, petites améliorations) |
+| `tool/publish.sh minor` | 1.1.1 → 1.2.0 (nouveau jeu, nouvelle fonctionnalité) |
+| `tool/publish.sh major` | 1.1.1 → 2.0.0 |
+| `tool/publish.sh build` | Garde 1.1.1, n'augmente que le numéro de build (renvoi d'un build) |
+| `--track internal` | Seulement le test interne (essayer avant la bêta) |
+| `--track beta` | Seulement le test ouvert |
+| `--notes "…"` | Notes de version sans passer par le fichier |
+| `--dry-run` | Affiche la future version et les notes, sans rien modifier |
+
+Le numéro de build (`+N`) augmente à chaque envoi : Play refuse un numéro déjà utilisé.
+
+### Faut-il repasser par la fiche Play Store ?
+
+**Non**, pas pour une mise à jour. Une nouvelle version = un nouveau bundle + des notes de version, c'est tout. On ne retouche Play Console que si :
+
+| Changement dans l'app | À mettre à jour |
+|---|---|
+| Nouveau jeu, écran très différent | Captures d'écran (`docs/play/screenshots/`) et descriptions (`docs/play/store-listing.md`) dans *Fiche Play Store* |
+| Nouvelle permission (caméra, photos…) | *Contenu de l'application* : déclaration correspondante + *Sécurité des données* |
+| Données envoyées hors de l'appareil, SDK d'analyse, pubs | *Sécurité des données*, *Annonces*, politique de confidentialité (https://kapps-mobile.fr/mesmots/confidentialite/) |
+| Public visé différent | *Cible et contenu* |
+
+Attention : l'app est dans le **programme Familles** (enfants de moins de 13 ans). Tout SDK tiers doit être certifié « Familles », sinon l'app peut être refusée. C'est pour ça que ML Kit a été retiré.
+
+## Mise en place de l'envoi automatique (une seule fois)
+
+Sans cette étape, le script s'arrête après le build : il ouvre le Finder sur le `.aab` et affiche les clics à faire dans Play Console.
+
+1. **Google Cloud** (https://console.cloud.google.com), avec le compte Kapps Mobile :
+   - créer (ou choisir) un projet ;
+   - *API et services → Bibliothèque* : activer **Google Play Android Developer API** ;
+   - *IAM → Comptes de service* : créer un compte de service (ex. `play-publisher`), sans rôle ;
+   - sur ce compte : *Clés → Ajouter une clé → JSON*. Enregistrer le fichier sous `~/.keystores/mesmots/play-service-account.json` (**hors du dépôt, jamais commité**).
+2. **Play Console → Utilisateurs et autorisations → Inviter de nouveaux utilisateurs** :
+   - e-mail : celui du compte de service (`…@….iam.gserviceaccount.com`) ;
+   - autorisations sur l'app MesMots : *Publier dans les canaux de test*, *Gérer les canaux de test et les listes de testeurs*, *Voir les informations sur l'application*.
+3. Tester avec `tool/publish.sh build --track internal`.
+
+Les droits peuvent mettre jusqu'à 24 h à s'appliquer. En cas d'erreur `403`, attendre et relancer `tool/publish.sh build`.
+
+## Ce qu'il ne faut pas perdre
+
+- Clé d'upload : `~/.keystores/mesmots/upload-keystore.jks` (alias `upload`) et ses mots de passe dans `android/key.properties` (ignoré par git).
+- Clé du compte de service : `~/.keystores/mesmots/play-service-account.json`.
+
+Sauvegarder ces fichiers dans le coffre de l'entreprise. Sans `key.properties`, le build release est signé avec la clé debug et Play le refuse. La signature finale est gérée par Google (signature d'app Play) : si la clé d'upload est perdue, une réinitialisation est possible via le support Play, mais c'est lent.
 
 ## Identité de l'app
 
 | | |
 |---|---|
-| Nom | MesMots |
-| Identifiant (applicationId / bundle iOS) | `fr.kappsmobile.mesmots` |
-| Compte Play Console | organisation Kapps Mobile |
+| Nom sur le Play Store | MesMots - Mots de dictée |
+| Identifiant | `fr.kappsmobile.mesmots` (définitif) |
+| Compte Play Console | Kapps Mobile |
+| Catégorie | Enseignement |
+| Contact public | contact@kapps-mobile.com |
+| Confidentialité | https://kapps-mobile.fr/mesmots/confidentialite/ (source : `docs/play/privacy-policy.html`) |
+| Public cible | 5 ans et moins, 6-8, 9-12 (programme Familles, « Approuvé par les enseignants » demandé) |
+| Test ouvert | France, Belgique, Suisse, Luxembourg, Monaco, Canada |
 
-L'identifiant est définitif une fois l'app créée sur Play Console.
+## Testeurs
 
-## Clé d'upload (à sauvegarder !)
+- **Test interne** : liste « MesMots - Famille » (Play Console → Tests internes → Testeurs). Lien d'inscription : https://play.google.com/apps/internaltest/4701531246511080208. Le testeur doit ouvrir le lien connecté avec l'adresse Gmail ajoutée ; un ajout récent peut mettre jusqu'à une heure à être pris en compte (avant, Google affiche « URL not found »).
+- **Test ouvert** : tout le monde peut rejoindre depuis la fiche Play Store, dans les pays ciblés.
 
-- Keystore : `~/.keystores/mesmots/upload-keystore.jks` (alias `upload`), **hors du dépôt**.
-- Mots de passe : dans `android/key.properties` (ignoré par git, jamais commité).
-- **Sauvegarde ces deux fichiers** dans le gestionnaire de mots de passe / coffre de l'entreprise.
-- Avec la signature d'app Play (activée par défaut), Google garde la clé de signature finale ; si la clé d'upload est perdue, une réinitialisation est possible via le support Play, mais c'est lent.
+## Installer une version de développement sur un téléphone
 
-Sur une autre machine sans `key.properties`, le build release est signé avec la clé debug (utilisable en local, refusé par Play).
+Une app installée depuis Play est signée par Google ; une app installée avec `adb` ou `flutter run` est signée avec la clé d'upload ou debug. Android refuse de passer de l'une à l'autre (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`) : il faut désinstaller, ce qui efface les listes et la progression.
 
-## Construire le bundle
+## Famille et tablette (Family Link)
 
-1. Incrémenter la version dans `pubspec.yaml` à chaque envoi (`1.0.0+1` → `1.0.0+2`…) : Play refuse un `versionCode` déjà utilisé.
-2. Construire :
-
-```bash
-flutter build appbundle --release
-```
-
-Fichier produit : `build/app/outputs/bundle/release/app-release.aab`.
-
-## Play Console : première mise en ligne
-
-1. **Créer l'application** : nom « MesMots », langue par défaut français (France), type *Application*, *Gratuite*.
-2. **Tester et publier → Tests → Test interne** :
-   - Onglet *Testeurs* : créer une liste d'e-mails et y ajouter le compte Google de l'enfant (et le tien).
-   - *Créer une release* : accepter la signature d'app Play, importer `app-release.aab`, ajouter une note de version, *Enregistrer*, *Examiner la release*, *Déployer*.
-   - Copier le **lien d'inscription** des testeurs (onglet *Testeurs*).
-3. **Déclarations** que Play peut demander avant la première diffusion (menu *Tableau de bord → Configurer votre application*) :
-   - Règles de confidentialité : une URL est requise pour une app destinée aux enfants (page simple : aucune donnée collectée, tout reste sur l'appareil).
-   - Accès à l'application : aucun identifiant requis (le code PIN est créé par l'utilisateur).
-   - Annonces : non.
-   - Classification du contenu : questionnaire (pas de contenu sensible).
-   - Public cible : tranches 5 ans et moins / 6-8 / 9-12 → l'app relève du **programme Familles** de Google Play.
-   - Sécurité des données : aucune donnée collectée ni partagée ; la photo de la liste est analysée sur l'appareil (ML Kit) et n'est pas envoyée.
-
-## Installer sur la tablette (Family Link)
-
-1. Sur la tablette, connecté avec le compte de l'enfant, ouvrir le **lien d'inscription** et accepter de devenir testeur.
-2. Ouvrir la fiche Play depuis ce lien et demander l'installation.
-3. Approuver la demande dans **Family Link** (sur ton téléphone) comme pour toute autre app.
-
-Point à vérifier au premier essai : l'inscription d'un compte supervisé à un test interne n'est pas documentée clairement par Google. Si elle est bloquée, alternatives : installer avec un compte adulte ajouté sur la tablette, ou passer par un **test fermé** (même procédure, liste de testeurs dédiée).
-
-## Mises à jour
-
-Incrémenter la version, reconstruire le `.aab`, créer une nouvelle release dans *Test interne*. La tablette reçoit la mise à jour via le Play Store (sous réserve des réglages Family Link).
-
-## Passage en production (plus tard)
-
-Compte organisation : pas d'obligation de test fermé à 12 testeurs. Il faudra compléter la fiche Play (descriptions, captures, icône 512 px : `docs/play/icon-512.png`) et respecter les exigences du programme Familles.
+Sur la tablette, connecté avec le compte de l'enfant, ouvrir le lien d'inscription au test interne, accepter, puis demander l'installation et l'approuver dans Family Link.

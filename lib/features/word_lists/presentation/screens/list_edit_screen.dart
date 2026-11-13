@@ -8,7 +8,6 @@ import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/game_toggle_tile.dart';
-import 'package:mesmots/features/word_lists/presentation/screens/photo_capture_screen.dart';
 import 'package:mesmots/shared/widgets/app_input.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
@@ -168,12 +167,6 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
               ),
             ),
           ),
-          CircleIconButton.colored(
-            icon: Icons.camera_alt,
-            onTap: _openPhotoCapture,
-            color: AppColors.buttonBlue,
-            shadowColor: AppColors.buttonBlueShadow,
-          ),
         ],
       ),
     );
@@ -293,26 +286,6 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
     setState(() {
       _words.clear();
     });
-  }
-
-  Future<void> _openPhotoCapture() async {
-    final words = await Navigator.push<List<String>>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const PhotoCaptureScreen(),
-      ),
-    );
-
-    if (words != null && words.isNotEmpty) {
-      setState(() {
-        for (final word in words) {
-          final cleanWord = word.trim().toLowerCase().nfc;
-          if (cleanWord.isNotEmpty && !_words.contains(cleanWord)) {
-            _words.add(cleanWord);
-          }
-        }
-      });
-    }
   }
 
   Future<void> _saveList() async {

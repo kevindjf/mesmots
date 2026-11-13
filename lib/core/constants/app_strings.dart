@@ -90,7 +90,7 @@ class AppStrings {
   static const String skip = 'Passer';
   static const String tourListTitle = 'Vous ajoutez la liste';
   static const String tourListText =
-      'Tapez les mots de la semaine ou prenez la liste en photo.';
+      'Tapez les mots de la semaine, en quelques secondes.';
   static const String tourGamesTitle = 'Votre enfant joue';
   static const String tourGamesText =
       '6 jeux, dans l\'ordre qu\'il veut, quand il veut. Pas de niveau à débloquer.';

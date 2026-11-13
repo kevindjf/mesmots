@@ -80,7 +80,7 @@ class TourListIllustration extends StatelessWidget {
           bottom: -14,
           child: PopIn(
             delay: Duration(milliseconds: 1000),
-            child: IconBadge.orange(icon: Icons.photo_camera_rounded),
+            child: IconBadge.orange(icon: Icons.keyboard_rounded),
           ),
         ),
       ],

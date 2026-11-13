@@ -26,12 +26,6 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Cette application a besoin d'accéder à la caméra pour détecter les mots sur une photo</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Cette application a besoin de sauvegarder des photos</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Cette application a besoin d'accéder à vos photos pour détecter les mots</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -1,7 +1,7 @@
 import 'package:mesmots/core/utils/string_utils.dart';
 
-/// Turns the text lines read from a photo of a word list into the words
-/// to learn.
+/// Turns the text lines of a word list (typed, pasted or, later, read
+/// from a photo) into the words to learn.
 ///
 /// Word lists given at school usually have one word per line, sometimes
 /// numbered, with a title and an article in front of nouns. This parser:

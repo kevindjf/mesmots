@@ -34,8 +34,6 @@ dependencies:
   collection: ^1.18.0
 
   # Image & Camera
-  image_picker: ^1.0.7
-  google_mlkit_text_recognition: ^0.16.0
 
   # Icons
   phosphor_flutter: ^2.1.0

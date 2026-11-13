@@ -1,1 +1,1 @@
-Nouvelle présentation des jeux avec des pictos en lettres, liste de mots repliable, écoute et épellation des mots pendant la saisie de la liste, et les lettres sont maintenant épelées avec leur vrai nom.
+Nouveau look tout en clarté : fond blanc, tuiles bien lisibles et nouvelle icône. Les parents peuvent activer un contraste renforcé dans l'espace parent. L'accueil met en avant la liste du moment et classe les autres listes par dernière partie jouée. Dans les mots mêlés, les mots se cachent aussi en diagonale.

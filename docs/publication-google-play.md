@@ -45,6 +45,14 @@ Le numéro de build (`+N`) augmente à chaque envoi : Play refuse un numéro dé
 
 Pour tester une version avant de l'ouvrir à tous : `tool/publish.sh patch --track internal`, l'essayer sur un téléphone, puis dans Play Console → *Tests internes* → la version → **Promouvoir la version → Test ouvert**. Ne pas relancer le script avec `--track beta` : il construirait un nouveau build.
 
+La promotion peut aussi se faire en ligne de commande, sans nouveau build, avec le numéro de build déjà envoyé (ici `5`) :
+
+```bash
+~/.cache/mesmots-publish-venv/bin/python tool/play_upload.py --package fr.kappsmobile.mesmots --key ~/.keystores/mesmots/play-service-account.json --version-code 5 --tracks beta --name "5 (1.2.0)" --notes "$(cat docs/play/release-notes.txt)"
+```
+
+`--tracks production` publie en production. Le compte de service doit alors avoir aussi le droit *Publier en production* dans Play Console (sinon erreur `403` : promouvoir depuis Play Console).
+
 ### En cas de problème
 
 | Situation | Que faire |

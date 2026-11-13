@@ -17,8 +17,15 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--package", required=True)
     parser.add_argument("--key", required=True, help="Service account JSON key")
-    parser.add_argument("--aab", required=True)
-    parser.add_argument("--tracks", required=True, help="e.g. internal,beta")
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--aab", help="Bundle to upload")
+    source.add_argument(
+        "--version-code",
+        help="Bundle already uploaded (e.g. on internal) to put on the tracks",
+    )
+    parser.add_argument(
+        "--tracks", required=True, help="e.g. internal,beta or production"
+    )
     parser.add_argument("--name", required=True, help="Release name")
     parser.add_argument("--notes", required=True, help="fr-FR release notes")
     args = parser.parse_args()
@@ -31,16 +38,21 @@ def main() -> None:
 
     edit_id = edits.insert(packageName=args.package, body={}).execute()["id"]
 
-    print(f"Import de {args.aab}…")
-    bundle = edits.bundles().upload(
-        packageName=args.package,
-        editId=edit_id,
-        media_body=MediaFileUpload(
-            args.aab, mimetype="application/octet-stream", resumable=True
-        ),
-    ).execute()
-    version_code = str(bundle["versionCode"])
-    print(f"✓ Bundle importé (versionCode {version_code})")
+    if args.aab:
+        print(f"Import de {args.aab}…")
+        bundle = edits.bundles().upload(
+            packageName=args.package,
+            editId=edit_id,
+            media_body=MediaFileUpload(
+                args.aab, mimetype="application/octet-stream", resumable=True
+            ),
+        ).execute()
+        version_code = str(bundle["versionCode"])
+        print(f"✓ Bundle importé (versionCode {version_code})")
+    else:
+        # Play refuses a second upload of the same version code: reuse it.
+        version_code = args.version_code
+        print(f"Bundle déjà importé (versionCode {version_code})")
 
     for track in args.tracks.split(","):
         edits.tracks().update(

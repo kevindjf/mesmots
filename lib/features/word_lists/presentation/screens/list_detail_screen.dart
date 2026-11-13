@@ -70,14 +70,18 @@ class ListDetailScreen extends ConsumerWidget {
 
                         const _SectionTitle(AppStrings.chooseGame),
                         const SizedBox(height: AppDimensions.spacingL),
-                        GridView.count(
-                          crossAxisCount:
-                              MediaQuery.sizeOf(context).width >= 600 ? 3 : 2,
+                        // One game per row; two columns on tablets.
+                        GridView(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                MediaQuery.sizeOf(context).width >= 600 ? 2 : 1,
+                            mainAxisSpacing: AppDimensions.spacingL,
+                            crossAxisSpacing: AppDimensions.spacingL,
+                            mainAxisExtent: 92,
+                          ),
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          mainAxisSpacing: AppDimensions.spacingL,
-                          crossAxisSpacing: AppDimensions.spacingL,
-                          childAspectRatio: 0.82,
                           children: [
                             for (final type in wordList.availableGames)
                               GameTile(

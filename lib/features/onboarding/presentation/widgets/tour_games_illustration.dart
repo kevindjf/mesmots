@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/features/games/presentation/extensions/game_type_presentation.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_picto.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/shared/widgets/pop_in.dart';
 
@@ -39,11 +39,8 @@ class TourGamesIllustration extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    games[i].icon,
-                    color: AppColors.textOnColor,
-                    size: AppDimensions.iconL,
-                  ),
+                  alignment: Alignment.center,
+                  child: GamePicto(type: games[i], width: _tileSize - 10),
                 ),
               ),
             ),

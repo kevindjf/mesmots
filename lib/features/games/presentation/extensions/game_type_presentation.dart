@@ -14,19 +14,19 @@ extension GameTypePresentation on GameType {
   IconData get icon {
     switch (this) {
       case GameType.qcm:
-        return Icons.touch_app_rounded;
+        return Icons.fact_check_rounded;
       case GameType.scramble:
         return Icons.shuffle_rounded;
       case GameType.spelling:
-        return Icons.abc_rounded;
+        return Icons.record_voice_over_rounded;
       case GameType.fillBlanks:
-        return Icons.extension_rounded;
+        return Icons.space_bar_rounded;
       case GameType.writing:
-        return Icons.edit_rounded;
+        return Icons.keyboard_rounded;
       case GameType.wordSearch:
-        return Icons.grid_on_rounded;
+        return Icons.manage_search_rounded;
       case GameType.crossword:
-        return Icons.border_all_rounded;
+        return Icons.grid_4x4_rounded;
     }
   }
 

@@ -66,7 +66,7 @@ class TtsService {
   }
 
   /// Say [word], then spell it letter by letter with the French letter
-  /// names ("sept": "èss", "eu", "pé", "té").
+  /// names ("sept": S, E, P, T).
   ///
   /// [onLetter] gets the position (grapheme index) of the letter being
   /// said, then null when the spelling ends or is interrupted by another

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -23,11 +24,11 @@ class WordMasteryChip extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: _buildChip(isMastered),
+      child: _buildChip(context, isMastered),
     );
   }
 
-  Widget _buildChip(bool isMastered) {
+  Widget _buildChip(BuildContext context, bool isMastered) {
     return Container(
       constraints: const BoxConstraints(
         minHeight: AppDimensions.minTouchTarget,
@@ -37,11 +38,13 @@ class WordMasteryChip extends StatelessWidget {
         vertical: AppDimensions.paddingS,
       ),
       decoration: BoxDecoration(
-        color: isMastered ? AppColors.success : AppColors.surface,
+        color: isMastered ? AppColors.success : context.palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
         boxShadow: [
           BoxShadow(
-            color: isMastered ? AppColors.successShadow : AppColors.primaryDark,
+            color: isMastered
+                ? AppColors.successShadow
+                : context.palette.panelShadow,
             blurRadius: 0,
             offset: const Offset(0, 3),
           ),
@@ -56,7 +59,9 @@ class WordMasteryChip extends StatelessWidget {
               fontFamily: AppTypography.fontFamily,
               fontSize: AppTypography.bodyMedium,
               fontWeight: AppTypography.semiBold,
-              color: isMastered ? AppColors.textOnColor : AppColors.textPrimary,
+              color: isMastered
+                  ? context.palette.onBlock(AppColors.success)
+                  : context.palette.panelText,
             ),
           ),
           Row(
@@ -70,7 +75,7 @@ class WordMasteryChip extends StatelessWidget {
                     ? AppColors.textOnColor
                     : filled
                         ? AppColors.buttonOrange
-                        : AppColors.textLight,
+                        : context.palette.panelHint,
               );
             }),
           ),

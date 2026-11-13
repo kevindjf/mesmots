@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 
@@ -44,7 +44,7 @@ class LetterTile extends StatelessWidget {
             fontFamily: AppTypography.fontFamily,
             fontSize: size * 0.6,
             fontWeight: AppTypography.bold,
-            color: AppColors.textOnColor,
+            color: context.palette.onBlock(color),
           ),
         ),
       ),

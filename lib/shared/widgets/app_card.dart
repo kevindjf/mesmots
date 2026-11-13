@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/theme/app_palette.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Standard application card with 3D shadow
 class AppCard extends StatelessWidget {
@@ -19,13 +21,15 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final card = Container(
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surface,
+        color: backgroundColor ?? palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
-        boxShadow: const [
+        border: backgroundColor == null ? palette.panelOutline : null,
+        boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark,
+            color: palette.panelShadow,
             blurRadius: 0,
             offset: Offset(0, 4),
           ),
@@ -74,40 +78,44 @@ class GameCard extends StatefulWidget {
 class _GameCardState extends State<GameCard> {
   bool _isPressed = false;
 
-  Color get _backgroundColor {
+  Color _backgroundColor(AppPalette palette) {
     if (widget.isCorrect) return AppColors.success;
     if (widget.isIncorrect) return AppColors.error;
     if (widget.isSelected) return AppColors.primary.withValues(alpha: 0.2);
-    return AppColors.surface;
+    return palette.panel;
   }
 
-  Color get _shadowColor {
+  Color _shadowColor(AppPalette palette) {
     if (widget.isCorrect) return const Color(0xFF3D8B40);
     if (widget.isIncorrect) return const Color(0xFFCC3B3B);
-    if (widget.isSelected) return AppColors.primaryDark;
-    return AppColors.primaryDark;
+    return palette.panelShadow;
   }
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return GestureDetector(
-      onTapDown: widget.onTap != null ? (_) => setState(() => _isPressed = true) : null,
+      onTapDown: widget.onTap != null
+          ? (_) => setState(() => _isPressed = true)
+          : null,
       onTapUp: widget.onTap != null
           ? (_) {
               setState(() => _isPressed = false);
               widget.onTap!();
             }
           : null,
-      onTapCancel: widget.onTap != null ? () => setState(() => _isPressed = false) : null,
+      onTapCancel: widget.onTap != null
+          ? () => setState(() => _isPressed = false)
+          : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: _backgroundColor,
+          color: _backgroundColor(palette),
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
           boxShadow: [
             BoxShadow(
-              color: _shadowColor,
+              color: _shadowColor(palette),
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -79,7 +80,8 @@ class _WordListCardState extends State<WordListCard> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ListDetailScreen(listId: widget.wordList.id),
+              builder: (context) =>
+                  ListDetailScreen(listId: widget.wordList.id),
             ),
           );
         }
@@ -112,11 +114,11 @@ class _WordListCardState extends State<WordListCard> {
                   // Title
                   Text(
                     widget.wordList.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodyLarge,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBlock(colorScheme.cardColor),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -129,7 +131,9 @@ class _WordListCardState extends State<WordListCard> {
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodySmall,
                       fontWeight: AppTypography.semiBold,
-                      color: AppColors.textOnColor.withValues(alpha: 0.85),
+                      color: context.palette
+                          .onBlock(colorScheme.cardColor)
+                          .withValues(alpha: 0.85),
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spacingM),
@@ -145,12 +149,12 @@ class _WordListCardState extends State<WordListCard> {
             const SizedBox(width: AppDimensions.spacingM),
 
             // Arrow
-            const Text(
+            Text(
               '→',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
-                color: AppColors.textOnColor,
+                color: context.palette.onBlock(colorScheme.cardColor),
               ),
             ),
           ],

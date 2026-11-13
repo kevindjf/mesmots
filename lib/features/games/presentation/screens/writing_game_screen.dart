@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -50,17 +50,17 @@ class WritingGameScreen extends ConsumerWidget {
                     ref.read(provider.notifier),
                   );
                 },
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                   ),
                 ),
-                error: (_, __) => const Center(
+                error: (_, __) => Center(
                   child: Text(
                     AppStrings.errorGeneric,
                     style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                 ),
@@ -126,22 +126,22 @@ class WritingGameScreen extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (question.isCopying)
-                              const Text(
+                              Text(
                                 AppStrings.copyTheWord,
                                 style: TextStyle(
                                   fontFamily: AppTypography.fontFamily,
                                   fontSize: AppTypography.bodySmall,
                                   fontWeight: AppTypography.semiBold,
-                                  color: AppColors.textOnColor,
+                                  color: context.palette.onBackground,
                                 ),
                               ),
                             SpelledWord(
                               word: question.word,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: AppTypography.fontFamily,
                                 fontSize: AppTypography.headingMedium,
                                 fontWeight: AppTypography.bold,
-                                color: AppColors.textOnColor,
+                                color: context.palette.onBackground,
                                 letterSpacing: 2,
                               ),
                             ),

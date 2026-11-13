@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -32,11 +33,11 @@ class WordSearchBoard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppDimensions.paddingS),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark,
+            color: context.palette.panelShadow,
             blurRadius: 0,
             offset: Offset(0, 4),
           ),
@@ -118,7 +119,9 @@ class _LetterCell extends StatelessWidget {
           fontFamily: AppTypography.fontFamily,
           fontSize: size * 0.55,
           fontWeight: AppTypography.bold,
-          color: highlighted ? AppColors.textOnColor : AppColors.textPrimary,
+          color: highlighted
+              ? context.palette.onBlock(background!)
+              : context.palette.panelText,
         ),
       ),
     );

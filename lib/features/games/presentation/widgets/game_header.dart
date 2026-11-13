@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -23,6 +24,7 @@ class GameHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final barColor = progressColor ?? AppColors.primary;
+    final palette = context.palette;
 
     return Container(
       margin: const EdgeInsets.symmetric(
@@ -31,11 +33,12 @@ class GameHeader extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-        boxShadow: const [
+        border: palette.panelOutline,
+        boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark,
+            color: palette.panelShadow,
             blurRadius: 0,
             offset: Offset(0, 4),
           ),
@@ -49,11 +52,11 @@ class GameHeader extends StatelessWidget {
             children: [
               Text(
                 '$validatedCount/$totalCount ${AppStrings.validated}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
                   fontSize: AppTypography.bodyMedium,
                   fontWeight: AppTypography.semiBold,
-                  color: AppColors.textPrimary,
+                  color: palette.panelText,
                 ),
               ),
               Row(

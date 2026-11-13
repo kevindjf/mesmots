@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/utils/haptic_service.dart';
@@ -93,7 +94,7 @@ class _SpellButtonState extends ConsumerState<SpellButton> {
             ),
             child: Icon(
               Icons.abc_rounded,
-              color: AppColors.textOnColor,
+              color: context.palette.onBlock(widget.backgroundColor),
               size: widget.size * 0.6,
             ),
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -96,12 +96,12 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                             size: 80,
                           ),
                           const SizedBox(height: AppDimensions.spacingS),
-                          const Text(
+                          Text(
                             AppStrings.tapToReplay,
                             style: TextStyle(
                               fontFamily: AppTypography.fontFamily,
                               fontSize: AppTypography.bodySmall,
-                              color: AppColors.textOnColor,
+                              color: context.palette.onBackground,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
@@ -144,15 +144,16 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                 ],
               );
             },
-            loading: () => const Center(
-              child: CircularProgressIndicator(color: AppColors.textOnColor),
+            loading: () => Center(
+              child: CircularProgressIndicator(
+                  color: context.palette.onBackground),
             ),
             error: (error, stack) => Center(
               child: Text(
                 'Erreur: $error',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
-                  color: AppColors.textOnColor,
+                  color: context.palette.onBackground,
                 ),
               ),
             ),

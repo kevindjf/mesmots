@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -69,11 +70,11 @@ class _WordToFindChipState extends ConsumerState<WordToFindChip> {
           vertical: AppDimensions.paddingS,
         ),
         decoration: BoxDecoration(
-          color: widget.foundColor ?? AppColors.surface,
+          color: widget.foundColor ?? context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark,
+              color: context.palette.panelShadow,
               blurRadius: 0,
               offset: Offset(0, 3),
             ),
@@ -96,10 +97,12 @@ class _WordToFindChipState extends ConsumerState<WordToFindChip> {
                   fontSize: AppTypography.bodyMedium,
                   fontWeight: AppTypography.semiBold,
                   color: isFound
-                      ? AppColors.textOnColor
-                      : AppColors.textPrimary,
+                      ? context.palette.onBlock(widget.foundColor!)
+                      : context.palette.panelText,
                   decoration: isFound ? TextDecoration.lineThrough : null,
-                  decorationColor: AppColors.textOnColor,
+                  decorationColor: isFound
+                      ? context.palette.onBlock(widget.foundColor!)
+                      : null,
                 ),
               )
             else

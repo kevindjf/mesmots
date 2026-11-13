@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -36,14 +36,14 @@ class ListDetailScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     _buildHeader(context, 'Liste'),
-                    const Expanded(
+                    Expanded(
                       child: Center(
                         child: Text(
                           'Liste non trouvée',
                           style: TextStyle(
                             fontFamily: AppTypography.fontFamily,
                             fontSize: AppTypography.bodyLarge,
-                            color: AppColors.textOnColor,
+                            color: context.palette.onBackground,
                           ),
                         ),
                       ),
@@ -113,10 +113,11 @@ class ListDetailScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Scaffold(
+      loading: () => Scaffold(
         body: GradientBackground(
           child: Center(
-              child: CircularProgressIndicator(color: AppColors.textOnColor)),
+              child: CircularProgressIndicator(
+                  color: context.palette.onBackground)),
         ),
       ),
       error: (error, stack) => Scaffold(
@@ -129,9 +130,9 @@ class ListDetailScreen extends ConsumerWidget {
                   child: Center(
                     child: Text(
                       'Erreur: $error',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppTypography.fontFamily,
-                        color: AppColors.textOnColor,
+                        color: context.palette.onBackground,
                       ),
                     ),
                   ),
@@ -160,11 +161,11 @@ class ListDetailScreen extends ConsumerWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -189,11 +190,11 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontFamily: AppTypography.fontFamily,
         fontSize: AppTypography.bodySmall,
         fontWeight: AppTypography.bold,
-        color: AppColors.textOnColor,
+        color: context.palette.onBackground,
         letterSpacing: 1.0,
       ),
     );

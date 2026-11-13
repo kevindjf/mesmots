@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -27,9 +28,10 @@ class CrosswordClueChip extends StatelessWidget {
         ? AppColors.success
         : isSelected
             ? AppColors.buttonOrange
-            : AppColors.surface;
-    final Color foreground =
-        isSolved || isSelected ? AppColors.textOnColor : AppColors.textPrimary;
+            : context.palette.panel;
+    final Color foreground = isSolved || isSelected
+        ? context.palette.onBlock(background)
+        : context.palette.panelText;
 
     return GestureDetector(
       onTap: onTap,
@@ -44,9 +46,9 @@ class CrosswordClueChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark,
+              color: context.palette.panelShadow,
               blurRadius: 0,
               offset: Offset(0, 3),
             ),

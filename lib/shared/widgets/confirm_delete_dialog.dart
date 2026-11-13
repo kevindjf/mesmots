@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -33,8 +34,9 @@ class ConfirmDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: palette.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
       ),
@@ -60,21 +62,21 @@ class ConfirmDeleteDialog extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textPrimary,
+                color: palette.panelText,
               ),
             ),
             const SizedBox(height: AppDimensions.spacingS),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyMedium,
-                color: AppColors.textSecondary,
+                color: palette.panelTextMuted,
               ),
             ),
             const SizedBox(height: AppDimensions.spacingXl),
@@ -83,9 +85,9 @@ class ConfirmDeleteDialog extends StatelessWidget {
                 Expanded(
                   child: ColorfulButton(
                     text: AppStrings.cancel,
-                    color: AppColors.surface,
-                    shadowColor: AppColors.primaryDark,
-                    textColor: AppColors.primary,
+                    color: palette.tile,
+                    shadowColor: palette.tileShadow,
+                    textColor: palette.tileAccent,
                     onTap: () => Navigator.pop(context, false),
                   ),
                 ),

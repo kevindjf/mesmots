@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -31,11 +32,12 @@ class GameToggleTile extends StatelessWidget {
             vertical: AppDimensions.paddingS,
           ),
           decoration: BoxDecoration(
-            color: isEnabled ? type.color : AppColors.surface,
+            color: isEnabled ? type.color : context.palette.panel,
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
             boxShadow: [
               BoxShadow(
-                color: isEnabled ? type.shadowColor : AppColors.primaryDark,
+                color:
+                    isEnabled ? type.shadowColor : context.palette.panelShadow,
                 blurRadius: 0,
                 offset: const Offset(0, 4),
               ),
@@ -45,7 +47,9 @@ class GameToggleTile extends StatelessWidget {
             children: [
               Icon(
                 type.icon,
-                color: isEnabled ? AppColors.textOnColor : AppColors.textLight,
+                color: isEnabled
+                    ? AppColors.textOnColor
+                    : context.palette.panelHint,
               ),
               const SizedBox(width: AppDimensions.spacingM),
               Expanded(
@@ -55,8 +59,9 @@ class GameToggleTile extends StatelessWidget {
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.bodyLarge,
                     fontWeight: AppTypography.bold,
-                    color:
-                        isEnabled ? AppColors.textOnColor : AppColors.textLight,
+                    color: isEnabled
+                        ? context.palette.onBlock(type.color)
+                        : context.palette.panelHint,
                   ),
                 ),
               ),
@@ -66,7 +71,7 @@ class GameToggleTile extends StatelessWidget {
                 activeThumbColor: AppColors.surface,
                 activeTrackColor: type.shadowColor,
                 inactiveThumbColor: AppColors.surface,
-                inactiveTrackColor: AppColors.textLight,
+                inactiveTrackColor: context.palette.panelHint,
                 trackOutlineColor:
                     const WidgetStatePropertyAll(Colors.transparent),
               ),

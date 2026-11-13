@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 
 /// Reusable 3D back button (Mr. Square style).
@@ -9,18 +8,18 @@ import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 /// (e.g. smaller variant for landscape headers).
 class BackButton3D extends StatelessWidget {
   final VoidCallback onTap;
-  final Color color;
-  final Color shadowColor;
-  final Color iconColor;
+  final Color? color;
+  final Color? shadowColor;
+  final Color? iconColor;
   final double size;
 
-  /// Default white back button with turquoise icon (used on turquoise backgrounds).
+  /// Theme tile back button with turquoise icon, unless colors are given.
   const BackButton3D({
     super.key,
     required this.onTap,
-    this.color = AppColors.surface,
-    this.shadowColor = AppColors.primaryDark,
-    this.iconColor = AppColors.primary,
+    this.color,
+    this.shadowColor,
+    this.iconColor,
     this.size = 44,
   });
 

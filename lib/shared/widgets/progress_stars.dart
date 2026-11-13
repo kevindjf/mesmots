@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 
@@ -20,7 +21,7 @@ class ProgressStars extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = activeColor ?? AppColors.accent;
-    final inactive = inactiveColor ?? AppColors.textLight;
+    final inactive = inactiveColor ?? context.palette.starInactive;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -110,7 +111,7 @@ class _AnimatedProgressStarsState extends State<AnimatedProgressStars>
   @override
   Widget build(BuildContext context) {
     final active = widget.activeColor ?? AppColors.accent;
-    final inactive = widget.inactiveColor ?? AppColors.textLight;
+    final inactive = widget.inactiveColor ?? context.palette.starInactive;
 
     return Row(
       mainAxisSize: MainAxisSize.min,

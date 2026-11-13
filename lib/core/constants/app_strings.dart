@@ -31,7 +31,8 @@ class AppStrings {
   static const String createList = 'Créer une liste';
   static const String editList = 'Modifier la liste';
   static const String deleteList = 'Supprimer la liste';
-  static const String confirmDelete = 'Es-tu sûr de vouloir supprimer cette liste ?';
+  static const String confirmDelete =
+      'Es-tu sûr de vouloir supprimer cette liste ?';
 
   // Games
   static const String chooseGame = 'CHOISIS TON JEU';
@@ -74,6 +75,16 @@ class AppStrings {
   static const String allowedGamesHint =
       'L\'enfant ne verra que les jeux cochés pour cette liste.';
   static const String atLeastOneGame = 'Choisis au moins un jeu';
+
+  // Appearance
+  static const String appearance = 'APPARENCE';
+  static const String themeTurquoise = 'Turquoise';
+  static const String themeLight = 'Clair';
+  static const String themeDark = 'Sombre';
+  static const String themeSystem = 'Auto';
+  static const String highContrast = 'Contraste renforcé';
+  static const String highContrastHint =
+      'Texte foncé sur les couleurs vives, plus facile à lire.';
   static const String games = 'jeux';
   static const String askAdultForList =
       'Demande à un adulte d\'ajouter ta liste avec le cadenas en haut.';

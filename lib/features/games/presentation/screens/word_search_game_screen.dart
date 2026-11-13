@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/word_search_game_provider.dart';
@@ -56,17 +56,17 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
                         onBackToList: () => Navigator.pop(context),
                       )
                     : _buildGame(state, ref.read(provider.notifier)),
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                   ),
                 ),
                 error: (error, _) => Center(
                   child: Text(
                     '$error',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                 ),
@@ -101,9 +101,9 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final boardSize = (constraints.maxWidth -
-                      2 * AppDimensions.paddingL)
-                  .clamp(0.0, constraints.maxHeight * 0.68);
+              final boardSize =
+                  (constraints.maxWidth - 2 * AppDimensions.paddingL)
+                      .clamp(0.0, constraints.maxHeight * 0.68);
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(AppDimensions.paddingL),

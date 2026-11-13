@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
+import 'package:mesmots/core/theme/app_palette.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -17,14 +19,17 @@ class WritingAnswer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final phase = question.phase;
+    final palette = context.palette;
     final background = switch (phase) {
       WritingPhase.correct => AppColors.success,
-      _ => AppColors.surface,
+      // Stays white: the green and red letters must read on it.
+      WritingPhase.wrong => AppColors.surface,
+      WritingPhase.typing => palette.tile,
     };
     final shadow = switch (phase) {
       WritingPhase.correct => AppColors.successShadow,
       WritingPhase.wrong => AppColors.errorShadow,
-      WritingPhase.typing => AppColors.primaryDark,
+      WritingPhase.typing => palette.tileShadow,
     };
 
     return Shake(
@@ -42,12 +47,12 @@ class WritingAnswer extends StatelessWidget {
           ],
         ),
         alignment: Alignment.center,
-        child: FittedBox(fit: BoxFit.scaleDown, child: _text()),
+        child: FittedBox(fit: BoxFit.scaleDown, child: _text(palette)),
       ),
     );
   }
 
-  Widget _text() {
+  Widget _text(AppPalette palette) {
     const style = TextStyle(
       fontFamily: AppTypography.fontFamily,
       fontSize: 32,
@@ -58,7 +63,7 @@ class WritingAnswer extends StatelessWidget {
       case WritingPhase.correct:
         return Text(
           question.input,
-          style: style.copyWith(color: AppColors.textOnColor),
+          style: style.copyWith(color: palette.onBlock(AppColors.success)),
         );
       case WritingPhase.wrong:
         final letters = question.input.graphemes;
@@ -87,7 +92,7 @@ class WritingAnswer extends StatelessWidget {
           children: [
             Text(
               question.input,
-              style: style.copyWith(color: AppColors.textPrimary),
+              style: style.copyWith(color: palette.tileText),
             ),
             // Cursor
             Container(

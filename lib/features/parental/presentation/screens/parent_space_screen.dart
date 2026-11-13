@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/features/appearance/presentation/widgets/appearance_section.dart';
 import 'package:mesmots/features/parental/presentation/widgets/pin_input_dialog.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
@@ -56,20 +57,20 @@ class ParentSpaceScreen extends ConsumerWidget {
                       onTap: () => Navigator.pop(context),
                     ),
                     const SizedBox(width: AppDimensions.spacingM),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         AppStrings.parentSpace,
                         style: TextStyle(
                           fontFamily: AppTypography.fontFamily,
                           fontSize: AppTypography.headingMedium,
                           fontWeight: AppTypography.bold,
-                          color: AppColors.textOnColor,
+                          color: context.palette.onBackground,
                         ),
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.lock_open_outlined,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ],
                 ),
@@ -77,17 +78,17 @@ class ParentSpaceScreen extends ConsumerWidget {
               Expanded(
                 child: listsAsync.when(
                   data: (lists) => _buildContent(context, ref, lists),
-                  loading: () => const Center(
+                  loading: () => Center(
                     child: CircularProgressIndicator(
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                   error: (error, _) => Center(
                     child: Text(
                       '${AppStrings.errorLoadingLists}: $error',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: AppTypography.fontFamily,
-                        color: AppColors.textOnColor,
+                        color: context.palette.onBackground,
                       ),
                     ),
                   ),
@@ -117,7 +118,7 @@ class ParentSpaceScreen extends ConsumerWidget {
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyMedium,
             fontWeight: AppTypography.semiBold,
-            color: AppColors.textOnColor.withValues(alpha: 0.9),
+            color: context.palette.onBackground.withValues(alpha: 0.9),
           ),
         ),
         const SizedBox(height: AppDimensions.spacingL),
@@ -128,13 +129,13 @@ class ParentSpaceScreen extends ConsumerWidget {
           onTap: () => _openEditor(context),
         ),
         const SizedBox(height: AppDimensions.spacingXl),
-        const Text(
+        Text(
           AppStrings.parentLists,
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodySmall,
             fontWeight: AppTypography.bold,
-            color: AppColors.textOnColor,
+            color: context.palette.onBackground,
             letterSpacing: 1.0,
           ),
         ),
@@ -145,7 +146,7 @@ class ParentSpaceScreen extends ConsumerWidget {
             style: TextStyle(
               fontFamily: AppTypography.fontFamily,
               fontSize: AppTypography.bodyMedium,
-              color: AppColors.textOnColor.withValues(alpha: 0.8),
+              color: context.palette.onBackground.withValues(alpha: 0.8),
             ),
           )
         else
@@ -156,6 +157,8 @@ class ParentSpaceScreen extends ConsumerWidget {
               onEdit: () => _openEditor(context, listId: list.id),
               onDelete: () => _confirmDelete(context, ref, list),
             ),
+        const SizedBox(height: AppDimensions.spacingXl),
+        const AppearanceSection(),
         const SizedBox(height: AppDimensions.spacingXxl),
       ],
     );

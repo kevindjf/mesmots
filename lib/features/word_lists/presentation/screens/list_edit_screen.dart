@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -160,11 +161,11 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
           Expanded(
             child: Text(
               _isEditing ? 'Modifier la liste' : 'Nouvelle liste',
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
           ),
@@ -177,13 +178,13 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           AppStrings.allowedGames,
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodySmall,
             fontWeight: AppTypography.bold,
-            color: AppColors.textOnColor,
+            color: context.palette.onBackground,
             letterSpacing: 1.0,
           ),
         ),
@@ -194,7 +195,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodySmall,
             fontWeight: AppTypography.semiBold,
-            color: AppColors.textOnColor.withValues(alpha: 0.85),
+            color: context.palette.onBackground.withValues(alpha: 0.85),
           ),
         ),
         const SizedBox(height: AppDimensions.spacingM),
@@ -232,7 +233,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyMedium,
             fontWeight: AppTypography.bold,
-            color: AppColors.textOnColor.withValues(alpha: 0.9),
+            color: context.palette.onBackground.withValues(alpha: 0.9),
           ),
         ),
         const Spacer(),
@@ -244,7 +245,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
               fontFamily: AppTypography.fontFamily,
               fontSize: AppTypography.bodySmall,
               fontWeight: AppTypography.semiBold,
-              color: AppColors.textOnColor.withValues(alpha: 0.7),
+              color: context.palette.onBackground.withValues(alpha: 0.7),
             ),
           ),
         ),

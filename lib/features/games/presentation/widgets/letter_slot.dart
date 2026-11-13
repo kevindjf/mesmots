@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -47,23 +48,25 @@ class LetterSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final (background, shadow, text) = switch (state) {
       LetterSlotState.empty => (
-          AppColors.surface.withValues(alpha: 0.35),
+          palette.slot,
           Colors.transparent,
-          AppColors.textPrimary,
+          palette.tileText,
         ),
-      // Plain white letters: clearly not a box to fill.
+      // Plain letters on the background: clearly not a box to fill.
       LetterSlotState.given => (
           Colors.transparent,
           Colors.transparent,
-          AppColors.textOnColor,
+          palette.onBackground,
         ),
       LetterSlotState.filled => (
-          AppColors.surface,
-          AppColors.primaryDark,
-          AppColors.textPrimary,
+          palette.tile,
+          palette.tileShadow,
+          palette.tileText,
         ),
+      // Stays white: the dark green letter must read on it in every theme.
       LetterSlotState.locked => (
           AppColors.surface,
           AppColors.primaryDark,
@@ -72,12 +75,12 @@ class LetterSlot extends StatelessWidget {
       LetterSlotState.correct => (
           AppColors.success,
           AppColors.successShadow,
-          AppColors.textOnColor,
+          palette.onBlock(AppColors.success),
         ),
       LetterSlotState.wrong => (
           AppColors.error,
           AppColors.errorShadow,
-          AppColors.textOnColor,
+          palette.onBlock(AppColors.error),
         ),
     };
 
@@ -93,7 +96,7 @@ class LetterSlot extends StatelessWidget {
           border: isHighlighted
               ? Border.all(color: AppColors.accent, width: 3)
               : state == LetterSlotState.empty
-                  ? Border.all(color: AppColors.surface, width: 2)
+                  ? Border.all(color: palette.slotBorder, width: 2)
                   : null,
           boxShadow: [
             BoxShadow(color: shadow, blurRadius: 0, offset: const Offset(0, 3)),

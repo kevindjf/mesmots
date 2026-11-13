@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -84,6 +85,7 @@ class _ColorfulButtonState extends State<ColorfulButton> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = widget.textColor ?? context.palette.onBlock(widget.color);
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
@@ -112,13 +114,14 @@ class _ColorfulButtonState extends State<ColorfulButton> {
         ),
         transform: Matrix4.translationValues(0, _isPressed ? 4 : 0, 0),
         child: Row(
-          mainAxisSize: widget.width != null ? MainAxisSize.max : MainAxisSize.min,
+          mainAxisSize:
+              widget.width != null ? MainAxisSize.max : MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (widget.icon != null) ...[
               Icon(
                 widget.icon,
-                color: widget.textColor ?? AppColors.textOnColor,
+                color: textColor,
                 size: 28,
               ),
               const SizedBox(width: AppDimensions.spacingL),
@@ -132,7 +135,7 @@ class _ColorfulButtonState extends State<ColorfulButton> {
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.headingSmall,
                     fontWeight: AppTypography.bold,
-                    color: widget.textColor ?? AppColors.textOnColor,
+                    color: textColor,
                     letterSpacing: 1.5,
                   ),
                 ),

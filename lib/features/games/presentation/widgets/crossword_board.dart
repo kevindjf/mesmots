@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/domain/entities/grid_point.dart';
@@ -34,6 +35,7 @@ class CrosswordBoard extends StatelessWidget {
                   children: [
                     for (var col = 0; col < crossword.cols; col++)
                       _buildCell(
+                        context,
                         GridPoint(row, col),
                         cellSize,
                         selectedCells,
@@ -49,6 +51,7 @@ class CrosswordBoard extends StatelessWidget {
   }
 
   Widget _buildCell(
+    BuildContext context,
     GridPoint point,
     double size,
     Set<GridPoint> selectedCells,
@@ -62,19 +65,19 @@ class CrosswordBoard extends StatelessWidget {
     final Color textColor;
     if (state.isSolvedCell(point)) {
       background = AppColors.success;
-      textColor = AppColors.textOnColor;
+      textColor = context.palette.onBlock(background);
     } else if (wrongCells.contains(point)) {
       background = AppColors.error;
-      textColor = AppColors.textOnColor;
+      textColor = context.palette.onBlock(background);
     } else if (point == state.cursor) {
       background = AppColors.buttonOrange;
-      textColor = AppColors.textOnColor;
+      textColor = context.palette.onBlock(background);
     } else if (selectedCells.contains(point)) {
-      background = AppColors.iconBackground;
-      textColor = AppColors.textPrimary;
+      background = context.palette.panelHighlight;
+      textColor = context.palette.panelText;
     } else {
-      background = AppColors.surface;
-      textColor = AppColors.textPrimary;
+      background = context.palette.panel;
+      textColor = context.palette.panelText;
     }
 
     final number = state.crossword.numberAt(point);
@@ -90,7 +93,7 @@ class CrosswordBoard extends StatelessWidget {
         margin: EdgeInsets.zero,
         decoration: BoxDecoration(
           color: background,
-          border: Border.all(color: AppColors.primaryDark, width: 1),
+          border: Border.all(color: context.palette.panelShadow, width: 1),
           borderRadius: BorderRadius.circular(size * 0.15),
         ),
         child: Stack(

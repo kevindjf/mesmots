@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/extensions/motion_context.dart';
 
 /// Page indicator: the current page is a wide pill, the others are dots.
@@ -23,8 +23,8 @@ class PageDots extends StatelessWidget {
           height: 10,
           decoration: BoxDecoration(
             color: isCurrent
-                ? AppColors.surface
-                : AppColors.surface.withValues(alpha: 0.4),
+                ? context.palette.onBackground
+                : context.palette.onBackground.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(5),
           ),
         );

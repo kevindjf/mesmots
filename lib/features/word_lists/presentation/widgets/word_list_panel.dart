@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -30,7 +30,7 @@ class _WordListPanelState extends State<WordListPanel> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.textOnColor.withValues(alpha: 0.15),
+        color: context.palette.onBackground.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
       ),
       child: Column(
@@ -53,9 +53,9 @@ class _WordListPanelState extends State<WordListPanel> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.menu_book,
-                        color: AppColors.textOnColor,
+                        color: context.palette.onBackground,
                         size: AppDimensions.iconS,
                       ),
                       const SizedBox(width: AppDimensions.spacingS),
@@ -64,20 +64,20 @@ class _WordListPanelState extends State<WordListPanel> {
                           '${list.words.length} ${AppStrings.words} • '
                           '${list.masteredCount}/${list.words.length} '
                           '${AppStrings.mastered}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: AppTypography.fontFamily,
                             fontSize: AppTypography.bodyMedium,
                             fontWeight: AppTypography.semiBold,
-                            color: AppColors.textOnColor,
+                            color: context.palette.onBackground,
                           ),
                         ),
                       ),
                       AnimatedRotation(
                         turns: _isExpanded ? 0.5 : 0,
                         duration: duration,
-                        child: const Icon(
+                        child: Icon(
                           Icons.expand_more_rounded,
-                          color: AppColors.textOnColor,
+                          color: context.palette.onBackground,
                           size: AppDimensions.iconM,
                         ),
                       ),

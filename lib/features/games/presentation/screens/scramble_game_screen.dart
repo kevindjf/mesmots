@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/scramble_game_provider.dart';
@@ -40,17 +40,17 @@ class ScrambleGameScreen extends ConsumerWidget {
                     engine: ref.read(provider.notifier).engine,
                   );
                 },
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                   ),
                 ),
-                error: (_, __) => const Center(
+                error: (_, __) => Center(
                   child: Text(
                     AppStrings.errorGeneric,
                     style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                 ),

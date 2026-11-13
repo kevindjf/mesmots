@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -81,11 +82,11 @@ class _EditWordItemState extends ConsumerState<EditWordItem> {
                 word: widget.word,
                 position: _spokenPosition,
                 highlightColor: AppColors.textPrimary,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
                   fontSize: AppTypography.headingSmall,
                   fontWeight: AppTypography.bold,
-                  color: AppColors.textOnColor,
+                  color: context.palette.onBlock(color),
                 ),
               ),
             ),

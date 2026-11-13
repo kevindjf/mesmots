@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -52,11 +53,12 @@ class _GameTileState extends State<GameTile> {
         padding: const EdgeInsets.all(AppDimensions.paddingS),
         transform: Matrix4.translationValues(0, _isPressed ? 3 : 0, 0),
         decoration: BoxDecoration(
-          color: _isEnabled ? type.color : AppColors.surface,
+          color: _isEnabled ? type.color : context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
           boxShadow: [
             BoxShadow(
-              color: _isEnabled ? type.shadowColor : AppColors.primaryDark,
+              color:
+                  _isEnabled ? type.shadowColor : context.palette.panelShadow,
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 5),
             ),
@@ -73,7 +75,7 @@ class _GameTileState extends State<GameTile> {
                 decoration: BoxDecoration(
                   color: _isEnabled
                       ? AppColors.textOnColor.withValues(alpha: 0.25)
-                      : AppColors.textLight,
+                      : context.palette.panelHint,
                   borderRadius: BorderRadius.circular(AppDimensions.radiusL),
                 ),
                 child: GamePicto(type: type, width: 66),
@@ -91,8 +93,8 @@ class _GameTileState extends State<GameTile> {
                         fontSize: AppTypography.bodyLarge,
                         fontWeight: AppTypography.bold,
                         color: _isEnabled
-                            ? AppColors.textOnColor
-                            : AppColors.textSecondary,
+                            ? context.palette.onBlock(type.color)
+                            : context.palette.panelTextMuted,
                         height: 1.1,
                       ),
                       maxLines: 1,
@@ -108,8 +110,10 @@ class _GameTileState extends State<GameTile> {
                         fontSize: AppTypography.bodySmall,
                         fontWeight: AppTypography.semiBold,
                         color: _isEnabled
-                            ? AppColors.textOnColor.withValues(alpha: 0.9)
-                            : AppColors.textSecondary,
+                            ? context.palette
+                                .onBlock(type.color)
+                                .withValues(alpha: 0.9)
+                            : context.palette.panelTextMuted,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

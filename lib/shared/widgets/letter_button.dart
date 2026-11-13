@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// 3D letter button used in scramble and keyboard games
 class LetterButton extends StatefulWidget {
@@ -45,6 +45,7 @@ class _LetterButtonState extends State<LetterButton> {
   @override
   Widget build(BuildContext context) {
     final isActive = !widget.isDisabled && widget.onTap != null;
+    final palette = context.palette;
 
     return GestureDetector(
       onTapDown: isActive ? (_) => setState(() => _isPressed = true) : null,
@@ -61,15 +62,13 @@ class _LetterButtonState extends State<LetterButton> {
         height: widget.size,
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: widget.isDisabled
-              ? AppColors.textLight.withValues(alpha: 0.3)
-              : AppColors.surface,
+          color: widget.isDisabled ? palette.tileDisabled : palette.tile,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
           boxShadow: widget.isDisabled
               ? []
               : [
                   BoxShadow(
-                    color: AppColors.primaryDark,
+                    color: palette.tileShadow,
                     blurRadius: 0,
                     offset: Offset(0, _isPressed ? 1 : 3),
                   ),
@@ -82,8 +81,9 @@ class _LetterButtonState extends State<LetterButton> {
               fontFamily: AppTypography.fontFamily,
               fontSize: widget.fontSize,
               fontWeight: AppTypography.bold,
-              color:
-                  widget.isDisabled ? AppColors.textLight : AppColors.primary,
+              color: widget.isDisabled
+                  ? palette.tileDisabledContent
+                  : palette.tileAccent,
             ),
           ),
         ),

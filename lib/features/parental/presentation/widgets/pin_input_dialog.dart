@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -24,11 +25,11 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark,
+              color: context.palette.panelShadow,
               blurRadius: 0,
               offset: Offset(0, 6),
             ),
@@ -50,13 +51,13 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
             const SizedBox(height: 8),
 
             // Subtitle
-            const Text(
+            Text(
               'Entre le code pour continuer',
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyMedium,
                 fontWeight: AppTypography.semiBold,
-                color: AppColors.textSecondary,
+                color: context.palette.panelTextMuted,
               ),
             ),
             const SizedBox(height: 24),
@@ -72,9 +73,9 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
             // Cancel button
             ColorfulButton(
               text: AppStrings.cancel,
-              color: AppColors.surface,
-              shadowColor: AppColors.primaryDark,
-              textColor: AppColors.primary,
+              color: context.palette.tile,
+              shadowColor: context.palette.tileShadow,
+              textColor: context.palette.tileAccent,
               onTap: () => Navigator.pop(context),
             ),
           ],

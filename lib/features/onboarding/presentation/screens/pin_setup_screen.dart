@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -175,8 +176,8 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
               _goTo(_OnboardingStep.confirmPin);
             },
             errorMessage: '',
-            dotColor: AppColors.surface,
-            emptyDotColor: AppColors.surface.withValues(alpha: 0.4),
+            dotColor: context.palette.onBackground,
+            emptyDotColor: context.palette.onBackground.withValues(alpha: 0.4),
           ),
         );
       case _OnboardingStep.confirmPin:
@@ -188,9 +189,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
             validate: (pin) async => pin == _pin,
             onAccepted: (_) => _completeSetup(),
             errorMessage: AppStrings.pinMismatch,
-            dotColor: AppColors.surface,
-            emptyDotColor: AppColors.surface.withValues(alpha: 0.4),
-            errorColor: AppColors.surface,
+            dotColor: context.palette.onBackground,
+            emptyDotColor: context.palette.onBackground.withValues(alpha: 0.4),
+            errorColor: context.palette.onBackground,
           ),
         );
     }
@@ -204,7 +205,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           const Spacer(flex: 3),
           const LetterTilesTitle(text: AppStrings.welcomeTiles, tileSize: 64),
           const SizedBox(height: AppDimensions.spacingXl),
-          const PopIn.rise(
+          PopIn.rise(
             delay: Duration(milliseconds: 1000),
             child: Text(
               AppStrings.welcomeTagline,
@@ -213,12 +214,12 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
           ),
           const SizedBox(height: AppDimensions.spacingM),
-          const PopIn.rise(
+          PopIn.rise(
             delay: Duration(milliseconds: 1100),
             child: Text(
               AppStrings.welcomeAudience,
@@ -227,7 +228,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyLarge,
                 fontWeight: AppTypography.semiBold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
           ),
@@ -255,13 +256,13 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           onBack: _back,
           trailing: TextButton(
             onPressed: () => _goTo(_OnboardingStep.createPin),
-            child: const Text(
+            child: Text(
               AppStrings.skip,
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyLarge,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
           ),
@@ -324,22 +325,22 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.headingLarge,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spacingS),
                   Text(
                     text,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodyLarge,
                       fontWeight: AppTypography.semiBold,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBackground,
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spacingXl),

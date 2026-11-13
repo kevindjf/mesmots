@@ -7,6 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mesmots/core/utils/audio_service.dart';
 import 'package:mesmots/core/utils/haptic_service.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
+import 'package:mesmots/features/appearance/data/repositories/appearance_repository_impl.dart';
+import 'package:mesmots/features/appearance/domain/entities/appearance_settings.dart';
+import 'package:mesmots/features/appearance/domain/repositories/appearance_repository.dart';
 import 'package:mesmots/features/word_lists/data/repositories/word_list_repository_impl.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
@@ -20,6 +23,8 @@ class _MockTts extends Mock implements TtsService {}
 class _MockAudio extends Mock implements AudioService {}
 
 class _MockHaptic extends Mock implements HapticService {}
+
+class _MockAppearance extends Mock implements AppearanceRepository {}
 
 /// Phone-sized surface, at a pixel ratio of 1 to keep the images small.
 const goldenSize = Size(390, 844);
@@ -40,8 +45,14 @@ Future<void> loadGoldenFonts() async {
     for (final weight in ['Regular', 'Medium', 'SemiBold', 'Bold'])
       'assets/fonts/Fredoka-$weight.ttf',
   ]);
-  final flutterRoot = File(Platform.resolvedExecutable).parent.parent.parent
-      .parent.parent.parent.path;
+  final flutterRoot = File(Platform.resolvedExecutable)
+      .parent
+      .parent
+      .parent
+      .parent
+      .parent
+      .parent
+      .path;
   final icons =
       '$flutterRoot/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf';
   if (File(icons).existsSync()) await load('MaterialIcons', [icons]);
@@ -104,7 +115,10 @@ List<Override> goldenOverrides(List<WordList> lists) {
   ]) {
     when(call).thenAnswer((_) async {});
   }
+  final appearance = _MockAppearance();
+  when(appearance.load).thenReturn(AppearanceSettings.initial);
   return [
+    appearanceRepositoryProvider.overrideWithValue(appearance),
     wordListRepositoryProvider.overrideWithValue(repository),
     ttsServiceProvider.overrideWithValue(tts),
     audioServiceProvider.overrideWithValue(audio),

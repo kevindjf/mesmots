@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -25,7 +25,7 @@ class WordPreviewSheet extends StatefulWidget {
   }) {
     return showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.palette.panel,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppDimensions.radiusXxl),
@@ -59,11 +59,11 @@ class _WordPreviewSheetState extends State<WordPreviewSheet> {
               word: widget.word,
               position: _spokenPosition,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingLarge,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textPrimary,
+                color: context.palette.panelText,
                 letterSpacing: 2,
               ),
             ),
@@ -115,11 +115,11 @@ class _LabeledAction extends StatelessWidget {
         const SizedBox(height: AppDimensions.spacingM),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyMedium,
             fontWeight: AppTypography.semiBold,
-            color: AppColors.textPrimary,
+            color: context.palette.panelText,
           ),
         ),
       ],

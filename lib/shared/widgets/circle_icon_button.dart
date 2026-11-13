@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Circular icon button with 3D shadow effect (style Mr. Square)
 class CircleIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onTap;
-  final Color color;
-  final Color shadowColor;
-  final Color iconColor;
+
+  /// Colors default to the theme tile (white on turquoise).
+  final Color? color;
+  final Color? shadowColor;
+  final Color? iconColor;
   final double size;
   final double iconSize;
 
@@ -16,23 +19,23 @@ class CircleIconButton extends StatefulWidget {
     super.key,
     required this.icon,
     this.onTap,
-    this.color = AppColors.surface,
-    this.shadowColor = AppColors.primaryDark,
-    this.iconColor = AppColors.primary,
+    this.color,
+    this.shadowColor,
+    this.iconColor,
     this.size = 44,
     this.iconSize = AppDimensions.iconM,
   });
 
-  /// White button with primary icon (e.g. back button)
+  /// Theme tile button with primary icon (e.g. back button)
   const CircleIconButton.surface({
     super.key,
     required this.icon,
     this.onTap,
     this.size = 44,
     this.iconSize = AppDimensions.iconM,
-  })  : color = AppColors.surface,
-        shadowColor = AppColors.primaryDark,
-        iconColor = AppColors.primary;
+  })  : color = null,
+        shadowColor = null,
+        iconColor = null;
 
   /// Colored button with white icon
   const CircleIconButton.colored({
@@ -54,6 +57,7 @@ class _CircleIconButtonState extends State<CircleIconButton> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
@@ -67,11 +71,11 @@ class _CircleIconButtonState extends State<CircleIconButton> {
         height: widget.size,
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: widget.color,
+          color: widget.color ?? palette.tile,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: widget.shadowColor,
+              color: widget.shadowColor ?? palette.tileShadow,
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),
@@ -79,7 +83,7 @@ class _CircleIconButtonState extends State<CircleIconButton> {
         ),
         child: Icon(
           widget.icon,
-          color: widget.iconColor,
+          color: widget.iconColor ?? palette.tileAccent,
           size: widget.iconSize,
         ),
       ),

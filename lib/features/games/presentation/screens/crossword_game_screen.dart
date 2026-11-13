@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -59,9 +60,9 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
                         onBackToList: () => Navigator.pop(context),
                       )
                     : _buildGame(state, ref.read(provider.notifier)),
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                   ),
                 ),
                 error: (error, _) => _buildMessage(
@@ -103,11 +104,11 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
               child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: AppTypography.fontFamily,
                   fontSize: AppTypography.bodyLarge,
                   fontWeight: AppTypography.semiBold,
-                  color: AppColors.textOnColor,
+                  color: context.palette.onBackground,
                 ),
               ),
             ),
@@ -186,11 +187,11 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
               Expanded(
                 child: Text(
                   '${state.selected.number} ${_directionLabel(state)} • ${AppStrings.crosswordListen}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.bodySmall,
                     fontWeight: AppTypography.semiBold,
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                   ),
                 ),
               ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// One dot per letter of a hidden word.
 class LetterDots extends StatelessWidget {
@@ -17,8 +17,8 @@ class LetterDots extends StatelessWidget {
             width: 7,
             height: 7,
             margin: const EdgeInsets.symmetric(horizontal: 2),
-            decoration: const BoxDecoration(
-              color: AppColors.textLight,
+            decoration: BoxDecoration(
+              color: context.palette.panelHint,
               shape: BoxShape.circle,
             ),
           ),

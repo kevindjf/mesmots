@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Custom app header with logo, title, subtitle, and action button
 class AppHeader extends StatelessWidget {
@@ -24,6 +25,7 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onBackground = context.palette.onBackground;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingL,
@@ -46,11 +48,11 @@ class AppHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.headingMedium,
                     fontWeight: AppTypography.bold,
-                    color: AppColors.textOnColor,
+                    color: onBackground,
                   ),
                 ),
                 if (subtitle != null)
@@ -60,7 +62,7 @@ class AppHeader extends StatelessWidget {
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodySmall,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.textOnColor.withValues(alpha: 0.85),
+                      color: onBackground.withValues(alpha: 0.85),
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -93,11 +95,12 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.tile,
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
         boxShadow: const [
           BoxShadow(
@@ -111,7 +114,7 @@ class AppLogo extends StatelessWidget {
         child: Icon(
           icon,
           size: size * 0.55,
-          color: AppColors.primary,
+          color: palette.tileAccent,
         ),
       ),
     );
@@ -136,6 +139,7 @@ class _LockIconButtonState extends State<LockIconButton> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
@@ -149,20 +153,20 @@ class _LockIconButtonState extends State<LockIconButton> {
         height: 44,
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: palette.tile,
           shape: BoxShape.circle,
           boxShadow: [
             // Ombre 3D simple
             BoxShadow(
-              color: AppColors.primaryDark,
+              color: palette.tileShadow,
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.lock_outline,
-          color: AppColors.primary,
+          color: palette.tileAccent,
           size: AppDimensions.iconM,
         ),
       ),

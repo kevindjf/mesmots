@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Round keypad button with 3D press effect, used in PIN input
 class KeypadButton extends StatefulWidget {
   final VoidCallback onTap;
   final Widget child;
-  final Color backgroundColor;
-  final Color shadowColor;
+
+  /// Colors default to the theme tile.
+  final Color? backgroundColor;
+  final Color? shadowColor;
   final double size;
 
   const KeypadButton({
     super.key,
     required this.onTap,
     required this.child,
-    this.backgroundColor = Colors.white,
-    this.shadowColor = AppColors.primaryDark,
+    this.backgroundColor,
+    this.shadowColor,
     this.size = 70,
   });
 
@@ -28,13 +30,15 @@ class KeypadButton extends StatefulWidget {
     return KeypadButton(
       key: key,
       onTap: onTap,
-      child: Text(
-        number.toString(),
-        style: const TextStyle(
-          fontFamily: AppTypography.fontFamily,
-          fontSize: 28,
-          fontWeight: AppTypography.bold,
-          color: AppColors.primary,
+      child: Builder(
+        builder: (context) => Text(
+          number.toString(),
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: 28,
+            fontWeight: AppTypography.bold,
+            color: context.palette.tileAccent,
+          ),
         ),
       ),
     );
@@ -67,6 +71,7 @@ class _KeypadButtonState extends State<KeypadButton> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
@@ -80,11 +85,11 @@ class _KeypadButtonState extends State<KeypadButton> {
         height: widget.size,
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: widget.backgroundColor,
+          color: widget.backgroundColor ?? palette.tile,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: widget.shadowColor,
+              color: widget.shadowColor ?? palette.tileShadow,
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Reusable text input with 3D shadow effect
 class AppInput extends StatelessWidget {
@@ -26,12 +27,16 @@ class AppInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final idleBorder = palette.panelBorder.a == 0
+        ? BorderSide.none
+        : BorderSide(color: palette.panelBorder, width: 2);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark,
+            color: palette.panelShadow,
             blurRadius: 0,
             offset: Offset(0, 4),
           ),
@@ -41,33 +46,33 @@ class AppInput extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         autofocus: autofocus,
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: AppTypography.fontFamily,
           fontSize: AppTypography.bodyLarge,
           fontWeight: AppTypography.semiBold,
-          color: AppColors.textPrimary,
+          color: palette.panelText,
         ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(
+          hintStyle: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyLarge,
             fontWeight: AppTypography.regular,
-            color: AppColors.textLight,
+            color: palette.panelHint,
           ),
           filled: true,
-          fillColor: AppColors.surface,
+          fillColor: palette.panel,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingL,
             vertical: AppDimensions.paddingM,
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-            borderSide: BorderSide.none,
+            borderSide: idleBorder,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-            borderSide: BorderSide.none,
+            borderSide: idleBorder,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),

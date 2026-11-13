@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -35,7 +36,7 @@ class HomeScreen extends ConsumerWidget {
               // Content
               Expanded(
                 child: wordListsAsync.when(
-                  data: (lists) => _buildContent(lists),
+                  data: (lists) => _buildContent(context, lists),
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(
@@ -50,7 +51,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(List<WordList> lists) {
+  Widget _buildContent(BuildContext context, List<WordList> lists) {
     // Sort lists: active first, then completed
     final activeLists = lists.where((list) => !list.isMastered).toList()
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
@@ -66,7 +67,7 @@ class HomeScreen extends ConsumerWidget {
 
         // Word lists
         if (lists.isEmpty)
-          _buildEmptyState()
+          _buildEmptyState(context)
         else ...[
           // Active lists
           if (activeLists.isNotEmpty) ...[
@@ -77,13 +78,13 @@ class HomeScreen extends ConsumerWidget {
           // Completed lists section
           if (completedLists.isNotEmpty) ...[
             const SizedBox(height: AppDimensions.spacingL),
-            const Text(
+            Text(
               AppStrings.previousLists,
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
             const SizedBox(height: AppDimensions.spacingM),
@@ -99,7 +100,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: AppDimensions.spacingXxl),
@@ -111,22 +112,22 @@ class HomeScreen extends ConsumerWidget {
             color: AppColors.shapeLight,
             borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
           ),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.menu_book,
               size: 48,
-              color: AppColors.textOnColor,
+              color: context.palette.onBackground,
             ),
           ),
         ),
         const SizedBox(height: AppDimensions.spacingL),
-        const Text(
+        Text(
           'Aucune liste de mots',
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.headingSmall,
             fontWeight: AppTypography.bold,
-            color: AppColors.textOnColor,
+            color: context.palette.onBackground,
           ),
         ),
         const SizedBox(height: AppDimensions.spacingS),
@@ -136,7 +137,7 @@ class HomeScreen extends ConsumerWidget {
           style: TextStyle(
             fontFamily: AppTypography.fontFamily,
             fontSize: AppTypography.bodyMedium,
-            color: AppColors.textOnColor.withValues(alpha: 0.8),
+            color: context.palette.onBackground.withValues(alpha: 0.8),
           ),
         ),
       ],

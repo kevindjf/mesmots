@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Control button for game screens (Effacer, Aide, Valider)
 /// Style Mr. Square with 3D shadow effect
@@ -38,6 +39,7 @@ class _GameControlButtonState extends State<GameControlButton> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final Color bgColor;
     final Color shadowColor;
     final Color iconColor;
@@ -47,9 +49,9 @@ class _GameControlButtonState extends State<GameControlButton> {
       shadowColor = const Color(0xFF3D8B40);
       iconColor = AppColors.textOnColor;
     } else {
-      bgColor = AppColors.surface;
-      shadowColor = AppColors.primaryDark;
-      iconColor = AppColors.primary;
+      bgColor = palette.tile;
+      shadowColor = palette.tileShadow;
+      iconColor = palette.tileAccent;
     }
 
     return Opacity(
@@ -96,8 +98,8 @@ class _GameControlButtonState extends State<GameControlButton> {
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodySmall,
                 fontWeight: AppTypography.semiBold,
-                // Labels sit on the turquoise background: white stays readable.
-                color: AppColors.textOnColor,
+                // Labels sit on the background.
+                color: palette.onBackground,
               ),
             ),
           ],

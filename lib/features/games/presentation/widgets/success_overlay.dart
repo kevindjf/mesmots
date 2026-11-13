@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -24,25 +25,25 @@ class SuccessOverlay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Title
-            const Text(
+            Text(
               AppStrings.congratulations,
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingLarge,
                 fontWeight: AppTypography.bold,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
             ),
             const SizedBox(height: AppDimensions.spacingL),
 
             // Message
-            const Text(
+            Text(
               AppStrings.allWordsValidated,
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.bodyLarge,
                 fontWeight: AppTypography.regular,
-                color: AppColors.textOnColor,
+                color: context.palette.onBackground,
               ),
               textAlign: TextAlign.center,
             ),
@@ -63,7 +64,8 @@ class SuccessOverlay extends StatelessWidget {
                   AppColors.buttonBlueShadow,
                 ];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spacingS),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppDimensions.spacingS),
                   child: Container(
                     width: 56,
                     height: 56,
@@ -102,9 +104,9 @@ class SuccessOverlay extends StatelessWidget {
             ColorfulButton(
               text: AppStrings.otherGame,
               icon: Icons.grid_view_rounded,
-              color: AppColors.surface,
-              shadowColor: AppColors.primaryDark,
-              textColor: AppColors.primary,
+              color: context.palette.tile,
+              shadowColor: context.palette.tileShadow,
+              textColor: context.palette.tileAccent,
               width: double.infinity,
               onTap: onBackToList,
             ),

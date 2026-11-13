@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
+import 'package:mesmots/features/appearance/domain/entities/appearance_settings.dart';
+import 'package:mesmots/features/appearance/presentation/providers/appearance_providers.dart';
 import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
@@ -42,6 +44,7 @@ void main() {
         overrides: [
           parentalOperationsProvider.overrideWith(() => operations),
           wordListsProvider.overrideWith((ref) => Stream.value([])),
+          appearanceProvider.overrideWith(_FixedAppearance.new),
         ],
         // Reduced motion: the title wave loops forever otherwise,
         // and pumpAndSettle would never return.
@@ -104,4 +107,10 @@ void main() {
     expect(operations.configuredPin, '1234');
     expect(find.text(AppStrings.parentSpace), findsOneWidget);
   });
+}
+
+/// Default appearance, without the Hive box of the app.
+class _FixedAppearance extends Appearance {
+  @override
+  AppearanceSettings build() => AppearanceSettings.initial;
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -44,11 +45,11 @@ class _ParentListCardState extends State<ParentListCard> {
         padding: const EdgeInsets.all(AppDimensions.paddingM),
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark,
+              color: context.palette.panelShadow,
               blurRadius: 0,
               offset: Offset(0, _isPressed ? 2 : 4),
             ),
@@ -64,11 +65,11 @@ class _ParentListCardState extends State<ParentListCard> {
                     list.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodyLarge,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.textPrimary,
+                      color: context.palette.panelText,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -76,11 +77,11 @@ class _ParentListCardState extends State<ParentListCard> {
                     '${list.words.length} ${AppStrings.words} • '
                     '${list.masteredCount}/${list.words.length} '
                     '${AppStrings.masteredWords}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodySmall,
                       fontWeight: AppTypography.semiBold,
-                      color: AppColors.textSecondary,
+                      color: context.palette.panelTextMuted,
                     ),
                   ),
                   const SizedBox(height: AppDimensions.spacingS),

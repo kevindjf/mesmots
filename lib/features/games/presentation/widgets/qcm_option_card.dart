@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/core/extensions/motion_context.dart';
@@ -51,9 +52,11 @@ class QcmOptionCard extends StatelessWidget {
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: showCorrect || showIncorrect
-                    ? AppColors.textOnColor
-                    : AppColors.textPrimary,
+                color: showCorrect
+                    ? context.palette.onBlock(AppColors.success)
+                    : showIncorrect
+                        ? context.palette.onBlock(AppColors.error)
+                        : context.palette.panelText,
               ),
             ),
           ),

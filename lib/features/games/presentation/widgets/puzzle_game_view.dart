@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -75,10 +76,10 @@ class PuzzleGameView extends StatelessWidget {
                   engine.spellAloud
                       ? AppStrings.spellingListen
                       : AppStrings.tapToReplay,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.bodySmall,
-                    color: AppColors.textOnColor,
+                    color: context.palette.onBackground,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
@@ -105,11 +106,11 @@ class PuzzleGameView extends StatelessWidget {
                       ),
                       child: Text(
                         puzzle.word,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: AppTypography.fontFamily,
                           fontSize: AppTypography.headingLarge,
                           fontWeight: AppTypography.bold,
-                          color: AppColors.textOnColor,
+                          color: context.palette.onBackground,
                           letterSpacing: 2,
                         ),
                       ),

@@ -3,7 +3,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mesmots/core/theme/app_palette.dart';
 import 'package:mesmots/core/theme/app_theme.dart';
+import 'package:mesmots/features/appearance/presentation/widgets/appearance_section.dart';
 import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
 import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
@@ -12,11 +14,15 @@ import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dar
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/list_detail_screen.dart';
 
+import 'package:mesmots/shared/widgets/gradient_background.dart';
+
 import 'golden_harness.dart';
 
 /// Every theme the app offers, each checked against its own goldens.
 final themes = <String, ThemeData>{
   'turquoise': AppTheme.lightTheme,
+  'light': AppTheme.of(AppPalette.light),
+  'dark': AppTheme.of(AppPalette.dark),
 };
 
 void main() {
@@ -43,6 +49,16 @@ void main() {
     'scramble': const ScrambleGameScreen(listId: 'scramble'),
     'writing': const WritingGameScreen(listId: 'writing'),
     'pin_setup': const PinSetupScreen(),
+    'appearance': const Scaffold(
+      body: GradientBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: AppearanceSection(),
+          ),
+        ),
+      ),
+    ),
   };
 
   for (final theme in themes.entries) {

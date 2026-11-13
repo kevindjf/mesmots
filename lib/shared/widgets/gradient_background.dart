@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 
 /// Widget providing a colorful gradient background with floating shapes
 class GradientBackground extends StatelessWidget {
@@ -22,11 +22,7 @@ class GradientBackground extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: colors ??
-              [
-                AppColors.backgroundGradientStart,
-                AppColors.backgroundGradientEnd,
-              ],
+          colors: colors ?? context.palette.backgroundGradient,
         ),
       ),
       child: showShapes
@@ -50,6 +46,7 @@ class FloatingShapes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final palette = context.palette;
     final random = Random(42); // Fixed seed for consistent layout
 
     return IgnorePointer(
@@ -70,7 +67,7 @@ class FloatingShapes extends StatelessWidget {
                 width: shapeSize,
                 height: shapeSize,
                 decoration: BoxDecoration(
-                  color: isLight ? AppColors.shapeLight : AppColors.shapeDark,
+                  color: palette.shapeColor(index, isLight: isLight),
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),

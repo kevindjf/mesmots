@@ -92,3 +92,6 @@ lcov.info
 # assets/sounds/*.mp3
 # assets/fonts/*.ttf
 # assets/animations/*.json
+
+# Golden test failure diffs
+test/goldens/failures/

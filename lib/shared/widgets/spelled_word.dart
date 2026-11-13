@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/utils/string_utils.dart';
+import 'package:mesmots/shared/widgets/highlighted_word.dart';
 import 'package:mesmots/shared/widgets/spell_button.dart';
 
 /// A word shown with a [SpellButton]: while the word is spelled aloud, the
@@ -33,23 +32,13 @@ class _SpelledWordState extends State<SpelledWord> {
 
   @override
   Widget build(BuildContext context) {
-    final letters = widget.word.graphemes;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          child: Text.rich(
-            TextSpan(
-              children: [
-                for (var i = 0; i < letters.length; i++)
-                  TextSpan(
-                    text: letters[i],
-                    style: i == _position
-                        ? const TextStyle(color: AppColors.accent)
-                        : null,
-                  ),
-              ],
-            ),
+          child: HighlightedWord(
+            word: widget.word,
+            position: _position,
             style: widget.style,
           ),
         ),

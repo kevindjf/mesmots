@@ -7,6 +7,7 @@ import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/edit_word_item.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/game_toggle_tile.dart';
 import 'package:mesmots/shared/widgets/app_input.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
@@ -256,7 +257,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
       children: _words.asMap().entries.map((entry) {
         final index = entry.key;
         final word = entry.value;
-        return _WordItem(
+        return EditWordItem(
           word: word,
           colorIndex: index,
           onDelete: () => _removeWord(index),
@@ -355,97 +356,5 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
         );
       }
     }
-  }
-}
-
-/// Word item with delete button
-class _WordItem extends StatefulWidget {
-  final String word;
-  final int colorIndex;
-  final VoidCallback onDelete;
-
-  const _WordItem({
-    required this.word,
-    required this.colorIndex,
-    required this.onDelete,
-  });
-
-  @override
-  State<_WordItem> createState() => _WordItemState();
-}
-
-class _WordItemState extends State<_WordItem> {
-  bool _isPressed = false;
-
-  static const _colors = [
-    (AppColors.buttonOrange, AppColors.buttonOrangeShadow),
-    (AppColors.buttonPink, AppColors.buttonPinkShadow),
-    (AppColors.buttonBlue, AppColors.buttonBlueShadow),
-    (AppColors.buttonMagenta, AppColors.buttonMagentaShadow),
-    (AppColors.buttonCoral, AppColors.buttonCoralShadow),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final colorPair = _colors[widget.colorIndex % _colors.length];
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDimensions.spacingM),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.paddingL,
-          vertical: AppDimensions.paddingM,
-        ),
-        decoration: BoxDecoration(
-          color: colorPair.$1,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-          boxShadow: [
-            BoxShadow(
-              color: colorPair.$2,
-              blurRadius: 0,
-              offset: Offset(0, _isPressed ? 2 : 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                widget.word,
-                style: const TextStyle(
-                  fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.headingSmall,
-                  fontWeight: AppTypography.bold,
-                  color: AppColors.textOnColor,
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTapDown: (_) => setState(() => _isPressed = true),
-              onTapUp: (_) {
-                setState(() => _isPressed = false);
-                widget.onDelete();
-              },
-              onTapCancel: () => setState(() => _isPressed = false),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.textOnColor.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.close,
-                  color: AppColors.textOnColor,
-                  size: 22,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

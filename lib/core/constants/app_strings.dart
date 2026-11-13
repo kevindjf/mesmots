@@ -53,6 +53,7 @@ class AppStrings {
   static const String validated = 'validés';
   static const String tapToReplay = '(touche pour réécouter)';
   static const String spellWord = 'Épeler le mot';
+  static const String listenWord = 'Écouter le mot';
   static const String spellingListen = 'Écoute les lettres et écris le mot';
   static const String playAgain = 'Rejouer';
   static const String otherGame = 'Choisir un autre jeu';

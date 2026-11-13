@@ -52,6 +52,7 @@ class AppStrings {
   // Game
   static const String validated = 'validés';
   static const String tapToReplay = '(touche pour réécouter)';
+  static const String spellWord = 'Épeler le mot';
   static const String playAgain = 'Rejouer';
   static const String otherGame = 'Choisir un autre jeu';
   static const String backToList = 'Retour à la liste';

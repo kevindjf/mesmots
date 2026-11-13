@@ -1,0 +1,56 @@
+/// How a letter is named aloud in French, written so that the French
+/// text-to-speech engine says it right ("s" alone is read as a hiss,
+/// "èss" is read as the letter name).
+extension LetterName on String {
+  static const _names = {
+    'a': 'a',
+    'b': 'bé',
+    'c': 'cé',
+    'd': 'dé',
+    'e': 'eu',
+    'f': 'èf',
+    'g': 'gé',
+    'h': 'hache',
+    'i': 'i',
+    'j': 'ji',
+    'k': 'ka',
+    'l': 'èl',
+    'm': 'èm',
+    'n': 'èn',
+    'o': 'o',
+    'p': 'pé',
+    'q': 'ku',
+    'r': 'èr',
+    's': 'èss',
+    't': 'té',
+    'u': 'u',
+    'v': 'vé',
+    'w': 'double vé',
+    'x': 'ixe',
+    'y': 'i grec',
+    'z': 'zèd',
+    'é': 'eu accent aigu',
+    'è': 'eu accent grave',
+    'ê': 'eu accent circonflexe',
+    'ë': 'eu tréma',
+    'à': 'a accent grave',
+    'â': 'a accent circonflexe',
+    'î': 'i accent circonflexe',
+    'ï': 'i tréma',
+    'ô': 'o accent circonflexe',
+    'ù': 'u accent grave',
+    'û': 'u accent circonflexe',
+    'ü': 'u tréma',
+    'ÿ': 'i grec tréma',
+    'ç': 'cé cédille',
+    'œ': 'eu dans l\'o',
+    'æ': 'eu dans l\'a',
+    '-': 'trait d\'union',
+    '\'': 'apostrophe',
+    '’': 'apostrophe',
+  };
+
+  /// Name of this letter (one grapheme) as said aloud, or null for what is
+  /// not spelled (spaces).
+  String? get letterName => _names[toLowerCase()];
+}

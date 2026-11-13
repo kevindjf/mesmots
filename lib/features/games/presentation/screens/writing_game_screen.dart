@@ -15,6 +15,7 @@ import 'package:mesmots/shared/widgets/game_control_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
+import 'package:mesmots/shared/widgets/spelled_word.dart';
 
 /// "Écriture": hear the word and type it entirely.
 class WritingGameScreen extends ConsumerWidget {
@@ -119,7 +120,7 @@ class WritingGameScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppDimensions.spacingM),
                 SizedBox(
-                  height: 48,
+                  height: 64,
                   child: showModel
                       ? Column(
                           mainAxisSize: MainAxisSize.min,
@@ -134,8 +135,8 @@ class WritingGameScreen extends ConsumerWidget {
                                   color: AppColors.textOnColor,
                                 ),
                               ),
-                            Text(
-                              question.word,
+                            SpelledWord(
+                              word: question.word,
                               style: const TextStyle(
                                 fontFamily: AppTypography.fontFamily,
                                 fontSize: AppTypography.headingMedium,

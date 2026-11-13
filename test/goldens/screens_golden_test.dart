@@ -21,14 +21,15 @@ import 'golden_harness.dart';
 /// Every theme the app offers, each checked against its own goldens.
 final themes = <String, ThemeData>{
   'light': AppTheme.of(AppPalette.light),
-  'dark': AppTheme.of(AppPalette.dark),
+  'light_contrast': AppTheme.of(AppPalette.light.copyWith(highContrast: true)),
 };
 
 void main() {
   setUpAll(loadGoldenFonts);
 
   final lists = [
-    goldenList(),
+    // Played last: shown as the current list on the home screen.
+    goldenList().copyWith(lastPlayedAt: DateTime(2026, 11, 12)),
     goldenList(id: 'done', words: const ['vélo']).copyWith(
       name: 'Semaine 11',
       mastery: const {

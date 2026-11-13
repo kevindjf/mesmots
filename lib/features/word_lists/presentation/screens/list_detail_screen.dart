@@ -14,6 +14,7 @@ import 'package:mesmots/features/word_lists/presentation/widgets/game_tile.dart'
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_panel.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/section_title.dart';
 
 class ListDetailScreen extends ConsumerWidget {
   final String listId;
@@ -68,7 +69,7 @@ class ListDetailScreen extends ConsumerWidget {
                         WordListPanel(wordList: wordList),
                         const SizedBox(height: AppDimensions.spacingXl),
 
-                        const _SectionTitle(AppStrings.chooseGame),
+                        const SectionTitle(AppStrings.chooseGame),
                         const SizedBox(height: AppDimensions.spacingL),
                         // One game per row; two columns on tablets.
                         GridView(
@@ -179,24 +180,4 @@ class ListDetailScreen extends ConsumerWidget {
   /// Whether the words cross into a playable crossword (deterministic check)
   bool _canPlayCrossword(List<String> words) =>
       GenerateCrossword(random: Random(0))(words).isPlayable;
-}
-
-class _SectionTitle extends StatelessWidget {
-  final String text;
-
-  const _SectionTitle(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        fontFamily: AppTypography.fontFamily,
-        fontSize: AppTypography.bodySmall,
-        fontWeight: AppTypography.bold,
-        color: context.palette.onBackground,
-        letterSpacing: 1.0,
-      ),
-    );
-  }
 }

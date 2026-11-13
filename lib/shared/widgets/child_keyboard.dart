@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/shared/widgets/keyboard_key.dart';
 
@@ -79,7 +80,7 @@ class ChildKeyboard extends StatelessWidget {
                 width: keyWidth * 2 + _gap,
                 color: AppColors.buttonCoral,
                 shadowColor: AppColors.buttonCoralShadow,
-                contentColor: AppColors.textOnColor,
+                contentColor: context.palette.onBlock(AppColors.buttonCoral),
                 onTap: onBackspace,
               ),
             ]),

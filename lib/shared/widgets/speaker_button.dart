@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
@@ -62,7 +63,7 @@ class _SpeakerButtonState extends ConsumerState<SpeakerButton> {
         ),
         child: Icon(
           Icons.volume_up_rounded,
-          color: widget.iconColor ?? AppColors.textOnColor,
+          color: widget.iconColor ?? context.palette.onBlock(bgColor),
           size: widget.size * 0.5,
         ),
       ),
@@ -93,7 +94,7 @@ class SmallSpeakerButton extends ConsumerWidget {
       },
       icon: Icon(
         Icons.volume_up_rounded,
-        color: color ?? AppColors.primary,
+        color: color ?? context.palette.panelText,
       ),
       iconSize: AppDimensions.iconM,
     );

@@ -68,10 +68,6 @@ class ParentSpaceScreen extends ConsumerWidget {
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.lock_open_outlined,
-                      color: context.palette.onBackground,
-                    ),
                   ],
                 ),
               ),

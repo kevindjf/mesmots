@@ -65,6 +65,18 @@ void main() {
       }
     });
 
+    test('words only go across or down, never diagonally', () {
+      for (var seed = 0; seed < 20; seed++) {
+        // Act
+        final crossword = GenerateCrossword(random: Random(seed))(weekWords);
+
+        // Assert
+        for (final entry in crossword.entries) {
+          expect(entry.direction, isNot(WordDirection.diagonal));
+        }
+      }
+    });
+
     test('every word gets its first letter', () {
       // Arrange
       final generate = GenerateCrossword(random: Random(4));

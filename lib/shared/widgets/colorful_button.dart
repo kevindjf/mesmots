@@ -199,7 +199,7 @@ class _ColorfulIconButtonState extends State<ColorfulIconButton> {
         transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
         child: Icon(
           widget.icon,
-          color: AppColors.textOnColor,
+          color: context.palette.onBlock(widget.color),
           size: widget.size * 0.5,
         ),
       ),

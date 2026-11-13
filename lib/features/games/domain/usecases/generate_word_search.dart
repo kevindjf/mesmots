@@ -8,8 +8,9 @@ import 'package:mesmots/features/games/domain/usecases/letter_confusions.dart';
 
 /// Builds a word search grid from a word list.
 ///
-/// Words are placed left-to-right or top-to-bottom only (readable for
-/// 5-10 year olds). Letters are lowercase with their accents. Filler
+/// Words are placed left-to-right, top-to-bottom or diagonally down to the
+/// right: always in reading order, never backwards (readable for 5-10 year
+/// olds). Letters are lowercase with their accents. Filler
 /// letters come from the words and the letters children confuse them with
 /// (e/é/è, s/ss/c…), so a word can't be spotted by a rare letter and the
 /// grid holds near-words that must be read carefully.
@@ -84,16 +85,15 @@ class GenerateWordSearch {
     if (letters.length > size) return null;
 
     for (var attempt = 0; attempt < _attemptsPerWord; attempt++) {
-      final direction = WordDirection.values[_random.nextInt(2)];
-      final maxRow =
-          direction == WordDirection.vertical ? size - letters.length : size - 1;
-      final maxCol = direction == WordDirection.horizontal
-          ? size - letters.length
-          : size - 1;
+      final direction =
+          WordDirection.values[_random.nextInt(WordDirection.values.length)];
+      final maxRow = direction.rowStep == 1 ? size - letters.length : size - 1;
+      final maxCol = direction.colStep == 1 ? size - letters.length : size - 1;
       final candidate = PlacedWord(
         word: word,
         letters: letters,
-        start: GridPoint(_random.nextInt(maxRow + 1), _random.nextInt(maxCol + 1)),
+        start:
+            GridPoint(_random.nextInt(maxRow + 1), _random.nextInt(maxCol + 1)),
         direction: direction,
       );
 

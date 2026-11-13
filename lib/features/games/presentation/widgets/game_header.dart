@@ -23,7 +23,7 @@ class GameHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barColor = progressColor ?? AppColors.primary;
+    final barColor = progressColor ?? AppColors.success;
     final palette = context.palette;
 
     return Container(
@@ -68,11 +68,11 @@ class GameHeader extends StatelessWidget {
                   ],
                   Text(
                     '${(progress * 100).round()}%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: AppTypography.fontFamily,
                       fontSize: AppTypography.bodyMedium,
                       fontWeight: AppTypography.bold,
-                      color: AppColors.primary,
+                      color: palette.panelText,
                     ),
                   ),
                 ],

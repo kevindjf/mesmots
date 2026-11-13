@@ -40,6 +40,9 @@ class WordMasteryChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: isMastered ? AppColors.success : context.palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+        border: context.palette.outlineOf(
+          isMastered ? AppColors.success : null,
+        ),
         boxShadow: [
           BoxShadow(
             color: isMastered
@@ -72,7 +75,7 @@ class WordMasteryChip extends StatelessWidget {
                 filled ? Icons.star_rounded : Icons.star_outline_rounded,
                 size: 16,
                 color: isMastered
-                    ? AppColors.textOnColor
+                    ? context.palette.onBlock(AppColors.success)
                     : filled
                         ? AppColors.buttonOrange
                         : context.palette.panelHint,

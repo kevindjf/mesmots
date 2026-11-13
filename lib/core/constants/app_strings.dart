@@ -20,7 +20,9 @@ class AppStrings {
   static const String continueText = 'Continuer';
 
   // Home
-  static const String previousLists = 'Listes précédentes';
+  static const String currentList = 'TA LISTE DU MOMENT';
+  static const String otherLists = 'TES AUTRES LISTES';
+  static const String yourLists = 'TES LISTES';
   static const String newList = 'Nouvelle liste';
 
   // Word Lists
@@ -78,8 +80,6 @@ class AppStrings {
 
   // Appearance
   static const String appearance = 'APPARENCE';
-  static const String themeLight = 'Clair';
-  static const String themeDark = 'Sombre';
   static const String highContrast = 'Contraste renforcé';
   static const String highContrastHint =
       'Texte foncé sur les couleurs vives, plus facile à lire.';

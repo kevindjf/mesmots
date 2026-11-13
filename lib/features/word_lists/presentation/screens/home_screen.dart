@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -9,8 +8,10 @@ import 'package:mesmots/features/parental/presentation/screens/parent_space_scre
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
-import 'package:mesmots/shared/widgets/app_header.dart';
+import 'package:mesmots/shared/widgets/letter_tiles_title.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/parent_space_button.dart';
+import 'package:mesmots/shared/widgets/section_title.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -24,12 +25,31 @@ class HomeScreen extends ConsumerWidget {
         child: SafeArea(
           child: Column(
             children: [
-              // Header
-              AppHeader(
-                title: AppStrings.appName,
-                subtitle: 'MES MOTS DE DICTÉE',
-                trailing: LockIconButton(
-                  onTap: () => ParentSpaceScreen.open(context),
+              // Header: the app name in letter tiles that drop in, then wave
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.paddingL,
+                  vertical: AppDimensions.paddingM,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        // "MES MOTS": the space puts MOTS on a second row.
+                        child: LetterTilesTitle(
+                          text: AppStrings.welcomeTiles,
+                          tileSize: 36,
+                          rowAlignment: CrossAxisAlignment.start,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppDimensions.spacingM),
+                    ParentSpaceButton(
+                      onTap: () => ParentSpaceScreen.open(context),
+                    ),
+                  ],
                 ),
               ),
 
@@ -52,52 +72,50 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildContent(BuildContext context, List<WordList> lists) {
-    // Sort lists: active first, then completed
-    final activeLists = lists.where((list) => !list.isMastered).toList()
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-
-    final completedLists = lists.where((list) => list.isMastered).toList()
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    // Last played first, then never played ones, newest first.
+    final sorted = [...lists]..sort(_byLastPlayed);
+    final current = sorted.isNotEmpty && sorted.first.lastPlayedAt != null
+        ? sorted.first
+        : null;
+    final others = current == null ? sorted : sorted.sublist(1);
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: AppDimensions.paddingL),
       children: [
-        // Mascot section
         const SizedBox(height: AppDimensions.spacingL),
-
-        // Word lists
-        if (lists.isEmpty)
-          _buildEmptyState(context)
-        else ...[
-          // Active lists
-          if (activeLists.isNotEmpty) ...[
-            for (int i = 0; i < activeLists.length; i++)
-              WordListCard(wordList: activeLists[i], colorIndex: i),
-          ],
-
-          // Completed lists section
-          if (completedLists.isNotEmpty) ...[
-            const SizedBox(height: AppDimensions.spacingL),
-            Text(
-              AppStrings.previousLists,
-              style: TextStyle(
-                fontFamily: AppTypography.fontFamily,
-                fontSize: AppTypography.bodyMedium,
-                fontWeight: AppTypography.bold,
-                color: context.palette.onBackground,
-              ),
-            ),
+        if (sorted.isEmpty) _buildEmptyState(context),
+        if (current != null) ...[
+          const SectionTitle(AppStrings.currentList),
+          const SizedBox(height: AppDimensions.spacingM),
+          WordListCard(wordList: current),
+          if (others.isNotEmpty) ...[
+            const SizedBox(height: AppDimensions.spacingS),
+            const SectionTitle(AppStrings.otherLists),
             const SizedBox(height: AppDimensions.spacingM),
-            for (int i = 0; i < completedLists.length; i++)
-              WordListCard(
-                  wordList: completedLists[i],
-                  colorIndex: i + activeLists.length),
           ],
         ],
-
+        // Before any game, every list goes under one title.
+        if (current == null && others.isNotEmpty) ...[
+          const SectionTitle(AppStrings.yourLists),
+          const SizedBox(height: AppDimensions.spacingM),
+        ],
+        for (var i = 0; i < others.length; i++)
+          WordListCard(
+            wordList: others[i],
+            colorIndex: current == null ? i : i + 1,
+          ),
         const SizedBox(height: AppDimensions.spacingXxl),
       ],
     );
+  }
+
+  static int _byLastPlayed(WordList a, WordList b) {
+    final playedA = a.lastPlayedAt;
+    final playedB = b.lastPlayedAt;
+    if (playedA != null && playedB != null) return playedB.compareTo(playedA);
+    if (playedA != null) return -1;
+    if (playedB != null) return 1;
+    return b.createdAt.compareTo(a.createdAt);
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -109,7 +127,7 @@ class HomeScreen extends ConsumerWidget {
           width: 100,
           height: 100,
           decoration: BoxDecoration(
-            color: AppColors.shapeLight,
+            color: context.palette.onBackground.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(AppDimensions.radiusXxl),
           ),
           child: Center(

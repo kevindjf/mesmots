@@ -81,7 +81,7 @@ class _GameCardState extends State<GameCard> {
   Color _backgroundColor(AppPalette palette) {
     if (widget.isCorrect) return AppColors.success;
     if (widget.isIncorrect) return AppColors.error;
-    if (widget.isSelected) return AppColors.primary.withValues(alpha: 0.2);
+    if (widget.isSelected) return AppColors.buttonBlue.withValues(alpha: 0.2);
     return palette.panel;
   }
 
@@ -113,6 +113,11 @@ class _GameCardState extends State<GameCard> {
         decoration: BoxDecoration(
           color: _backgroundColor(palette),
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+          border: palette.outlineOf(
+            widget.isCorrect || widget.isIncorrect || widget.isSelected
+                ? _backgroundColor(palette)
+                : null,
+          ),
           boxShadow: [
             BoxShadow(
               color: _shadowColor(palette),

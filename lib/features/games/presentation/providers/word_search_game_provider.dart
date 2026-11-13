@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:mesmots/core/utils/audio_service.dart';
 import 'package:mesmots/core/utils/haptic_service.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
@@ -92,7 +94,8 @@ class WordSearchGame extends _$WordSearchGame {
     final current = _current;
     if (current == null || current.selection.isEmpty) return;
     state = AsyncData(
-      current.copyWith(selection: _straightLine(current.selection.first, point)),
+      current.copyWith(
+          selection: _straightLine(current.selection.first, point)),
     );
   }
 
@@ -164,10 +167,24 @@ class WordSearchGame extends _$WordSearchGame {
     return null;
   }
 
-  /// Cells from [start] towards [end], constrained to a row or a column
+  /// Cells from [start] towards [end], constrained to a row, a column or a
+  /// diagonal, whichever is closest to the finger.
   static List<GridPoint> _straightLine(GridPoint start, GridPoint end) {
     final dRow = end.row - start.row;
     final dCol = end.col - start.col;
+
+    // Diagonal when neither direction is more than twice the other. The
+    // shorter side sets the length, so the line stays inside the grid.
+    final shorter = min(dRow.abs(), dCol.abs());
+    final longer = max(dRow.abs(), dCol.abs());
+    if (shorter > 0 && shorter * 2 >= longer) {
+      final rowStep = dRow.sign;
+      final colStep = dCol.sign;
+      return [
+        for (var i = 0; i <= shorter; i++)
+          GridPoint(start.row + i * rowStep, start.col + i * colStep),
+      ];
+    }
 
     if (dRow.abs() >= dCol.abs()) {
       final step = dRow >= 0 ? 1 : -1;

@@ -34,6 +34,7 @@ class GameToggleTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: isEnabled ? type.color : context.palette.panel,
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+            border: context.palette.outlineOf(isEnabled ? type.color : null),
             boxShadow: [
               BoxShadow(
                 color:
@@ -48,7 +49,7 @@ class GameToggleTile extends StatelessWidget {
               Icon(
                 type.icon,
                 color: isEnabled
-                    ? AppColors.textOnColor
+                    ? context.palette.onBlock(type.color)
                     : context.palette.panelHint,
               ),
               const SizedBox(width: AppDimensions.spacingM),

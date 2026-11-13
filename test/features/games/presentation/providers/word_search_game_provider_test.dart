@@ -135,4 +135,40 @@ void main() {
     expect(stored.statusOf('école').successCount, 1);
     expect(stored.playCountOf(GameType.wordSearch), 1);
   });
+
+  test('a drag close to 45° selects a diagonal', () async {
+    // Arrange
+    await load();
+
+    // Act
+    notifier()
+      ..startSelection(const GridPoint(0, 0))
+      ..updateSelection(const GridPoint(3, 2));
+
+    // Assert
+    expect(current().selection, const [
+      GridPoint(0, 0),
+      GridPoint(1, 1),
+      GridPoint(2, 2),
+    ]);
+  });
+
+  test('a mostly vertical drag stays in the column', () async {
+    // Arrange
+    await load();
+
+    // Act
+    notifier()
+      ..startSelection(const GridPoint(4, 4))
+      ..updateSelection(const GridPoint(0, 3));
+
+    // Assert
+    expect(current().selection, const [
+      GridPoint(4, 4),
+      GridPoint(3, 4),
+      GridPoint(2, 4),
+      GridPoint(1, 4),
+      GridPoint(0, 4),
+    ]);
+  });
 }

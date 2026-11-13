@@ -77,7 +77,7 @@ class AppInput extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
             borderSide: const BorderSide(
-              color: AppColors.primary,
+              color: AppColors.buttonBlue,
               width: 2,
             ),
           ),

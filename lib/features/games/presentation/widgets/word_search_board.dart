@@ -35,6 +35,7 @@ class WordSearchBoard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
+        border: context.palette.panelOutline,
         boxShadow: [
           BoxShadow(
             color: context.palette.panelShadow,
@@ -83,7 +84,7 @@ class WordSearchBoard extends StatelessWidget {
   }
 
   Color? _backgroundOf(GridPoint point) {
-    if (state.selection.contains(point)) return AppColors.primary;
+    if (state.selection.contains(point)) return AppColors.buttonBlue;
     return state.foundWordAt(point)?.foundWordColor;
   }
 }

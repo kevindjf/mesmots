@@ -46,6 +46,9 @@ class CrosswordClueChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
+          border: context.palette.outlineOf(
+            isSolved || isSelected ? background : null,
+          ),
           boxShadow: [
             BoxShadow(
               color: context.palette.panelShadow,

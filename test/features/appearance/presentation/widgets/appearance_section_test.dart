@@ -33,28 +33,14 @@ void main() {
         ),
       );
 
-  testWidgets('shows light and dark, the saved one selected', (tester) async {
+  testWidgets('shows the high contrast setting, off by default',
+      (tester) async {
     // Act
     await pumpSection(tester);
 
     // Assert
-    expect(find.text(AppStrings.themeLight), findsOneWidget);
-    expect(find.text(AppStrings.themeDark), findsOneWidget);
-    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
-  });
-
-  testWidgets('tapping a theme saves it', (tester) async {
-    // Arrange
-    await pumpSection(tester);
-
-    // Act
-    await tester.tap(find.text(AppStrings.themeDark));
-    await tester.pump();
-
-    // Assert
-    verify(
-      () => repository.save(const AppearanceSettings(theme: ThemeChoice.dark)),
-    ).called(1);
+    expect(find.text(AppStrings.highContrast), findsOneWidget);
+    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
   });
 
   testWidgets('tapping the contrast row turns it on', (tester) async {

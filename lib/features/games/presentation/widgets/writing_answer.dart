@@ -99,7 +99,7 @@ class WritingAnswer extends StatelessWidget {
               width: 3,
               height: 34,
               margin: const EdgeInsets.only(left: 2),
-              color: AppColors.primary,
+              color: palette.tileText,
             ),
           ],
         );

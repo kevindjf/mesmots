@@ -114,60 +114,7 @@ class AppLogo extends StatelessWidget {
         child: Icon(
           icon,
           size: size * 0.55,
-          color: palette.tileAccent,
-        ),
-      ),
-    );
-  }
-}
-
-/// Lock icon button opening the parent space, with 3D style
-class LockIconButton extends StatefulWidget {
-  final VoidCallback? onTap;
-
-  const LockIconButton({
-    super.key,
-    this.onTap,
-  });
-
-  @override
-  State<LockIconButton> createState() => _LockIconButtonState();
-}
-
-class _LockIconButtonState extends State<LockIconButton> {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final palette = context.palette;
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) {
-        setState(() => _isPressed = false);
-        widget.onTap?.call();
-      },
-      onTapCancel: () => setState(() => _isPressed = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        width: 44,
-        height: 44,
-        transform: Matrix4.translationValues(0, _isPressed ? 2 : 0, 0),
-        decoration: BoxDecoration(
-          color: palette.tile,
-          shape: BoxShape.circle,
-          boxShadow: [
-            // Ombre 3D simple
-            BoxShadow(
-              color: palette.tileShadow,
-              blurRadius: 0,
-              offset: Offset(0, _isPressed ? 2 : 4),
-            ),
-          ],
-        ),
-        child: Icon(
-          Icons.lock_outline,
-          color: palette.tileAccent,
-          size: AppDimensions.iconM,
+          color: palette.tileIcon,
         ),
       ),
     );

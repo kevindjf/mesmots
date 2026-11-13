@@ -10,9 +10,6 @@ class Appearance extends _$Appearance {
   @override
   AppearanceSettings build() => ref.watch(appearanceRepositoryProvider).load();
 
-  Future<void> setTheme(ThemeChoice theme) =>
-      _update(state.copyWith(theme: theme));
-
   Future<void> setHighContrast(bool highContrast) =>
       _update(state.copyWith(highContrast: highContrast));
 

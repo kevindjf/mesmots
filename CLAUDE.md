@@ -23,7 +23,7 @@
 - `ColorfulButton` : Bouton coloré avec effet 3D
 - `GradientBackground` : Fond turquoise avec formes flottantes
 - `AppHeader` : En-tête avec titre et actions
-- `LockIconButton` : Bouton cadenas avec effet 3D
+- `ParentSpaceButton` : Bouton rond aux couleurs du thème avec le symbole parent (SVG), ouvre l'espace parent
 - `AppInput` : Champ de saisie avec effet 3D
 
 ## Structure

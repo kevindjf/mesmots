@@ -47,11 +47,11 @@ class _GameControlButtonState extends State<GameControlButton> {
     if (widget.isPrimary) {
       bgColor = AppColors.success;
       shadowColor = const Color(0xFF3D8B40);
-      iconColor = AppColors.textOnColor;
+      iconColor = palette.onBlock(AppColors.success);
     } else {
       bgColor = palette.tile;
       shadowColor = palette.tileShadow;
-      iconColor = palette.tileAccent;
+      iconColor = palette.tileIcon;
     }
 
     return Opacity(

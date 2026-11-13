@@ -16,9 +16,7 @@ void main() {
 
   setUp(() {
     repository = _MockRepository();
-    when(repository.load).thenReturn(
-      const AppearanceSettings(theme: ThemeChoice.light),
-    );
+    when(repository.load).thenReturn(AppearanceSettings.initial);
     when(() => repository.save(any())).thenAnswer((_) async {});
     container = ProviderContainer(
       overrides: [appearanceRepositoryProvider.overrideWithValue(repository)],
@@ -28,29 +26,16 @@ void main() {
 
   test('starts from the saved settings', () {
     // Act & Assert
-    expect(container.read(appearanceProvider).theme, ThemeChoice.light);
+    expect(container.read(appearanceProvider), AppearanceSettings.initial);
   });
 
-  test('setTheme updates and saves the theme', () async {
-    // Act
-    await container.read(appearanceProvider.notifier).setTheme(
-          ThemeChoice.dark,
-        );
-
-    // Assert
-    const expected = AppearanceSettings(theme: ThemeChoice.dark);
-    expect(container.read(appearanceProvider), expected);
-    verify(() => repository.save(expected)).called(1);
-  });
-
-  test('setHighContrast keeps the theme', () async {
+  test('setHighContrast updates and saves the setting', () async {
     // Act
     await container.read(appearanceProvider.notifier).setHighContrast(true);
 
     // Assert
-    expect(
-      container.read(appearanceProvider),
-      const AppearanceSettings(theme: ThemeChoice.light, highContrast: true),
-    );
+    const expected = AppearanceSettings(highContrast: true);
+    expect(container.read(appearanceProvider), expected);
+    verify(() => repository.save(expected)).called(1);
   });
 }

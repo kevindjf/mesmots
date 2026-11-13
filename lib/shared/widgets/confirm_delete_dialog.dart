@@ -87,7 +87,7 @@ class ConfirmDeleteDialog extends StatelessWidget {
                     text: AppStrings.cancel,
                     color: palette.tile,
                     shadowColor: palette.tileShadow,
-                    textColor: palette.tileAccent,
+                    textColor: palette.tileIcon,
                     onTap: () => Navigator.pop(context, false),
                   ),
                 ),

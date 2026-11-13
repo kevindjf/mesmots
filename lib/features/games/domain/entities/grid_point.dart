@@ -16,11 +16,17 @@ class GridPoint {
   String toString() => '($row, $col)';
 }
 
-/// Direction of a word in a grid.
+/// Direction of a word in a grid, always in reading order.
 enum WordDirection {
   horizontal,
-  vertical;
+  vertical,
 
-  int get rowStep => this == WordDirection.vertical ? 1 : 0;
-  int get colStep => this == WordDirection.horizontal ? 1 : 0;
+  /// Top-left to bottom-right (word search only).
+  diagonal;
+
+  /// Directions where words cross in a crossword.
+  static const straight = [horizontal, vertical];
+
+  int get rowStep => this == WordDirection.horizontal ? 0 : 1;
+  int get colStep => this == WordDirection.vertical ? 0 : 1;
 }

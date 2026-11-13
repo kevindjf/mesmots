@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -20,8 +21,9 @@ class PinEntry extends ConsumerStatefulWidget {
   final Future<bool> Function(String pin) validate;
   final ValueChanged<String> onAccepted;
   final String errorMessage;
-  final Color dotColor;
-  final Color emptyDotColor;
+  /// Dot colors default to the panel text and hint of the theme.
+  final Color? dotColor;
+  final Color? emptyDotColor;
   final Color errorColor;
 
   const PinEntry({
@@ -29,8 +31,8 @@ class PinEntry extends ConsumerStatefulWidget {
     required this.validate,
     required this.onAccepted,
     required this.errorMessage,
-    this.dotColor = AppColors.primary,
-    this.emptyDotColor = AppColors.textLight,
+    this.dotColor,
+    this.emptyDotColor,
     this.errorColor = AppColors.error,
   });
 
@@ -107,8 +109,8 @@ class _PinEntryState extends ConsumerState<PinEntry> {
             filled: _pin.length,
             length: PinEntry.pinLength,
             isSuccess: _isSuccess,
-            filledColor: widget.dotColor,
-            emptyColor: widget.emptyDotColor,
+            filledColor: widget.dotColor ?? context.palette.panelText,
+            emptyColor: widget.emptyDotColor ?? context.palette.panelHint,
           ),
         ),
         const SizedBox(height: AppDimensions.spacingS),

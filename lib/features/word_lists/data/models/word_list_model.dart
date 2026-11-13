@@ -43,6 +43,10 @@ class WordListModel extends HiveObject {
   @HiveField(28)
   List<String>? enabledGames;
 
+  /// When the list was last played. Null if never (or saved before).
+  @HiveField(29)
+  DateTime? lastPlayedAt;
+
   WordListModel();
 
   WordListModel.fromEntity(WordList entity) {
@@ -50,6 +54,7 @@ class WordListModel extends HiveObject {
     name = entity.name;
     createdAt = entity.createdAt;
     updatedAt = entity.updatedAt;
+    lastPlayedAt = entity.lastPlayedAt;
     words = List.of(entity.words);
     masterySuccess = words.map((w) => entity.statusOf(w).successCount).toList();
     masteryErrors =
@@ -78,6 +83,7 @@ class WordListModel extends HiveObject {
       name: name,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      lastPlayedAt: lastPlayedAt,
       words: words,
       mastery: {
         for (var i = 0; i < words.length; i++)

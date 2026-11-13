@@ -46,7 +46,7 @@ void main() {
 
     test('keeps white on a block where it already reads well', () {
       // Arrange
-      final palette = AppPalette.dark.copyWith(highContrast: true);
+      final palette = AppPalette.light.copyWith(highContrast: true);
 
       // Act & Assert
       expect(palette.onBlock(AppColors.buttonPurple), AppColors.textOnColor);
@@ -64,17 +64,20 @@ void main() {
 
   test('copyWith only changes the high contrast flag', () {
     // Act
-    final copy = AppPalette.dark.copyWith(highContrast: true);
+    final copy = AppPalette.light.copyWith(highContrast: true);
 
     // Assert
     expect(copy.highContrast, isTrue);
-    expect(copy.panel, AppPalette.dark.panel);
-    expect(copy.brightness, AppPalette.dark.brightness);
+    expect(copy.panel, AppPalette.light.panel);
+    expect(copy.tile, AppPalette.light.tile);
   });
 
   test('lerp switches palettes at half way', () {
+    // Arrange
+    final contrast = AppPalette.light.copyWith(highContrast: true);
+
     // Act & Assert
-    expect(AppPalette.light.lerp(AppPalette.dark, 0.4), AppPalette.light);
-    expect(AppPalette.light.lerp(AppPalette.dark, 0.6), AppPalette.dark);
+    expect(AppPalette.light.lerp(contrast, 0.4), AppPalette.light);
+    expect(AppPalette.light.lerp(contrast, 0.6), contrast);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/extensions/motion_context.dart';
 
@@ -8,16 +9,17 @@ class PinDots extends StatelessWidget {
   final int length;
   final int filled;
   final bool isSuccess;
-  final Color filledColor;
-  final Color emptyColor;
+  /// Default to the panel text and hint of the theme.
+  final Color? filledColor;
+  final Color? emptyColor;
 
   const PinDots({
     super.key,
     required this.filled,
     this.length = 4,
     this.isSuccess = false,
-    this.filledColor = AppColors.primary,
-    this.emptyColor = AppColors.textLight,
+    this.filledColor,
+    this.emptyColor,
   });
 
   @override
@@ -42,8 +44,8 @@ class PinDots extends StatelessWidget {
                 color: isSuccess
                     ? AppColors.success
                     : isFilled
-                        ? filledColor
-                        : emptyColor,
+                        ? filledColor ?? context.palette.panelText
+                        : emptyColor ?? context.palette.panelHint,
               ),
             ),
           ),

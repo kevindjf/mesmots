@@ -19,6 +19,7 @@ void main() {
     expect(restored.statusOf('été').successCount, 1);
     expect(restored.statusOf('chat').consecutiveErrors, 1);
     expect(restored.playCountOf(GameType.scramble), 1);
+    expect(restored.lastPlayedAt, entity.lastPlayedAt);
   });
 
   test('legacy record without mastery fields starts fresh', () {
@@ -36,6 +37,7 @@ void main() {
     // Assert
     expect(entity.statusOf('chat').successCount, 0);
     expect(entity.playCount, isEmpty);
+    expect(entity.lastPlayedAt, isNull);
   });
 
   test('enabled games survive a round trip', () {

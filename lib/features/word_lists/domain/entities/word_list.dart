@@ -15,6 +15,9 @@ class WordList {
   /// Last update timestamp
   final DateTime updatedAt;
 
+  /// When the child last played with this list, null if never
+  final DateTime? lastPlayedAt;
+
   /// List of words
   final List<String> words;
 
@@ -32,6 +35,7 @@ class WordList {
     required this.name,
     required this.createdAt,
     required this.updatedAt,
+    this.lastPlayedAt,
     required this.words,
     required this.mastery,
     required this.playCount,
@@ -113,20 +117,24 @@ class WordList {
     if (!words.contains(word)) return this;
 
     final current = statusOf(word);
+    final now = DateTime.now();
     return copyWith(
       mastery: {
         ...mastery,
         word: success ? current.recordSuccess() : current.recordError(),
       },
-      updatedAt: DateTime.now(),
+      updatedAt: now,
+      lastPlayedAt: now,
     );
   }
 
   /// Record a completed game
   WordList recordGamePlayed(GameType type) {
+    final now = DateTime.now();
     return copyWith(
       playCount: {...playCount, type: playCountOf(type) + 1},
-      updatedAt: DateTime.now(),
+      updatedAt: now,
+      lastPlayedAt: now,
     );
   }
 
@@ -144,6 +152,7 @@ class WordList {
     String? name,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? lastPlayedAt,
     List<String>? words,
     Map<String, WordStatus>? mastery,
     Map<GameType, int>? playCount,
@@ -154,6 +163,7 @@ class WordList {
       name: name ?? this.name,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastPlayedAt: lastPlayedAt ?? this.lastPlayedAt,
       words: words ?? this.words,
       mastery: mastery ?? this.mastery,
       playCount: playCount ?? this.playCount,

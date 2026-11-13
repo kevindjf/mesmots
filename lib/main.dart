@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/utils/audio_service.dart';
@@ -10,8 +12,17 @@ import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dar
 import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
 
+/// Length of the animated logo of the Android 12+ splash
+/// (android/app/src/main/res/drawable/splash_animated.xml).
+const _splashAnimation = Duration(milliseconds: 950);
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+
+  // Android keeps its splash until the first frame: hold that frame until
+  // the logo animation has played, so it is never cut short.
+  final splashPlayed = Future<void>.delayed(_splashAnimation);
+  if (Platform.isAndroid) binding.deferFirstFrame();
 
   // Initialize Hive database
   await initializeDatabase();
@@ -25,6 +36,11 @@ void main() async {
       child: MesMotsApp(),
     ),
   );
+
+  if (Platform.isAndroid) {
+    await splashPlayed;
+    binding.allowFirstFrame();
+  }
 }
 
 class MesMotsApp extends ConsumerWidget {

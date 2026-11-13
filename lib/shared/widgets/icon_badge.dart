@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 
 /// A round colored badge with a white icon and a 3D shadow (not tappable).
@@ -37,7 +38,7 @@ class IconBadge extends StatelessWidget {
               color: shadowColor, blurRadius: 0, offset: const Offset(0, 4)),
         ],
       ),
-      child: Icon(icon, size: size * 0.5, color: AppColors.textOnColor),
+      child: Icon(icon, size: size * 0.5, color: context.palette.onBlock(color)),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -39,13 +38,13 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Title
-            const Text(
+            Text(
               'Zone Adultes',
               style: TextStyle(
                 fontFamily: AppTypography.fontFamily,
                 fontSize: AppTypography.headingMedium,
                 fontWeight: AppTypography.bold,
-                color: AppColors.primary,
+                color: context.palette.panelText,
               ),
             ),
             const SizedBox(height: 8),
@@ -75,7 +74,7 @@ class _PinInputDialogState extends ConsumerState<PinInputDialog> {
               text: AppStrings.cancel,
               color: context.palette.tile,
               shadowColor: context.palette.tileShadow,
-              textColor: context.palette.tileAccent,
+              textColor: context.palette.tileIcon,
               onTap: () => Navigator.pop(context),
             ),
           ],

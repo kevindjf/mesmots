@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -45,11 +46,12 @@ class TourStarsIllustration extends StatelessWidget {
             vertical: AppDimensions.paddingM,
           ),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.palette.panel,
             borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-            boxShadow: const [
+            border: context.palette.panelOutline,
+            boxShadow: [
               BoxShadow(
-                color: AppColors.primaryDark,
+                color: context.palette.panelShadow,
                 blurRadius: 0,
                 offset: Offset(0, 5),
               ),
@@ -57,11 +59,11 @@ class TourStarsIllustration extends StatelessWidget {
           ),
           child: Text(
             AppStrings.tourExampleWords.first,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: AppTypography.fontFamily,
               fontSize: AppTypography.headingMedium,
               fontWeight: AppTypography.bold,
-              color: AppColors.textPrimary,
+              color: context.palette.panelText,
             ),
           ),
         ),

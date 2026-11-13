@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
 
@@ -46,7 +45,7 @@ class CircleIconButton extends StatefulWidget {
     required this.shadowColor,
     this.size = 44,
     this.iconSize = AppDimensions.iconM,
-  }) : iconColor = AppColors.textOnColor;
+  }) : iconColor = null;
 
   @override
   State<CircleIconButton> createState() => _CircleIconButtonState();
@@ -83,7 +82,10 @@ class _CircleIconButtonState extends State<CircleIconButton> {
         ),
         child: Icon(
           widget.icon,
-          color: widget.iconColor ?? palette.tileAccent,
+          color: widget.iconColor ??
+              (widget.color == null
+                  ? palette.tileIcon
+                  : palette.onBlock(widget.color!)),
           size: widget.iconSize,
         ),
       ),

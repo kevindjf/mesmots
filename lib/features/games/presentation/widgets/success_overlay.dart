@@ -80,9 +80,9 @@ class SuccessOverlay extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.star,
-                      color: AppColors.textOnColor,
+                      color: context.palette.onBlock(colors[index]),
                       size: 32,
                     ),
                   ),
@@ -106,7 +106,7 @@ class SuccessOverlay extends StatelessWidget {
               icon: Icons.grid_view_rounded,
               color: context.palette.tile,
               shadowColor: context.palette.tileShadow,
-              textColor: context.palette.tileAccent,
+              textColor: context.palette.tileIcon,
               width: double.infinity,
               onTap: onBackToList,
             ),

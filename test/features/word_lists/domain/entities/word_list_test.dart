@@ -123,4 +123,35 @@ void main() {
       expect(() => list.updateEnabledGames({}), throwsArgumentError);
     });
   });
+
+  group('WordList.lastPlayedAt', () {
+    test('a new list has never been played', () {
+      // Act
+      final list = WordList.create(id: '1', name: 'S1', words: const ['chat']);
+
+      // Assert
+      expect(list.lastPlayedAt, isNull);
+    });
+
+    test('an attempt or a finished game marks the list as played', () {
+      // Arrange
+      final list = WordList.create(id: '1', name: 'S1', words: const ['chat']);
+
+      // Act & Assert
+      expect(list.recordAttempt('chat', success: true).lastPlayedAt, isNotNull);
+      expect(list.recordGamePlayed(GameType.qcm).lastPlayedAt, isNotNull);
+    });
+
+    test('editing the list does not count as playing', () {
+      // Arrange
+      final list = WordList.create(id: '1', name: 'S1', words: const ['chat']);
+
+      // Act
+      final edited = list.updateName('S2').updateWords(
+          const ['chat', 'chien']).updateEnabledGames({GameType.qcm});
+
+      // Assert
+      expect(edited.lastPlayedAt, isNull);
+    });
+  });
 }

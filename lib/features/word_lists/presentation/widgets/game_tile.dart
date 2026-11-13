@@ -55,6 +55,7 @@ class _GameTileState extends State<GameTile> {
         decoration: BoxDecoration(
           color: _isEnabled ? type.color : context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+          border: context.palette.outlineOf(_isEnabled ? type.color : null),
           boxShadow: [
             BoxShadow(
               color:
@@ -120,16 +121,16 @@ class _GameTileState extends State<GameTile> {
                     ),
                     if (widget.playCount > 0) ...[
                       const SizedBox(height: AppDimensions.spacingXs),
-                      _PlayCountBadge(widget.playCount),
+                      _PlayCountBadge(widget.playCount, blockColor: type.color),
                     ],
                   ],
                 ),
               ),
               if (_isEnabled) ...[
                 const SizedBox(width: AppDimensions.spacingS),
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
-                  color: AppColors.textOnColor,
+                  color: context.palette.onBlock(type.color),
                   size: AppDimensions.iconL,
                 ),
               ],
@@ -143,8 +144,9 @@ class _GameTileState extends State<GameTile> {
 
 class _PlayCountBadge extends StatelessWidget {
   final int count;
+  final Color blockColor;
 
-  const _PlayCountBadge(this.count);
+  const _PlayCountBadge(this.count, {required this.blockColor});
 
   @override
   Widget build(BuildContext context) {
@@ -159,11 +161,11 @@ class _PlayCountBadge extends StatelessWidget {
       ),
       child: Text(
         '${AppStrings.playedTimes} $count×',
-        style: const TextStyle(
+        style: TextStyle(
           fontFamily: AppTypography.fontFamily,
           fontSize: AppTypography.bodySmall,
           fontWeight: AppTypography.bold,
-          color: AppColors.textOnColor,
+          color: context.palette.onBlock(blockColor),
         ),
       ),
     );

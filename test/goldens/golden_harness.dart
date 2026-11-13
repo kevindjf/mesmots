@@ -100,6 +100,13 @@ List<Override> goldenOverrides(List<WordList> lists) {
   when(() => repository.update(any())).thenAnswer((_) async {});
   when(() => tts.speak(any())).thenAnswer((_) async {});
   when(() => tts.stop()).thenAnswer((_) async {});
+  when(
+    () => tts.spell(
+      any(),
+      sayWordFirst: any(named: 'sayWordFirst'),
+      onLetter: any(named: 'onLetter'),
+    ),
+  ).thenAnswer((_) async {});
   for (final call in [
     audio.playSuccess,
     audio.playStar,

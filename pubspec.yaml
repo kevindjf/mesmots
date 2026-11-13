@@ -37,6 +37,7 @@ dependencies:
 
   # Icons
   phosphor_flutter: ^2.1.0
+  flutter_svg: ^2.3.4
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +50,7 @@ dev_dependencies:
   hive_generator: ^2.0.1
   mocktail: ^1.0.5
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 flutter:
   uses-material-design: true
@@ -81,3 +83,17 @@ flutter_launcher_icons:
   adaptive_icon_background: "#4ECDC4"
   adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   adaptive_icon_monochrome: "assets/icon/icon_monochrome.png"
+
+# Native splash, white like the app (regenerate with:
+# dart run flutter_native_splash:create). On Android 12+ the icon is the
+# animated android/app/src/main/res/drawable/splash_animated.xml: after
+# create, put it back in res/values-v31 and res/values-night-v31.
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/splash/splash.png
+  android_12:
+    color: "#FFFFFF"
+    image: assets/splash/splash_android12.png
+  android: true
+  ios: true
+  web: false

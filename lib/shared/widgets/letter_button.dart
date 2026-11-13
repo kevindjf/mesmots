@@ -83,7 +83,7 @@ class _LetterButtonState extends State<LetterButton> {
               fontWeight: AppTypography.bold,
               color: widget.isDisabled
                   ? palette.tileDisabledContent
-                  : palette.tileAccent,
+                  : palette.tileText,
             ),
           ),
         ),

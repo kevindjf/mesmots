@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mesmots/features/games/domain/entities/grid_point.dart';
 import 'package:mesmots/features/games/domain/entities/word_search_grid.dart';
 import 'package:mesmots/features/games/domain/usecases/generate_word_search.dart';
 
@@ -34,6 +35,22 @@ void main() {
           expect(readWord(grid, i), grid.words[i].letters.join());
         }
       }
+    });
+
+    test('places some words diagonally, always in reading order', () {
+      // Arrange
+      final directions = <WordDirection>{};
+
+      // Act
+      for (var seed = 0; seed < 50; seed++) {
+        final grid = GenerateWordSearch(random: Random(seed))(words);
+        directions.addAll(grid.words.map((word) => word.direction));
+      }
+
+      // Assert
+      expect(directions, containsAll(WordDirection.values));
+      expect(WordDirection.diagonal.rowStep, 1);
+      expect(WordDirection.diagonal.colStep, 1);
     });
 
     test('keeps accents and drops separators', () {

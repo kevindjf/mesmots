@@ -24,7 +24,7 @@ class AppTheme {
       // Color scheme
       colorScheme: isDark
           ? ColorScheme.dark(
-              primary: AppColors.primary,
+              primary: AppColors.buttonBlue,
               secondary: AppColors.secondary,
               tertiary: AppColors.accent,
               surface: palette.panel,
@@ -35,7 +35,7 @@ class AppTheme {
               onError: Colors.white,
             )
           : ColorScheme.light(
-              primary: AppColors.primary,
+              primary: AppColors.buttonBlue,
               secondary: AppColors.secondary,
               tertiary: AppColors.accent,
               surface: palette.panel,
@@ -116,7 +116,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.buttonBlue, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
@@ -136,7 +136,7 @@ class AppTheme {
 
       // Progress indicator theme
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primary,
+        color: AppColors.success,
         linearTrackColor: AppColors.textLight,
       ),
 

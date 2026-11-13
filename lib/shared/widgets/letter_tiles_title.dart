@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -25,12 +26,16 @@ class LetterTilesTitle extends StatefulWidget {
   final Duration delay;
   final Duration stagger;
 
+  /// How rows line up when the text has several (centered by default).
+  final CrossAxisAlignment rowAlignment;
+
   const LetterTilesTitle({
     super.key,
     required this.text,
     this.tileSize = 44,
     this.delay = Duration.zero,
     this.stagger = const Duration(milliseconds: 90),
+    this.rowAlignment = CrossAxisAlignment.center,
   });
 
   @override
@@ -57,6 +62,7 @@ class _LetterTilesTitleState extends State<LetterTilesTitle>
     duration: _slot * (_tileCount + _restSlots),
   );
   bool _waveStarted = false;
+  Timer? _waveStart;
 
   int get _tileCount => widget.text.replaceAll(' ', '').characters.length;
 
@@ -69,13 +75,12 @@ class _LetterTilesTitleState extends State<LetterTilesTitle>
     final landed = widget.delay +
         widget.stagger * _tileCount +
         const Duration(milliseconds: 900);
-    Future<void>.delayed(landed, () {
-      if (mounted) _wave.repeat();
-    });
+    _waveStart = Timer(landed, _wave.repeat);
   }
 
   @override
   void dispose() {
+    _waveStart?.cancel();
     _wave.dispose();
     super.dispose();
   }
@@ -96,6 +101,7 @@ class _LetterTilesTitleState extends State<LetterTilesTitle>
       fit: BoxFit.scaleDown,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: widget.rowAlignment,
         children: [
           for (final row in rows)
             Padding(

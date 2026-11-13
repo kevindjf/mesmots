@@ -29,8 +29,7 @@ void main() {
 
   test('saved settings load back', () async {
     // Arrange
-    const settings =
-        AppearanceSettings(theme: ThemeChoice.dark, highContrast: true);
+    const settings = AppearanceSettings(highContrast: true);
 
     // Act
     await repository.save(settings);
@@ -39,11 +38,11 @@ void main() {
     expect(repository.load(), settings);
   });
 
-  test('a theme no longer offered falls back to the default', () async {
+  test('a theme saved by an older version is ignored', () async {
     // Arrange
-    await box.put('theme', 'turquoise');
+    await box.put('theme', 'dark');
 
     // Act & Assert
-    expect(repository.load().theme, AppearanceSettings.initial.theme);
+    expect(repository.load(), AppearanceSettings.initial);
   });
 }

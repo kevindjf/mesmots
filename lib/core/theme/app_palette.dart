@@ -8,7 +8,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 /// changes:
 /// - [onBackground]: text and icons drawn right on the background.
 /// - tiles: white elements on the background (letters, round and control
-///   buttons, keys). Anthracite on white, white on dark.
+///   buttons, keys), anthracite with white content.
 /// - panels: content cards and dialogs (progress header, boards, inputs).
 /// - slots: boxes still to fill in letter games.
 @immutable
@@ -27,8 +27,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color tile;
   final Color tileShadow;
 
-  /// Icons and free letters on a tile.
-  final Color tileAccent;
+  /// Icons and button labels on a tile: the inverse of the tile.
+  final Color tileIcon;
 
   /// Placed letters and key labels on a tile.
   final Color tileText;
@@ -63,7 +63,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.onBackground,
     required this.tile,
     required this.tileShadow,
-    required this.tileAccent,
+    required this.tileIcon,
     required this.tileText,
     required this.tileDisabled,
     required this.tileDisabledContent,
@@ -89,48 +89,20 @@ class AppPalette extends ThemeExtension<AppPalette> {
     onBackground: AppColors.textPrimary,
     tile: AppColors.anthracite,
     tileShadow: AppColors.anthraciteShadow,
-    tileAccent: AppColors.primary,
+    tileIcon: AppColors.textOnColor,
     tileText: AppColors.textOnColor,
     tileDisabled: AppColors.lightDisabled,
     tileDisabledContent: AppColors.textLight,
     panel: AppColors.surface,
-    panelShadow: AppColors.borderLight,
-    panelBorder: AppColors.borderLight,
+    panelShadow: AppColors.dashedBorder,
+    panelBorder: AppColors.dashedBorder,
     panelText: AppColors.textPrimary,
     panelTextMuted: AppColors.textSecondary,
     panelHint: AppColors.textLight,
-    panelHighlight: AppColors.iconBackground,
+    panelHighlight: AppColors.lightHighlight,
     slot: AppColors.lightSlot,
     slotBorder: AppColors.lightSlotBorder,
     starInactive: AppColors.textLight,
-  );
-
-  /// Night blue background, light text, white tiles.
-  static final dark = AppPalette(
-    brightness: Brightness.dark,
-    background: AppColors.nightGradientEnd,
-    backgroundGradient: const [
-      AppColors.nightGradientStart,
-      AppColors.nightGradientEnd,
-    ],
-    shapeTints: _tints(0.1),
-    onBackground: AppColors.nightText,
-    tile: AppColors.surface,
-    tileShadow: AppColors.offWhiteShadow,
-    tileAccent: AppColors.primary,
-    tileText: AppColors.textPrimary,
-    tileDisabled: AppColors.surface.withValues(alpha: 0.08),
-    tileDisabledContent: AppColors.nightMuted,
-    panel: AppColors.nightCard,
-    panelShadow: AppColors.nightLine,
-    panelBorder: AppColors.nightLine,
-    panelText: AppColors.nightText,
-    panelTextMuted: AppColors.nightTextMuted,
-    panelHint: AppColors.nightMuted,
-    panelHighlight: AppColors.nightLine,
-    slot: AppColors.surface.withValues(alpha: 0.06),
-    slotBorder: AppColors.nightMuted,
-    starInactive: AppColors.nightStar,
   );
 
   static List<Color> _tints(double alpha) => [
@@ -138,7 +110,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
           AppColors.buttonOrange,
           AppColors.buttonPink,
           AppColors.buttonBlue,
-          AppColors.primary,
+          AppColors.buttonCoral,
           AppColors.buttonMagenta,
         ])
           color.withValues(alpha: alpha),
@@ -170,6 +142,12 @@ class AppPalette extends ThemeExtension<AppPalette> {
   BoxBorder? get panelOutline =>
       panelBorder.a == 0 ? null : Border.all(color: panelBorder, width: 2);
 
+  /// Outline of an element that is a panel, or a block of [blockColor]
+  /// when given: same width either way, so switching never resizes it.
+  BoxBorder? outlineOf(Color? blockColor) => blockColor == null
+      ? panelOutline
+      : Border.all(color: blockColor, width: 2);
+
   /// Color of the floating shape number [index].
   Color shapeColor(int index) => shapeTints[index % shapeTints.length];
 
@@ -182,7 +160,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
         onBackground: onBackground,
         tile: tile,
         tileShadow: tileShadow,
-        tileAccent: tileAccent,
+        tileIcon: tileIcon,
         tileText: tileText,
         tileDisabled: tileDisabled,
         tileDisabledContent: tileDisabledContent,

@@ -37,7 +37,7 @@ class KeypadButton extends StatefulWidget {
             fontFamily: AppTypography.fontFamily,
             fontSize: 28,
             fontWeight: AppTypography.bold,
-            color: context.palette.tileAccent,
+            color: context.palette.tileIcon,
           ),
         ),
       ),

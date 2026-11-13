@@ -69,7 +69,7 @@ class LetterSlot extends StatelessWidget {
       // Stays white: the dark green letter must read on it in every theme.
       LetterSlotState.locked => (
           AppColors.surface,
-          AppColors.primaryDark,
+          AppColors.successShadow,
           AppColors.successDark,
         ),
       LetterSlotState.correct => (

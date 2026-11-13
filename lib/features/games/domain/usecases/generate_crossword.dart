@@ -100,7 +100,7 @@ class GenerateCrossword {
       for (var i = 0; i < letters.length; i++) {
         if (letters[i] != cell.value) continue;
 
-        for (final direction in WordDirection.values) {
+        for (final direction in WordDirection.straight) {
           if (grid.directions[cell.key]!.contains(direction)) continue;
           final candidate = PlacedWord(
             word: word,

@@ -47,6 +47,7 @@ class _ParentListCardState extends State<ParentListCard> {
         decoration: BoxDecoration(
           color: context.palette.panel,
           borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
+          border: context.palette.panelOutline,
           boxShadow: [
             BoxShadow(
               color: context.palette.panelShadow,
@@ -103,7 +104,7 @@ class _ParentListCardState extends State<ParentListCard> {
                             child: Icon(
                               type.icon,
                               size: 16,
-                              color: AppColors.textOnColor,
+                              color: context.palette.onBlock(type.color),
                             ),
                           ),
                         ),

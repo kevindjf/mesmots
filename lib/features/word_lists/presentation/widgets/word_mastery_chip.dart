@@ -8,18 +8,30 @@ import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 class WordMasteryChip extends StatelessWidget {
   final String word;
   final WordStatus status;
+  final VoidCallback? onTap;
 
   const WordMasteryChip({
     super.key,
     required this.word,
     required this.status,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isMastered = status.isMastered;
 
+    return GestureDetector(
+      onTap: onTap,
+      child: _buildChip(isMastered),
+    );
+  }
+
+  Widget _buildChip(bool isMastered) {
     return Container(
+      constraints: const BoxConstraints(
+        minHeight: AppDimensions.minTouchTarget,
+      ),
       padding: const EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingM,
         vertical: AppDimensions.paddingS,

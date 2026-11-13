@@ -5,8 +5,9 @@ import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/utils/haptic_service.dart';
 import 'package:mesmots/core/utils/tts_service.dart';
 
-/// Round button that says a word, then spells it letter by letter
-/// ("sept": "èss, eu, pé, té"). Mr. Square style with a 3D shadow.
+/// Round button that says a word (unless [sayWordFirst] is false), then
+/// spells it letter by letter
+/// ("sept": S, E, P, T). Mr. Square style with a 3D shadow.
 class SpellButton extends ConsumerStatefulWidget {
   final String word;
   final double size;
@@ -16,6 +17,9 @@ class SpellButton extends ConsumerStatefulWidget {
   /// Position of the letter being said, then null when the spelling ends.
   final ValueChanged<int?>? onLetter;
 
+  /// Say the whole word before its letters.
+  final bool sayWordFirst;
+
   const SpellButton({
     super.key,
     required this.word,
@@ -23,6 +27,7 @@ class SpellButton extends ConsumerStatefulWidget {
     this.backgroundColor = AppColors.buttonOrange,
     this.shadowColor = AppColors.buttonOrangeShadow,
     this.onLetter,
+    this.sayWordFirst = true,
   });
 
   @override
@@ -39,6 +44,7 @@ class _SpellButtonState extends ConsumerState<SpellButton> {
     setState(() => _isSpelling = true);
     await _tts.spell(
       widget.word,
+      sayWordFirst: widget.sayWordFirst,
       onLetter: (position) {
         if (mounted) widget.onLetter?.call(position);
       },

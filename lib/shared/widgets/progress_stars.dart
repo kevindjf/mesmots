@@ -65,11 +65,9 @@ class AnimatedProgressStars extends StatefulWidget {
 
 class _AnimatedProgressStarsState extends State<AnimatedProgressStars>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 600),
-    vsync: this,
-    value: 1,
-  );
+  // Created up front: a lazy controller would be created in dispose() when
+  // no star was ever lit (0 stars), which is not allowed there.
+  late final AnimationController _controller;
   late final Animation<double> _pop = TweenSequence<double>([
     TweenSequenceItem(tween: Tween<double>(begin: 0, end: 1.5), weight: 40),
     TweenSequenceItem(
@@ -81,6 +79,16 @@ class _AnimatedProgressStarsState extends State<AnimatedProgressStars>
 
   /// Stars lit before the last change: they don't animate.
   late int _previousCount = widget.count;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+      value: 1,
+    );
+  }
 
   @override
   void didUpdateWidget(AnimatedProgressStars oldWidget) {

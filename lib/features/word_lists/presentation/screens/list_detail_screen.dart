@@ -11,7 +11,7 @@ import 'package:mesmots/features/games/presentation/extensions/game_type_present
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/game_tile.dart';
-import 'package:mesmots/features/word_lists/presentation/widgets/word_mastery_chip.dart';
+import 'package:mesmots/features/word_lists/presentation/widgets/word_list_panel.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 
@@ -65,36 +65,7 @@ class ListDetailScreen extends ConsumerWidget {
                     child: ListView(
                       padding: const EdgeInsets.all(AppDimensions.paddingL),
                       children: [
-                        // List info badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppDimensions.paddingM,
-                            vertical: AppDimensions.paddingS,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                AppColors.textOnColor.withValues(alpha: 0.15),
-                            borderRadius:
-                                BorderRadius.circular(AppDimensions.radiusM),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.menu_book,
-                                  color: AppColors.textOnColor, size: 18),
-                              const SizedBox(width: AppDimensions.spacingS),
-                              Text(
-                                '${wordList.words.length} ${AppStrings.words}',
-                                style: const TextStyle(
-                                  fontFamily: AppTypography.fontFamily,
-                                  fontSize: AppTypography.bodyMedium,
-                                  fontWeight: AppTypography.semiBold,
-                                  color: AppColors.textOnColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        WordListPanel(wordList: wordList),
                         const SizedBox(height: AppDimensions.spacingXl),
 
                         const _SectionTitle(AppStrings.chooseGame),
@@ -124,23 +95,6 @@ class ListDetailScreen extends ConsumerWidget {
                                                 type.buildScreen(listId),
                                           ),
                                         ),
-                              ),
-                          ],
-                        ),
-
-                        const SizedBox(height: AppDimensions.spacingXl),
-                        _SectionTitle(
-                          '${AppStrings.myWords} • ${wordList.masteredCount}/${wordList.words.length} ${AppStrings.masteredWords}',
-                        ),
-                        const SizedBox(height: AppDimensions.spacingL),
-                        Wrap(
-                          spacing: AppDimensions.spacingS,
-                          runSpacing: AppDimensions.spacingM,
-                          children: [
-                            for (final word in wordList.words)
-                              WordMasteryChip(
-                                word: word,
-                                status: wordList.statusOf(word),
                               ),
                           ],
                         ),

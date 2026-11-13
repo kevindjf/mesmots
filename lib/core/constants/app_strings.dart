@@ -37,6 +37,7 @@ class AppStrings {
   static const String chooseGame = 'CHOISIS TON JEU';
   static const String myWords = 'MES MOTS';
   static const String masteredWords = 'mots maîtrisés';
+  static const String mastered = 'maîtrisés';
   static const String wordsToLearn = 'mots à apprendre';
   static const String playedTimes = 'Joué';
   static const String crosswordUnavailable =
@@ -54,6 +55,8 @@ class AppStrings {
   static const String tapToReplay = '(touche pour réécouter)';
   static const String spellWord = 'Épeler le mot';
   static const String listenWord = 'Écouter le mot';
+  static const String listen = 'Écouter';
+  static const String spell = 'Épeler';
   static const String spellingListen = 'Écoute les lettres et écris le mot';
   static const String playAgain = 'Rejouer';
   static const String otherGame = 'Choisir un autre jeu';

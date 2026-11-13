@@ -1,1 +1,1 @@
-Nouveau jeu « Écoute et épelle », pièges de lettres muettes dans Le bon mot, et retrait temporaire du scan photo.
+Nouvelle présentation des jeux avec des pictos en lettres, liste de mots repliable, écoute et épellation des mots pendant la saisie de la liste, et les lettres sont maintenant épelées avec leur vrai nom.

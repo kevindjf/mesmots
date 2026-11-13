@@ -5,7 +5,7 @@ import 'package:mesmots/features/games/presentation/extensions/game_type_present
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/shared/widgets/pop_in.dart';
 
-/// The 6 games as colorful tiles popping in one after another.
+/// The games as colorful tiles popping in one after another.
 class TourGamesIllustration extends StatelessWidget {
   const TourGamesIllustration({super.key});
 

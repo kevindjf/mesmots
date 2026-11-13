@@ -138,4 +138,76 @@ void main() {
     // Assert
     expect(published.length, count);
   });
+
+  group('spelling aloud', () {
+    late _MockTts tts;
+    late PuzzleGameEngine spellingEngine;
+    late List<PuzzleGameState> states;
+    late void Function(int? position) onLetter;
+
+    setUp(() {
+      final repository = _MockRepository();
+      tts = _MockTts();
+      when(() => repository.getById('l')).thenAnswer((_) async => list);
+      when(() => repository.update(any())).thenAnswer((_) async {});
+      when(() => tts.stop()).thenAnswer((_) async {});
+      when(
+        () => tts.spell(any(), onLetter: any(named: 'onLetter')),
+      ).thenAnswer((invocation) async {
+        onLetter = invocation.namedArguments[#onLetter]
+            as void Function(int? position);
+      });
+      states = [];
+      spellingEngine = PuzzleGameEngine(
+        wordList: list,
+        type: GameType.spelling,
+        spellAloud: true,
+        makePuzzle: (word) => LetterPuzzle(
+            word: word, blanks: const [1, 3], tiles: const ['t', 'h', 'd']),
+        tts: tts,
+        audio: audio,
+        haptic: _MockHaptic(),
+        recorder: ProgressRecorder(repository, 'l'),
+        onChange: states.add,
+      );
+    });
+
+    test('spells the word instead of only saying it', () {
+      // Assert
+      verify(() => tts.spell('chat', onLetter: any(named: 'onLetter')))
+          .called(1);
+      verifyNever(() => tts.speak(any()));
+    });
+
+    test('publishes the letter being spelled', () {
+      // Act
+      onLetter(2);
+      final during = spellingEngine.state.spokenPosition;
+      onLetter(null);
+
+      // Assert
+      expect(during, 2);
+      expect(spellingEngine.state.spokenPosition, isNull);
+    });
+
+    test('a replaced spelling no longer moves the highlight', () {
+      // Arrange
+      final first = onLetter;
+      spellingEngine.replaySpelling();
+
+      // Act
+      first(1);
+
+      // Assert
+      expect(spellingEngine.state.spokenPosition, isNull);
+    });
+
+    test('stops speaking when the screen is closed', () {
+      // Act
+      spellingEngine.dispose();
+
+      // Assert
+      verify(() => tts.stop()).called(1);
+    });
+  });
 }

@@ -10,6 +10,7 @@ class CircleIconButton extends StatefulWidget {
   final Color shadowColor;
   final Color iconColor;
   final double size;
+  final double iconSize;
 
   const CircleIconButton({
     super.key,
@@ -19,6 +20,7 @@ class CircleIconButton extends StatefulWidget {
     this.shadowColor = AppColors.primaryDark,
     this.iconColor = AppColors.primary,
     this.size = 44,
+    this.iconSize = AppDimensions.iconM,
   });
 
   /// White button with primary icon (e.g. back button)
@@ -27,6 +29,7 @@ class CircleIconButton extends StatefulWidget {
     required this.icon,
     this.onTap,
     this.size = 44,
+    this.iconSize = AppDimensions.iconM,
   })  : color = AppColors.surface,
         shadowColor = AppColors.primaryDark,
         iconColor = AppColors.primary;
@@ -39,6 +42,7 @@ class CircleIconButton extends StatefulWidget {
     required this.color,
     required this.shadowColor,
     this.size = 44,
+    this.iconSize = AppDimensions.iconM,
   }) : iconColor = AppColors.textOnColor;
 
   @override
@@ -76,7 +80,7 @@ class _CircleIconButtonState extends State<CircleIconButton> {
         child: Icon(
           widget.icon,
           color: widget.iconColor,
-          size: AppDimensions.iconM,
+          size: widget.iconSize,
         ),
       ),
     );

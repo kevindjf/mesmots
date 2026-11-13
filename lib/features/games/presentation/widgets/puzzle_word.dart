@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
+import 'package:mesmots/core/extensions/motion_context.dart';
 import 'package:mesmots/features/games/domain/entities/letter_puzzle.dart';
 import 'package:mesmots/features/games/presentation/widgets/letter_slot.dart';
 import 'package:mesmots/shared/widgets/shake.dart';
@@ -16,7 +17,15 @@ class PuzzleWord extends StatelessWidget {
   final LetterPuzzle puzzle;
   final ValueChanged<int> onSlotTap;
 
-  const PuzzleWord({super.key, required this.puzzle, required this.onSlotTap});
+  /// Position of the letter being spelled aloud: its box pops up.
+  final int? highlighted;
+
+  const PuzzleWord({
+    super.key,
+    required this.puzzle,
+    required this.onSlotTap,
+    this.highlighted,
+  });
 
   LetterSlotState _stateOf(int position) {
     final slot = puzzle.slotAt(position);
@@ -57,15 +66,22 @@ class PuzzleWord extends StatelessWidget {
                 if (letters[i] == ' ')
                   SizedBox(width: size / 2)
                 else
-                  LetterSlot(
-                    letter: puzzle.slotAt(i) == null
-                        ? letters[i]
-                        : puzzle.letterAt(puzzle.slotAt(i)!),
-                    state: _stateOf(i),
-                    size: size,
-                    onTap: puzzle.slotAt(i) == null
-                        ? null
-                        : () => onSlotTap(puzzle.slotAt(i)!),
+                  AnimatedSlide(
+                    offset: Offset(0, i == highlighted ? -0.2 : 0),
+                    duration: context.motion(
+                      const Duration(milliseconds: 150),
+                    ),
+                    child: LetterSlot(
+                      letter: puzzle.slotAt(i) == null
+                          ? letters[i]
+                          : puzzle.letterAt(puzzle.slotAt(i)!),
+                      state: _stateOf(i),
+                      size: size,
+                      isHighlighted: i == highlighted,
+                      onTap: puzzle.slotAt(i) == null
+                          ? null
+                          : () => onSlotTap(puzzle.slotAt(i)!),
+                    ),
                   ),
               ],
             ],

@@ -59,11 +59,23 @@ class PuzzleGameView extends StatelessWidget {
             padding: const EdgeInsets.all(AppDimensions.paddingXl),
             child: Column(
               children: [
-                SpeakerButton(word: puzzle.word, size: 80),
+                if (engine.spellAloud)
+                  CircleIconButton.colored(
+                    icon: Icons.abc_rounded,
+                    onTap: engine.replaySpelling,
+                    color: AppColors.buttonPurple,
+                    shadowColor: AppColors.buttonPurpleShadow,
+                    size: 80,
+                    iconSize: AppDimensions.iconXl,
+                  )
+                else
+                  SpeakerButton(word: puzzle.word, size: 80),
                 const SizedBox(height: AppDimensions.spacingS),
-                const Text(
-                  AppStrings.tapToReplay,
-                  style: TextStyle(
+                Text(
+                  engine.spellAloud
+                      ? AppStrings.spellingListen
+                      : AppStrings.tapToReplay,
+                  style: const TextStyle(
                     fontFamily: AppTypography.fontFamily,
                     fontSize: AppTypography.bodySmall,
                     color: AppColors.textOnColor,
@@ -77,7 +89,11 @@ class PuzzleGameView extends StatelessWidget {
                   size: AppDimensions.iconL,
                 ),
                 const SizedBox(height: AppDimensions.spacingXl),
-                PuzzleWord(puzzle: puzzle, onSlotTap: engine.remove),
+                PuzzleWord(
+                  puzzle: puzzle,
+                  onSlotTap: engine.remove,
+                  highlighted: state.spokenPosition,
+                ),
                 // The right spelling, shown after a mistake.
                 SizedBox(
                   height: 56,

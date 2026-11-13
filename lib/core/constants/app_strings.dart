@@ -53,6 +53,7 @@ class AppStrings {
   static const String validated = 'validés';
   static const String tapToReplay = '(touche pour réécouter)';
   static const String spellWord = 'Épeler le mot';
+  static const String spellingListen = 'Écoute les lettres et écris le mot';
   static const String playAgain = 'Rejouer';
   static const String otherGame = 'Choisir un autre jeu';
   static const String backToList = 'Retour à la liste';
@@ -94,7 +95,7 @@ class AppStrings {
       'Tapez les mots de la semaine, en quelques secondes.';
   static const String tourGamesTitle = 'Votre enfant joue';
   static const String tourGamesText =
-      '6 jeux, dans l\'ordre qu\'il veut, quand il veut. Pas de niveau à débloquer.';
+      '7 jeux, dans l\'ordre qu\'il veut, quand il veut. Pas de niveau à débloquer.';
   static const String tourStarsTitle = 'Il gagne des étoiles';
   static const String tourStarsText =
       'Chaque réussite donne une étoile au mot. À 3 étoiles, il est maîtrisé. Les erreurs ne retirent rien.';

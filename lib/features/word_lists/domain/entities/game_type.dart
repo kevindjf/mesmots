@@ -3,6 +3,7 @@
 enum GameType {
   qcm,
   scramble,
+  spelling,
   fillBlanks,
   writing,
   wordSearch,
@@ -15,6 +16,8 @@ enum GameType {
         return 'Le bon mot';
       case GameType.scramble:
         return 'Lettres mélangées';
+      case GameType.spelling:
+        return 'Écoute et épelle';
       case GameType.fillBlanks:
         return 'Mots à trous';
       case GameType.writing:
@@ -33,6 +36,8 @@ enum GameType {
         return 'Choisis la bonne orthographe';
       case GameType.scramble:
         return 'Remets les lettres dans l\'ordre';
+      case GameType.spelling:
+        return 'Écoute les lettres et écris le mot';
       case GameType.fillBlanks:
         return 'Complète les lettres manquantes';
       case GameType.writing:

@@ -4,6 +4,7 @@ import 'package:mesmots/features/games/presentation/screens/crossword_game_scree
 import 'package:mesmots/features/games/presentation/screens/fill_blanks_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/qcm_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/scramble_game_screen.dart';
+import 'package:mesmots/features/games/presentation/screens/spelling_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/word_search_game_screen.dart';
 import 'package:mesmots/features/games/presentation/screens/writing_game_screen.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
@@ -16,6 +17,8 @@ extension GameTypePresentation on GameType {
         return Icons.touch_app_rounded;
       case GameType.scramble:
         return Icons.shuffle_rounded;
+      case GameType.spelling:
+        return Icons.abc_rounded;
       case GameType.fillBlanks:
         return Icons.extension_rounded;
       case GameType.writing:
@@ -33,6 +36,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonOrange;
       case GameType.scramble:
         return AppColors.buttonBlue;
+      case GameType.spelling:
+        return AppColors.buttonPurple;
       case GameType.fillBlanks:
         return AppColors.buttonPink;
       case GameType.writing:
@@ -50,6 +55,8 @@ extension GameTypePresentation on GameType {
         return AppColors.buttonOrangeShadow;
       case GameType.scramble:
         return AppColors.buttonBlueShadow;
+      case GameType.spelling:
+        return AppColors.buttonPurpleShadow;
       case GameType.fillBlanks:
         return AppColors.buttonPinkShadow;
       case GameType.writing:
@@ -68,6 +75,8 @@ extension GameTypePresentation on GameType {
         return QcmGameScreen(listId: listId);
       case GameType.scramble:
         return ScrambleGameScreen(listId: listId);
+      case GameType.spelling:
+        return SpellingGameScreen(listId: listId);
       case GameType.fillBlanks:
         return FillBlanksGameScreen(listId: listId);
       case GameType.writing:

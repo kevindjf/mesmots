@@ -33,12 +33,16 @@ class LetterSlot extends StatelessWidget {
   final double size;
   final VoidCallback? onTap;
 
+  /// The letter of this box is being spelled aloud.
+  final bool isHighlighted;
+
   const LetterSlot({
     super.key,
     required this.letter,
     required this.state,
     required this.size,
     this.onTap,
+    this.isHighlighted = false,
   });
 
   @override
@@ -86,9 +90,11 @@ class LetterSlot extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
-          border: state == LetterSlotState.empty
-              ? Border.all(color: AppColors.surface, width: 2)
-              : null,
+          border: isHighlighted
+              ? Border.all(color: AppColors.accent, width: 3)
+              : state == LetterSlotState.empty
+                  ? Border.all(color: AppColors.surface, width: 2)
+                  : null,
           boxShadow: [
             BoxShadow(color: shadow, blurRadius: 0, offset: const Offset(0, 3)),
           ],

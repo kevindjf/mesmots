@@ -22,6 +22,8 @@ class AppColors {
   static const Color buttonMagentaShadow = Color(0xFFC626E0); // Ombre magenta
   static const Color buttonBlue = Color(0xFF42A5F5); // Bleu
   static const Color buttonBlueShadow = Color(0xFF2889D9); // Ombre bleu
+  static const Color buttonPurple = Color(0xFF7E57C2); // Violet
+  static const Color buttonPurpleShadow = Color(0xFF6440A8); // Ombre violet
 
   // Background colors
   static const Color background = Color(0xFF4ECDC4); // Fond turquoise

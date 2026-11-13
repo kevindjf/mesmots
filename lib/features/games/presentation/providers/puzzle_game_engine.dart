@@ -19,12 +19,17 @@ class PuzzleGameState {
   final int validatedCount;
   final int totalCount;
 
+  /// Position (grapheme index) of the letter being spelled aloud, when the
+  /// game spells the words.
+  final int? spokenPosition;
+
   const PuzzleGameState({
     required this.puzzle,
     required this.stars,
     required this.progress,
     required this.validatedCount,
     required this.totalCount,
+    this.spokenPosition,
   });
 }
 
@@ -38,11 +43,14 @@ class PuzzleGameState {
 ///   mistake gives no star and comes back later.
 /// - Each word must be found twice without mistake in a game.
 /// - Sounds only for results (right, wrong, word done, game done).
+/// - With [spellAloud] ("Écoute et épelle"), each word is said then spelled
+///   letter by letter, at the start and after a mistake.
 class PuzzleGameEngine {
   static const successPause = Duration(milliseconds: 1200);
   static const errorPause = Duration(milliseconds: 1800);
 
   final GameType type;
+  final bool spellAloud;
   final LetterPuzzle Function(String word) _makePuzzle;
   final TtsService _tts;
   final AudioService _audio;
@@ -55,10 +63,16 @@ class PuzzleGameEngine {
   LetterPuzzle? _puzzle;
   bool _hadMistake = false;
   bool _disposed = false;
+  int? _spokenPosition;
+
+  /// Identifies the current spelling: a spelling replaced by a newer one
+  /// no longer moves the highlighted letter.
+  int _spelling = 0;
 
   PuzzleGameEngine({
     required WordList wordList,
     required this.type,
+    this.spellAloud = false,
     required LetterPuzzle Function(String word) makePuzzle,
     required TtsService tts,
     required AudioService audio,
@@ -87,11 +101,15 @@ class PuzzleGameEngine {
       progress: _session.progress,
       validatedCount: _session.validatedCount,
       totalCount: _session.totalWords,
+      spokenPosition: _spokenPosition,
     );
   }
 
   /// Stop: the game screen was closed, possibly during a pause.
-  void dispose() => _disposed = true;
+  void dispose() {
+    _disposed = true;
+    if (spellAloud) _tts.stop().ignore();
+  }
 
   void _publish() {
     if (!_disposed) _onChange(state);
@@ -101,12 +119,36 @@ class PuzzleGameEngine {
     _hadMistake = false;
     final word = _session.currentWord;
     _puzzle = word == null ? null : _makePuzzle(word);
-    if (word != null) _tts.speak(word).ignore();
+    if (word != null) _say(word);
+  }
+
+  /// Say the word, and spell it in "Écoute et épelle".
+  void _say(String word) {
+    if (!spellAloud) {
+      _tts.speak(word).ignore();
+      return;
+    }
+    final spelling = ++_spelling;
+    _spokenPosition = null;
+    _tts.spell(
+      word,
+      onLetter: (position) {
+        if (spelling != _spelling) return;
+        _spokenPosition = position;
+        _publish();
+      },
+    ).ignore();
   }
 
   Future<void> replayWord() async {
     final word = _puzzle?.word;
     if (word != null) await _tts.speak(word);
+  }
+
+  /// Say and spell the current word again.
+  void replaySpelling() {
+    final word = _puzzle?.word;
+    if (word != null) _say(word);
   }
 
   /// Put [tile] in the first empty slot; checks the word when it's full.
@@ -180,7 +222,7 @@ class PuzzleGameEngine {
 
     _haptic.error();
     _audio.playError();
-    _tts.speak(word).ignore();
+    _say(word);
     _publish();
 
     await Future.delayed(errorPause);

@@ -8,7 +8,7 @@ class CircleIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  /// Colors default to the theme tile (white on turquoise).
+  /// Colors default to the theme tile (anthracite on light, white on dark).
   final Color? color;
   final Color? shadowColor;
   final Color? iconColor;

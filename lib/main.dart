@@ -36,8 +36,6 @@ class MesMotsApp extends ConsumerWidget {
     return MaterialApp(
       title: AppStrings.appName,
       theme: appearance.themeData,
-      darkTheme: appearance.darkThemeData,
-      themeMode: appearance.themeMode,
       home: const AppInitializer(),
       debugShowCheckedModeBanner: false,
     );

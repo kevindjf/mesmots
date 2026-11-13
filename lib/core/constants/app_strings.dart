@@ -78,10 +78,8 @@ class AppStrings {
 
   // Appearance
   static const String appearance = 'APPARENCE';
-  static const String themeTurquoise = 'Turquoise';
   static const String themeLight = 'Clair';
   static const String themeDark = 'Sombre';
-  static const String themeSystem = 'Auto';
   static const String highContrast = 'Contraste renforcé';
   static const String highContrastHint =
       'Texte foncé sur les couleurs vives, plus facile à lire.';

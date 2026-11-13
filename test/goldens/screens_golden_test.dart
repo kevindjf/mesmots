@@ -20,7 +20,6 @@ import 'golden_harness.dart';
 
 /// Every theme the app offers, each checked against its own goldens.
 final themes = <String, ThemeData>{
-  'turquoise': AppTheme.lightTheme,
   'light': AppTheme.of(AppPalette.light),
   'dark': AppTheme.of(AppPalette.dark),
 };

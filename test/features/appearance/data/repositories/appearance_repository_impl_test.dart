@@ -39,9 +39,9 @@ void main() {
     expect(repository.load(), settings);
   });
 
-  test('an unknown theme falls back to the default', () async {
+  test('a theme no longer offered falls back to the default', () async {
     // Arrange
-    await box.put('theme', 'rainbow');
+    await box.put('theme', 'turquoise');
 
     // Act & Assert
     expect(repository.load().theme, AppearanceSettings.initial.theme);

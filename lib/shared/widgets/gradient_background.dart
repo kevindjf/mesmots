@@ -55,7 +55,7 @@ class FloatingShapes extends StatelessWidget {
           final shapeSize = 30.0 + random.nextDouble() * 60;
           final left = random.nextDouble() * size.width;
           final top = random.nextDouble() * size.height;
-          final isLight = random.nextBool();
+          random.nextBool(); // Keeps the shapes where they always were.
           final borderRadius = random.nextDouble() * 8 + 4;
 
           return Positioned(
@@ -67,7 +67,7 @@ class FloatingShapes extends StatelessWidget {
                 width: shapeSize,
                 height: shapeSize,
                 decoration: BoxDecoration(
-                  color: palette.shapeColor(index, isLight: isLight),
+                  color: palette.shapeColor(index),
                   borderRadius: BorderRadius.circular(borderRadius),
                 ),
               ),

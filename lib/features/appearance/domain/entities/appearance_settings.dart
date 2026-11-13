@@ -1,16 +1,10 @@
 /// Look of the app, picked by the parent.
 enum ThemeChoice {
-  /// Original turquoise background.
-  turquoise,
-
   /// White background, dark text.
   light,
 
   /// Night blue background, light text.
   dark,
-
-  /// Light or dark, following the device setting.
-  system,
 }
 
 /// Appearance preferences of the app.
@@ -21,11 +15,11 @@ class AppearanceSettings {
   final bool highContrast;
 
   const AppearanceSettings({
-    this.theme = ThemeChoice.turquoise,
+    this.theme = ThemeChoice.light,
     this.highContrast = false,
   });
 
-  /// Preferences of a fresh install: the original look.
+  /// Preferences of a fresh install: light theme.
   static const initial = AppearanceSettings();
 
   AppearanceSettings copyWith({ThemeChoice? theme, bool? highContrast}) =>

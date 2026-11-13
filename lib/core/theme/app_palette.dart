@@ -8,12 +8,9 @@ import 'package:mesmots/core/constants/app_colors.dart';
 /// changes:
 /// - [onBackground]: text and icons drawn right on the background.
 /// - tiles: white elements on the background (letters, round and control
-///   buttons, keys). White on turquoise and dark, anthracite on white.
+///   buttons, keys). Anthracite on white, white on dark.
 /// - panels: content cards and dialogs (progress header, boards, inputs).
 /// - slots: boxes still to fill in letter games.
-///
-/// [AppPalette.turquoise] holds the original colors, so the app looks exactly
-/// as before when it is selected.
 @immutable
 class AppPalette extends ThemeExtension<AppPalette> {
   final Brightness brightness;
@@ -22,11 +19,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color background;
   final List<Color> backgroundGradient;
 
-  /// Floating shapes: [shapeLight]/[shapeDark] picked at random, unless
-  /// [shapeTints] is set, then cycled through.
-  final Color shapeLight;
-  final Color shapeDark;
-  final List<Color>? shapeTints;
+  /// Floating shapes colors, cycled through.
+  final List<Color> shapeTints;
 
   final Color onBackground;
 
@@ -65,9 +59,7 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.brightness,
     required this.background,
     required this.backgroundGradient,
-    required this.shapeLight,
-    required this.shapeDark,
-    this.shapeTints,
+    required this.shapeTints,
     required this.onBackground,
     required this.tile,
     required this.tileShadow,
@@ -88,42 +80,11 @@ class AppPalette extends ThemeExtension<AppPalette> {
     this.highContrast = false,
   });
 
-  /// The original look: turquoise background, white text.
-  static final turquoise = AppPalette(
-    brightness: Brightness.light,
-    background: AppColors.background,
-    backgroundGradient: const [
-      AppColors.backgroundGradientStart,
-      AppColors.backgroundGradientEnd,
-    ],
-    shapeLight: AppColors.shapeLight,
-    shapeDark: AppColors.shapeDark,
-    onBackground: AppColors.textOnColor,
-    tile: AppColors.surface,
-    tileShadow: AppColors.primaryDark,
-    tileAccent: AppColors.primary,
-    tileText: AppColors.textPrimary,
-    tileDisabled: AppColors.textLight.withValues(alpha: 0.3),
-    tileDisabledContent: AppColors.textLight,
-    panel: AppColors.surface,
-    panelShadow: AppColors.primaryDark,
-    panelBorder: Colors.transparent,
-    panelText: AppColors.textPrimary,
-    panelTextMuted: AppColors.textSecondary,
-    panelHint: AppColors.textLight,
-    panelHighlight: AppColors.iconBackground,
-    slot: AppColors.surface.withValues(alpha: 0.35),
-    slotBorder: AppColors.surface,
-    starInactive: AppColors.textLight,
-  );
-
   /// White background, dark text, anthracite tiles.
   static final light = AppPalette(
     brightness: Brightness.light,
     background: AppColors.surface,
     backgroundGradient: const [AppColors.surface, AppColors.surface],
-    shapeLight: AppColors.shapeLight,
-    shapeDark: AppColors.shapeDark,
     shapeTints: _tints(0.13),
     onBackground: AppColors.textPrimary,
     tile: AppColors.anthracite,
@@ -152,8 +113,6 @@ class AppPalette extends ThemeExtension<AppPalette> {
       AppColors.nightGradientStart,
       AppColors.nightGradientEnd,
     ],
-    shapeLight: AppColors.shapeLight,
-    shapeDark: AppColors.shapeDark,
     shapeTints: _tints(0.1),
     onBackground: AppColors.nightText,
     tile: AppColors.surface,
@@ -211,20 +170,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
   BoxBorder? get panelOutline =>
       panelBorder.a == 0 ? null : Border.all(color: panelBorder, width: 2);
 
-  /// Floating shape color: tints cycle by [index], else light or dark.
-  Color shapeColor(int index, {required bool isLight}) {
-    final tints = shapeTints;
-    if (tints != null) return tints[index % tints.length];
-    return isLight ? shapeLight : shapeDark;
-  }
+  /// Color of the floating shape number [index].
+  Color shapeColor(int index) => shapeTints[index % shapeTints.length];
 
   @override
   AppPalette copyWith({bool? highContrast}) => AppPalette(
         brightness: brightness,
         background: background,
         backgroundGradient: backgroundGradient,
-        shapeLight: shapeLight,
-        shapeDark: shapeDark,
         shapeTints: shapeTints,
         onBackground: onBackground,
         tile: tile,

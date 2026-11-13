@@ -8,8 +8,8 @@ import 'package:mesmots/core/theme/app_palette.dart';
 class AppTheme {
   AppTheme._();
 
-  /// The original turquoise theme.
-  static ThemeData get lightTheme => of(AppPalette.turquoise);
+  /// The default theme, light.
+  static ThemeData get lightTheme => of(AppPalette.light);
 
   /// Theme built on [palette], which widgets read via `context.palette`.
   static ThemeData of(AppPalette palette) {

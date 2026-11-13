@@ -13,7 +13,7 @@ class BackButton3D extends StatelessWidget {
   final Color? iconColor;
   final double size;
 
-  /// Theme tile back button with turquoise icon, unless colors are given.
+  /// Theme tile back button with primary icon, unless colors are given.
   const BackButton3D({
     super.key,
     required this.onTap,

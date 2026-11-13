@@ -33,19 +33,13 @@ void main() {
         ),
       );
 
-  testWidgets('shows the four themes, the saved one selected', (tester) async {
+  testWidgets('shows light and dark, the saved one selected', (tester) async {
     // Act
     await pumpSection(tester);
 
     // Assert
-    for (final label in [
-      AppStrings.themeTurquoise,
-      AppStrings.themeLight,
-      AppStrings.themeDark,
-      AppStrings.themeSystem,
-    ]) {
-      expect(find.text(label), findsOneWidget);
-    }
+    expect(find.text(AppStrings.themeLight), findsOneWidget);
+    expect(find.text(AppStrings.themeDark), findsOneWidget);
     expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
   });
 

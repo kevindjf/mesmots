@@ -29,7 +29,7 @@ void main() {
   group('onBlock', () {
     test('stays white when high contrast is off', () {
       // Arrange
-      final palette = AppPalette.turquoise;
+      final palette = AppPalette.light;
 
       // Act & Assert
       expect(palette.onBlock(AppColors.buttonOrange), AppColors.textOnColor);
@@ -53,27 +53,13 @@ void main() {
     });
   });
 
-  group('shapeColor', () {
-    test('turquoise picks the light or dark shape', () {
-      // Arrange
-      final palette = AppPalette.turquoise;
+  test('shapeColor cycles through the tints', () {
+    // Arrange
+    final tints = AppPalette.light.shapeTints;
 
-      // Act & Assert
-      expect(palette.shapeColor(3, isLight: true), AppColors.shapeLight);
-      expect(palette.shapeColor(3, isLight: false), AppColors.shapeDark);
-    });
-
-    test('light and dark cycle through the tints', () {
-      // Arrange
-      final tints = AppPalette.light.shapeTints!;
-
-      // Act & Assert
-      expect(AppPalette.light.shapeColor(0, isLight: true), tints[0]);
-      expect(
-        AppPalette.light.shapeColor(tints.length + 1, isLight: false),
-        tints[1],
-      );
-    });
+    // Act & Assert
+    expect(AppPalette.light.shapeColor(0), tints[0]);
+    expect(AppPalette.light.shapeColor(tints.length + 1), tints[1]);
   });
 
   test('copyWith only changes the high contrast flag', () {

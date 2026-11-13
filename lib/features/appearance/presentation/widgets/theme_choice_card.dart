@@ -56,13 +56,8 @@ class ThemeChoiceCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(radius - 4),
                     child: SizedBox(
                       height: 64,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final preview in choice.previewPalettes)
-                            Expanded(child: ThemePreview(palette: preview)),
-                        ],
-                      ),
+                      width: double.infinity,
+                      child: ThemePreview(palette: choice.previewPalette),
                     ),
                   ),
                   if (isSelected)

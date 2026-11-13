@@ -75,6 +75,21 @@ class GenerateDistractors {
     _Rule(r'ô', ['o']),
     _Rule(r'î', ['i']),
     _Rule(r'û', ['u']),
+    // Silent consonants inside a word or after a nasal sound. A closed list
+    // of known cases: a general "pt -> t" would also hit "adapter",
+    // "septembre" or "concept", where the letter is heard.
+    _Rule(r'^sept(?=$|s$|ième)', ['set', 'cet']),
+    _Rule(r'(?<=^(dé|ra)?com)p(?=t)', ['']),
+    _Rule(r'^comp(?=t)', ['con']),
+    _Rule(r'(?<=^ba)p(?=t)', ['']),
+    _Rule(r'(?<=^scul)p(?=t)', ['']),
+    _Rule(r'(?<=^(auto|conda|da))m(?=n)', ['']),
+    _Rule(r'(?<=^(prin)?te)mps$', ['ms', 'mp', 'n']),
+    _Rule(r'(?<=^(doi|vin))gt(?=s?$)', ['t', 'g', '']),
+    _Rule(r'(?<=[ao])ng$', ['n', 'nc']),
+    // "donc" is left out: its c is often heard.
+    _Rule(r'(?<!^do)(?<=[ao])nc$', ['n', 'nt']),
+    _Rule(r'(?<=^co)rps$', ['r', 'rt']),
     // Silent endings
     _Rule(r'(?<=[V][^V])e$', ['']),
     _Rule(r'(?<=[V])r$', ['re']),

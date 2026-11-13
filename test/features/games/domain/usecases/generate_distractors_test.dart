@@ -71,6 +71,31 @@ void main() {
     expect(allVariants('garçon'), contains('garson'));
   });
 
+  test('drops silent letters inside a word', () {
+    // Assert
+    expect(allVariants('sept'), containsAll(['set', 'cet']));
+    expect(generate('sept').length, 3);
+    expect(allVariants('septième'), contains('setième'));
+    expect(allVariants('compter'), containsAll(['comter', 'conter']));
+    expect(allVariants('baptême'), contains('batême'));
+    expect(allVariants('sculpter'), contains('sculter'));
+    expect(allVariants('automne'), contains('autone'));
+    expect(allVariants('printemps'), contains('printems'));
+    expect(allVariants('doigt'), containsAll(['doit', 'doig']));
+    expect(allVariants('vingt'), contains('vint'));
+    expect(allVariants('blanc'), contains('blan'));
+    expect(allVariants('rang'), contains('ran'));
+    expect(allVariants('corps'), contains('cor'));
+  });
+
+  test('keeps letters that are heard', () {
+    // Assert
+    expect(allVariants('septembre'), isNot(contains('setembre')));
+    expect(allVariants('adapter'), isNot(contains('adater')));
+    expect(allVariants('concept'), isNot(contains('concet')));
+    expect(allVariants('donc'), isNot(contains('don')));
+  });
+
   test('avoids spellings that change the sound', () {
     // Assert: "ercole", "coleil", "éceaule" were produced before
     expect(allVariants('école'),

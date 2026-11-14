@@ -23,14 +23,10 @@ class WordSearchGameState {
   /// Cells currently selected by the child
   final List<GridPoint> selection;
 
-  /// First cell picked with a tap (tap-tap selection), if any
-  final GridPoint? anchor;
-
   const WordSearchGameState({
     required this.grid,
     this.found = const {},
     this.selection = const [],
-    this.anchor,
   });
 
   int get foundCount => found.length;
@@ -50,14 +46,11 @@ class WordSearchGameState {
   WordSearchGameState copyWith({
     Map<int, List<GridPoint>>? found,
     List<GridPoint>? selection,
-    GridPoint? anchor,
-    bool clearAnchor = false,
   }) {
     return WordSearchGameState(
       grid: grid,
       found: found ?? this.found,
       selection: selection ?? this.selection,
-      anchor: clearAnchor ? null : anchor ?? this.anchor,
     );
   }
 }
@@ -85,7 +78,7 @@ class WordSearchGame extends _$WordSearchGame {
     final current = _current;
     if (current == null || current.isComplete) return;
     state = AsyncData(
-      current.copyWith(selection: [point], clearAnchor: true),
+      current.copyWith(selection: [point]),
     );
   }
 
@@ -106,20 +99,6 @@ class WordSearchGame extends _$WordSearchGame {
     _validate(current.selection);
   }
 
-  /// Tap-tap selection: first tap sets the start, second tap the end
-  void tapCell(GridPoint point) {
-    final current = _current;
-    if (current == null || current.isComplete) return;
-
-    final anchor = current.anchor;
-    if (anchor == null) {
-      ref.read(hapticServiceProvider).selectionClick();
-      state = AsyncData(current.copyWith(selection: [point], anchor: point));
-      return;
-    }
-    _validate(_straightLine(anchor, point));
-  }
-
   void _validate(List<GridPoint> selection) {
     final current = _current;
     if (current == null) return;
@@ -128,7 +107,7 @@ class WordSearchGame extends _$WordSearchGame {
     if (index == null) {
       if (selection.length > 1) ref.read(hapticServiceProvider).light();
       state = AsyncData(
-        current.copyWith(selection: const [], clearAnchor: true),
+        current.copyWith(selection: const []),
       );
       return;
     }
@@ -137,7 +116,6 @@ class WordSearchGame extends _$WordSearchGame {
     final updated = current.copyWith(
       found: {...current.found, index: selection},
       selection: const [],
-      clearAnchor: true,
     );
     state = AsyncData(updated);
 

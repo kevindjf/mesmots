@@ -80,4 +80,29 @@ void main() {
     expect(state().found.containsKey(index), isTrue);
     expect(tester.getRect(find.byType(WordSearchBoard)), board);
   });
+
+  testWidgets('tapping the first then the last letter finds nothing',
+      (tester) async {
+    // Arrange
+    final state = await pumpGame(tester);
+    final word = state().grid.words.first;
+    final board = tester.getRect(find.byType(WordSearchBoard));
+    final cellSize =
+        (board.width - 2 * AppDimensions.paddingS) / state().grid.size;
+    Offset centerOf(GridPoint point) =>
+        board.topLeft +
+        Offset(
+          AppDimensions.paddingS + (point.col + 0.5) * cellSize,
+          AppDimensions.paddingS + (point.row + 0.5) * cellSize,
+        );
+
+    // Act
+    await tester.tapAt(centerOf(word.cells.first));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tapAt(centerOf(word.cells.last));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    // Assert
+    expect(state().found, isEmpty);
+  });
 }

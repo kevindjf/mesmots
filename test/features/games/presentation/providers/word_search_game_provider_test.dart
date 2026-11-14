@@ -90,20 +90,6 @@ void main() {
     expect(current().selection, isEmpty);
   });
 
-  test('tap on first then last letter also finds the word', () async {
-    // Arrange
-    final state = await load();
-    final cells = state.grid.words.last.cells;
-
-    // Act
-    notifier()
-      ..tapCell(cells.last)
-      ..tapCell(cells.first);
-
-    // Assert
-    expect(current().found.containsKey(state.grid.words.length - 1), isTrue);
-  });
-
   test('a wrong selection is cleared without penalty', () async {
     // Arrange
     final state = await load();

@@ -9,13 +9,13 @@ import 'package:mesmots/features/games/presentation/providers/word_search_game_p
 import 'package:mesmots/features/games/presentation/widgets/found_word_colors.dart';
 
 /// Word search letter grid. Words are selected by dragging a finger along
-/// a row or a column, or by tapping the first then the last letter.
+/// a row, a column or a diagonal. There is no tap-tap selection: tapping
+/// letter pairs at random found words without reading the grid.
 class WordSearchBoard extends StatelessWidget {
   final WordSearchGameState state;
   final ValueChanged<GridPoint> onSelectionStart;
   final ValueChanged<GridPoint> onSelectionUpdate;
   final VoidCallback onSelectionEnd;
-  final ValueChanged<GridPoint> onCellTap;
 
   const WordSearchBoard({
     super.key,
@@ -23,7 +23,6 @@ class WordSearchBoard extends StatelessWidget {
     required this.onSelectionStart,
     required this.onSelectionUpdate,
     required this.onSelectionEnd,
-    required this.onCellTap,
   });
 
   @override
@@ -57,7 +56,6 @@ class WordSearchBoard extends StatelessWidget {
 
             return GestureDetector(
               dragStartBehavior: DragStartBehavior.down,
-              onTapUp: (d) => onCellTap(toPoint(d.localPosition)),
               onPanStart: (d) => onSelectionStart(toPoint(d.localPosition)),
               onPanUpdate: (d) => onSelectionUpdate(toPoint(d.localPosition)),
               onPanEnd: (_) => onSelectionEnd(),

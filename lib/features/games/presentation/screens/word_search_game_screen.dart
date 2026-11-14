@@ -121,7 +121,6 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
                         onSelectionStart: game.startSelection,
                         onSelectionUpdate: game.updateSelection,
                         onSelectionEnd: game.endSelection,
-                        onCellTap: game.tapCell,
                       ),
                     ),
                   ),

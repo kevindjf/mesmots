@@ -1,1 +1,1 @@
-Nouveau look tout en clarté : fond blanc, tuiles bien lisibles et nouvelle icône. Les parents peuvent activer un contraste renforcé dans l'espace parent. L'accueil met en avant la liste du moment et classe les autres listes par dernière partie jouée. Dans les mots mêlés, les mots se cachent aussi en diagonale.
+Mots mêlés : la grille ne bouge plus quand l'enfant fait glisser son doigt pour sélectionner un mot, même avec une longue liste. Seuls les mots à trouver défilent en dessous.

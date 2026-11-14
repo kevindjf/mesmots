@@ -59,7 +59,10 @@ class WordSearchBoard extends StatelessWidget {
               onPanStart: (d) => onSelectionStart(toPoint(d.localPosition)),
               onPanUpdate: (d) => onSelectionUpdate(toPoint(d.localPosition)),
               onPanEnd: (_) => onSelectionEnd(),
+              // A new grid gets new cells: they must not animate from the
+              // size of the previous grid's cells.
               child: Column(
+                key: ObjectKey(state.grid),
                 children: [
                   for (var row = 0; row < size; row++)
                     Row(

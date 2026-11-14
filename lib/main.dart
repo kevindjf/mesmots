@@ -11,6 +11,7 @@ import 'package:mesmots/core/utils/tts_service.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
 import 'package:mesmots/features/onboarding/presentation/screens/pin_setup_screen.dart';
 import 'package:mesmots/features/parental/presentation/providers/parental_providers.dart';
+import 'package:mesmots/shared/widgets/adaptive_scale.dart';
 
 /// Length of the animated logo of the Android 12+ splash
 /// (android/app/src/main/res/drawable/splash_animated.xml).
@@ -53,6 +54,7 @@ class MesMotsApp extends ConsumerWidget {
       title: AppStrings.appName,
       theme: appearance.themeData,
       home: const AppInitializer(),
+      builder: AdaptiveScale.builder,
       debugShowCheckedModeBanner: false,
     );
   }

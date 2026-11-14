@@ -33,6 +33,9 @@ class AppDimensions {
   static const double minTouchTarget = 48.0;
   static const double cardMinHeight = 60.0;
 
+  // Game tile of the list screen
+  static const double gameTileHeight = 92.0;
+
   // Icon sizes
   static const double iconS = 20.0;
   static const double iconM = 24.0;

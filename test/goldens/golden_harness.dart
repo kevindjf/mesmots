@@ -14,6 +14,7 @@ import 'package:mesmots/features/word_lists/data/repositories/word_list_reposito
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:mesmots/features/word_lists/domain/repositories/word_list_repository.dart';
+import 'package:mesmots/shared/widgets/adaptive_scale.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockRepository extends Mock implements WordListRepository {}
@@ -134,14 +135,18 @@ List<Override> goldenOverrides(List<WordList> lists) {
 }
 
 /// Pumps [screen] full-size with [theme] and lets entrance animations end.
+///
+/// [size] is the logical screen, a phone by default; the app scales its UI
+/// up on tablet sizes, as `MesMotsApp` does.
 Future<void> pumpGoldenScreen(
   WidgetTester tester,
   Widget screen, {
   required ThemeData theme,
   List<Override> overrides = const [],
+  Size size = goldenSize,
 }) async {
   tester.view
-    ..physicalSize = goldenSize
+    ..physicalSize = size
     ..devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -150,6 +155,7 @@ Future<void> pumpGoldenScreen(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: theme,
+        builder: AdaptiveScale.builder,
         home: screen,
       ),
     ),

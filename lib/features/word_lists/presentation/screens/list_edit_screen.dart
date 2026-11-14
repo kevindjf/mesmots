@@ -15,6 +15,7 @@ import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 
 class ListEditScreen extends ConsumerStatefulWidget {
   final String? listId;
@@ -73,72 +74,74 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              _buildHeader(),
+          child: BoundedContent(
+            child: Column(
+              children: [
+                // Header
+                _buildHeader(),
 
-              // Content
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(AppDimensions.paddingL),
-                  children: [
-                    // List name input
-                    AppInput(
-                      controller: _nameController,
-                      hintText: 'Nom de la liste (ex: Semaine 1)',
-                      textCapitalization: TextCapitalization.sentences,
-                    ),
-                    const SizedBox(height: AppDimensions.spacingXl),
-
-                    // Word input section
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: AppInput(
-                            controller: _wordController,
-                            focusNode: _wordFocusNode,
-                            hintText: 'Ajouter un mot...',
-                            onSubmitted: (_) => _addWord(),
-                          ),
-                        ),
-                        const SizedBox(width: AppDimensions.spacingM),
-                        ColorfulIconButton(
-                          icon: Icons.add,
-                          onTap: _addWord,
-                          color: AppColors.success,
-                          shadowColor: const Color(0xFF3D8B40),
-                          size: 56,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimensions.spacingL),
-
-                    // Words list
-                    if (_words.isNotEmpty) ...[
-                      _buildWordsHeader(),
-                      const SizedBox(height: AppDimensions.spacingM),
-                      _buildWordsList(),
-                    ],
-
-                    const SizedBox(height: AppDimensions.spacingXl),
-                    _buildAllowedGames(),
-                    const SizedBox(height: AppDimensions.spacingXl),
-
-                    // Save button
-                    if (_words.isNotEmpty)
-                      ColorfulButton.orange(
-                        text: _isEditing ? 'Enregistrer' : 'Créer la liste',
-                        icon: Icons.check,
-                        width: double.infinity,
-                        onTap: _isLoading ? null : _saveList,
+                // Content
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.all(AppDimensions.paddingL),
+                    children: [
+                      // List name input
+                      AppInput(
+                        controller: _nameController,
+                        hintText: 'Nom de la liste (ex: Semaine 1)',
+                        textCapitalization: TextCapitalization.sentences,
                       ),
-                    const SizedBox(height: AppDimensions.spacingXxl),
-                  ],
+                      const SizedBox(height: AppDimensions.spacingXl),
+
+                      // Word input section
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: AppInput(
+                              controller: _wordController,
+                              focusNode: _wordFocusNode,
+                              hintText: 'Ajouter un mot...',
+                              onSubmitted: (_) => _addWord(),
+                            ),
+                          ),
+                          const SizedBox(width: AppDimensions.spacingM),
+                          ColorfulIconButton(
+                            icon: Icons.add,
+                            onTap: _addWord,
+                            color: AppColors.success,
+                            shadowColor: const Color(0xFF3D8B40),
+                            size: 56,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppDimensions.spacingL),
+
+                      // Words list
+                      if (_words.isNotEmpty) ...[
+                        _buildWordsHeader(),
+                        const SizedBox(height: AppDimensions.spacingM),
+                        _buildWordsList(),
+                      ],
+
+                      const SizedBox(height: AppDimensions.spacingXl),
+                      _buildAllowedGames(),
+                      const SizedBox(height: AppDimensions.spacingXl),
+
+                      // Save button
+                      if (_words.isNotEmpty)
+                        ColorfulButton.orange(
+                          text: _isEditing ? 'Enregistrer' : 'Créer la liste',
+                          icon: Icons.check,
+                          width: double.infinity,
+                          onTap: _isLoading ? null : _saveList,
+                        ),
+                      const SizedBox(height: AppDimensions.spacingXxl),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

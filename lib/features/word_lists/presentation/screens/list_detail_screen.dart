@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
+import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
@@ -12,6 +13,7 @@ import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/game_tile.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_panel.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/section_title.dart';
@@ -59,56 +61,62 @@ class ListDetailScreen extends ConsumerWidget {
         return Scaffold(
           body: GradientBackground(
             child: SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context, wordList.name),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(AppDimensions.paddingL),
-                      children: [
-                        WordListPanel(wordList: wordList),
-                        const SizedBox(height: AppDimensions.spacingXl),
+              child: BoundedContent.wide(
+                child: Column(
+                  children: [
+                    _buildHeader(context, wordList.name),
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsets.all(AppDimensions.paddingL),
+                        children: [
+                          WordListPanel(wordList: wordList),
+                          const SizedBox(height: AppDimensions.spacingXl),
 
-                        const SectionTitle(AppStrings.chooseGame),
-                        const SizedBox(height: AppDimensions.spacingL),
-                        // One game per row; two columns on tablets.
-                        GridView(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                MediaQuery.sizeOf(context).width >= 600 ? 2 : 1,
-                            mainAxisSpacing: AppDimensions.spacingL,
-                            crossAxisSpacing: AppDimensions.spacingL,
-                            mainAxisExtent: 92,
-                          ),
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            for (final type in wordList.availableGames)
-                              GameTile(
-                                type: type,
-                                playCount: wordList.playCountOf(type),
-                                unavailableReason:
-                                    AppStrings.crosswordUnavailable,
-                                onTap: type == GameType.crossword &&
-                                        !_canPlayCrossword(wordList.words)
-                                    ? null
-                                    : () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                type.buildScreen(listId),
-                                          ),
-                                        ),
+                          const SectionTitle(AppStrings.chooseGame),
+                          const SizedBox(height: AppDimensions.spacingL),
+                          // One game per row; two or three columns on tablets.
+                          LayoutBuilder(
+                            builder: (context, constraints) => GridView(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: AppBreakpoints.columnsFor(
+                                  constraints.maxWidth,
+                                  spacing: AppDimensions.spacingL,
+                                ),
+                                mainAxisSpacing: AppDimensions.spacingL,
+                                crossAxisSpacing: AppDimensions.spacingL,
+                                mainAxisExtent: AppDimensions.gameTileHeight,
                               ),
-                          ],
-                        ),
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                                for (final type in wordList.availableGames)
+                                  GameTile(
+                                    type: type,
+                                    playCount: wordList.playCountOf(type),
+                                    unavailableReason:
+                                        AppStrings.crosswordUnavailable,
+                                    onTap: type == GameType.crossword &&
+                                            !_canPlayCrossword(wordList.words)
+                                        ? null
+                                        : () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    type.buildScreen(listId),
+                                              ),
+                                            ),
+                                  ),
+                              ],
+                            ),
+                          ),
 
-                        const SizedBox(height: AppDimensions.spacingXxl),
-                      ],
+                          const SizedBox(height: AppDimensions.spacingXxl),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

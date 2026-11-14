@@ -87,19 +87,23 @@ class _GameTileState extends State<GameTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      type.label,
-                      style: TextStyle(
-                        fontFamily: AppTypography.fontFamily,
-                        fontSize: AppTypography.bodyLarge,
-                        fontWeight: AppTypography.bold,
-                        color: _isEnabled
-                            ? context.palette.onBlock(type.color)
-                            : context.palette.panelTextMuted,
-                        height: 1.1,
+                    // Shrinks rather than cuts the name in a narrow column.
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        type.label,
+                        style: TextStyle(
+                          fontFamily: AppTypography.fontFamily,
+                          fontSize: AppTypography.bodyLarge,
+                          fontWeight: AppTypography.bold,
+                          color: _isEnabled
+                              ? context.palette.onBlock(type.color)
+                              : context.palette.panelTextMuted,
+                          height: 1.1,
+                        ),
+                        maxLines: 1,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(

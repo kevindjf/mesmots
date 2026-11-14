@@ -6,6 +6,7 @@ import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/screens/home_screen.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
+import 'package:mesmots/shared/widgets/adaptive_scale.dart';
 
 WordList _list(String name, {DateTime? playedAt, DateTime? updatedAt}) =>
     WordList.create(id: name, name: name, words: const ['chat']).copyWith(
@@ -20,7 +21,10 @@ void main() {
         overrides: [
           wordListsProvider.overrideWith((ref) => Stream.value(lists)),
         ],
-        child: const MaterialApp(home: HomeScreen()),
+        child: const MaterialApp(
+          builder: AdaptiveScale.builder,
+          home: HomeScreen(),
+        ),
       ),
     );
     await tester.pump();
@@ -52,8 +56,7 @@ void main() {
     expect(find.text(AppStrings.otherLists), findsOneWidget);
   });
 
-  testWidgets('before any game, lists show under "your lists"',
-      (tester) async {
+  testWidgets('before any game, lists show under "your lists"', (tester) async {
     // Act
     await pumpHome(tester, [_list('Semaine 12'), _list('Semaine 11')]);
 
@@ -72,5 +75,32 @@ void main() {
     // Assert
     expect(find.text(AppStrings.currentList), findsOneWidget);
     expect(find.text(AppStrings.otherLists), findsNothing);
+  });
+
+  testWidgets('shows the other lists two per row on a tablet', (tester) async {
+    // Arrange
+    tester.view
+      ..physicalSize = const Size(1032, 1376)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final lists = [
+      _list('Semaine 12', playedAt: DateTime(2026, 11, 12)),
+      _list('Semaine 11'),
+      _list('Semaine 10'),
+      _list('Semaine 9'),
+    ];
+
+    // Act
+    await pumpHome(tester, lists);
+    final cards = [
+      for (var i = 0; i < lists.length; i++)
+        tester.getRect(find.byType(WordListCard).at(i)),
+    ];
+
+    // Assert
+    // The current list, then the three others: two, then one.
+    expect(cards[2].top, cards[1].top);
+    expect(cards[2].left, greaterThan(cards[1].right));
+    expect(cards[3].top, greaterThanOrEqualTo(cards[1].bottom));
   });
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
+import 'package:mesmots/core/extensions/responsive_context.dart';
+import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -15,6 +17,7 @@ import 'package:mesmots/shared/widgets/child_keyboard.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 
 class CrosswordGameScreen extends ConsumerStatefulWidget {
   final String listId;
@@ -47,30 +50,32 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: ref.watch(provider).when(
-                data: (state) => _showSuccess
-                    ? SuccessOverlay(
-                        onReplay: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                CrosswordGameScreen(listId: widget.listId),
+          child: BoundedContent.sideBySide(
+            child: ref.watch(provider).when(
+                  data: (state) => _showSuccess
+                      ? SuccessOverlay(
+                          onReplay: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CrosswordGameScreen(listId: widget.listId),
+                            ),
                           ),
-                        ),
-                        onBackToList: () => Navigator.pop(context),
-                      )
-                    : _buildGame(state, ref.read(provider.notifier)),
-                loading: () => Center(
-                  child: CircularProgressIndicator(
-                    color: context.palette.onBackground,
+                          onBackToList: () => Navigator.pop(context),
+                        )
+                      : _buildGame(state, ref.read(provider.notifier)),
+                  loading: () => Center(
+                    child: CircularProgressIndicator(
+                      color: context.palette.onBackground,
+                    ),
+                  ),
+                  error: (error, _) => _buildMessage(
+                    error is CrosswordUnavailableException
+                        ? AppStrings.crosswordUnavailable
+                        : '$error',
                   ),
                 ),
-                error: (error, _) => _buildMessage(
-                  error is CrosswordUnavailableException
-                      ? AppStrings.crosswordUnavailable
-                      : '$error',
-                ),
-              ),
+          ),
         ),
       ),
     );
@@ -121,106 +126,144 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
   Widget _buildGame(CrosswordGameState state, CrosswordGame game) {
     final entries = state.crossword.entries;
 
-    return Column(
-      children: [
-        _buildHeader(),
-        GameHeader(
-          progress: state.progress,
-          validatedCount: state.solvedCount,
-          totalCount: state.totalCount,
-        ),
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final crossword = state.crossword;
-              final maxWidth =
-                  constraints.maxWidth - 2 * AppDimensions.paddingL;
-              final maxHeight = constraints.maxHeight;
-              final width = (maxHeight * crossword.cols / crossword.rows)
-                  .clamp(0.0, maxWidth);
+    final board = LayoutBuilder(
+      builder: (context, constraints) {
+        final crossword = state.crossword;
+        final maxWidth = constraints.maxWidth - 2 * AppDimensions.paddingL;
+        final maxHeight = constraints.maxHeight;
+        final width =
+            (maxHeight * crossword.cols / crossword.rows).clamp(0.0, maxWidth);
 
-              return Center(
-                child: SizedBox(
-                  width: width,
-                  child: CrosswordBoard(
-                    state: state,
-                    onCellTap: game.tapCell,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: AppDimensions.spacingM),
-        SizedBox(
-          height: AppDimensions.minTouchTarget + 6,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingL,
-            ),
-            itemCount: entries.length,
-            separatorBuilder: (_, __) =>
-                const SizedBox(width: AppDimensions.spacingS),
-            itemBuilder: (_, index) => CrosswordClueChip(
-              entry: entries[index],
-              isSelected: index == state.selectedEntry,
-              isSolved: state.solved.contains(index),
-              onTap: () => game.selectEntry(index),
+        return Center(
+          child: SizedBox(
+            width: width,
+            child: CrosswordBoard(
+              state: state,
+              onCellTap: game.tapCell,
             ),
           ),
-        ),
-        const SizedBox(height: AppDimensions.spacingM),
-        Padding(
+        );
+      },
+    );
+
+    final controls = [
+      SizedBox(
+        height: AppDimensions.minTouchTarget + 6,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(
             horizontal: AppDimensions.paddingL,
           ),
-          child: Row(
-            children: [
-              CircleIconButton.colored(
-                icon: Icons.volume_up_rounded,
-                onTap: game.speakSelected,
-                color: AppColors.buttonBlue,
-                shadowColor: AppColors.buttonBlueShadow,
-              ),
-              const SizedBox(width: AppDimensions.spacingM),
-              Expanded(
-                child: Text(
-                  '${state.selected.number} ${_directionLabel(state)} • ${AppStrings.crosswordListen}',
-                  style: TextStyle(
-                    fontFamily: AppTypography.fontFamily,
-                    fontSize: AppTypography.bodySmall,
-                    fontWeight: AppTypography.semiBold,
-                    color: context.palette.onBackground,
-                  ),
+          itemCount: entries.length,
+          separatorBuilder: (_, __) =>
+              const SizedBox(width: AppDimensions.spacingS),
+          itemBuilder: (_, index) => CrosswordClueChip(
+            entry: entries[index],
+            isSelected: index == state.selectedEntry,
+            isSolved: state.solved.contains(index),
+            onTap: () => game.selectEntry(index),
+          ),
+        ),
+      ),
+      const SizedBox(height: AppDimensions.spacingM),
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingL,
+        ),
+        child: Row(
+          children: [
+            CircleIconButton.colored(
+              icon: Icons.volume_up_rounded,
+              onTap: game.speakSelected,
+              color: AppColors.buttonBlue,
+              shadowColor: AppColors.buttonBlueShadow,
+            ),
+            const SizedBox(width: AppDimensions.spacingM),
+            Expanded(
+              child: Text(
+                '${state.selected.number} ${_directionLabel(state)} • ${AppStrings.crosswordListen}',
+                style: TextStyle(
+                  fontFamily: AppTypography.fontFamily,
+                  fontSize: AppTypography.bodySmall,
+                  fontWeight: AppTypography.semiBold,
+                  color: context.palette.onBackground,
                 ),
               ),
-              const SizedBox(width: AppDimensions.spacingM),
-              ColorfulButton(
-                text: AppStrings.hint,
-                icon: Icons.lightbulb_rounded,
-                color: AppColors.buttonOrange,
-                shadowColor: AppColors.buttonOrangeShadow,
-                onTap: game.revealLetter,
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: AppDimensions.spacingM),
+            ColorfulButton(
+              text: AppStrings.hint,
+              icon: Icons.lightbulb_rounded,
+              color: AppColors.buttonOrange,
+              shadowColor: AppColors.buttonOrangeShadow,
+              onTap: game.revealLetter,
+            ),
+          ],
         ),
-        const SizedBox(height: AppDimensions.spacingM),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingS,
-          ),
-          child: ChildKeyboard(
-            accents: state.keys.accents,
-            hasSpace: state.keys.hasSpace,
-            hasHyphen: state.keys.hasHyphen,
-            hasApostrophe: state.keys.hasApostrophe,
-            onLetter: state.isShowingMistake ? null : game.typeLetter,
-            onBackspace: state.isShowingMistake ? null : game.deleteLetter,
-          ),
+      ),
+      const SizedBox(height: AppDimensions.spacingM),
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.paddingS,
         ),
+        child: ChildKeyboard(
+          accents: state.keys.accents,
+          hasSpace: state.keys.hasSpace,
+          hasHyphen: state.keys.hasHyphen,
+          hasApostrophe: state.keys.hasApostrophe,
+          onLetter: state.isShowingMistake ? null : game.typeLetter,
+          onBackspace: state.isShowingMistake ? null : game.deleteLetter,
+        ),
+      ),
+      const SizedBox(height: AppDimensions.spacingM),
+    ];
+
+    final header = [
+      _buildHeader(),
+      GameHeader(
+        progress: state.progress,
+        validatedCount: state.solvedCount,
+        totalCount: state.totalCount,
+      ),
+    ];
+
+    // Tablet held sideways: the grid on the left, the clues and the
+    // keyboard on the right.
+    if (context.isTabletLandscape) {
+      return Column(
+        children: [
+          ...header,
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppDimensions.paddingM,
+                    ),
+                    child: board,
+                  ),
+                ),
+                SizedBox(
+                  width: AppBreakpoints.sidePanelWidth,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: controls,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        ...header,
+        Expanded(child: board),
         const SizedBox(height: AppDimensions.spacingM),
+        ...controls,
       ],
     );
   }

@@ -8,6 +8,7 @@ import 'package:mesmots/features/games/domain/entities/grid_point.dart';
 import 'package:mesmots/features/games/presentation/providers/word_search_game_provider.dart';
 import 'package:mesmots/features/games/presentation/screens/word_search_game_screen.dart';
 import 'package:mesmots/features/games/presentation/widgets/word_search_board.dart';
+import 'package:mesmots/features/games/presentation/widgets/word_to_find_chip.dart';
 
 import '../../../../goldens/golden_harness.dart';
 
@@ -21,12 +22,16 @@ final _longList = goldenList(
 );
 
 void main() {
-  Future<WordSearchGameState Function()> pumpGame(WidgetTester tester) async {
+  Future<WordSearchGameState Function()> pumpGame(
+    WidgetTester tester, {
+    Size size = goldenSize,
+  }) async {
     await pumpGoldenScreen(
       tester,
       WordSearchGameScreen(listId: _longList.id),
       theme: AppTheme.of(AppPalette.light),
       overrides: goldenOverrides([_longList]),
+      size: size,
     );
     final container = ProviderScope.containerOf(
       tester.element(find.byType(WordSearchGameScreen)),
@@ -104,5 +109,61 @@ void main() {
 
     // Assert
     expect(state().found, isEmpty);
+  });
+
+  group('on an iPad held sideways', () {
+    const ipadLandscape = Size(1376, 1032);
+
+    testWidgets('puts the words next to the board, out of any scroll view',
+        (tester) async {
+      // Arrange
+      await pumpGame(tester, size: ipadLandscape);
+
+      // Act
+      final board = tester.getRect(find.byType(WordSearchBoard));
+      final firstWord = tester.getRect(find.byType(WordToFindChip).first);
+      final scrollableAncestors = find.ancestor(
+        of: find.byType(WordSearchBoard),
+        matching: find.byType(Scrollable),
+      );
+
+      // Assert
+      expect(scrollableAncestors, findsNothing);
+      expect(firstWord.left, greaterThan(board.right));
+      // As tall as the screen allows: well over half of it.
+      expect(board.height, greaterThan(ipadLandscape.height / 2));
+    });
+
+    testWidgets('selects a word by dragging', (tester) async {
+      // Arrange
+      final state = await pumpGame(tester, size: ipadLandscape);
+      final grid = state().grid;
+      final word = grid.words.first;
+      final board = tester.getRect(find.byType(WordSearchBoard));
+      // The UI is drawn bigger on tablets.
+      final scale =
+          board.width / tester.getSize(find.byType(WordSearchBoard)).width;
+      final padding = AppDimensions.paddingS * scale;
+      final cellSize = (board.width - 2 * padding) / grid.size;
+      Offset centerOf(GridPoint point) =>
+          board.topLeft +
+          Offset(
+            padding + (point.col + 0.5) * cellSize,
+            padding + (point.row + 0.5) * cellSize,
+          );
+
+      // Act
+      final gesture = await tester.startGesture(centerOf(word.cells.first));
+      for (final cell in word.cells.skip(1)) {
+        await gesture.moveTo(centerOf(cell));
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await gesture.up();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // Assert
+      expect(scale, greaterThan(1));
+      expect(state().found.containsKey(0), isTrue);
+    });
   });
 }

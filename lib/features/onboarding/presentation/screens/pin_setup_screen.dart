@@ -20,6 +20,7 @@ import 'package:mesmots/shared/widgets/icon_badge.dart';
 import 'package:mesmots/shared/widgets/letter_tiles_title.dart';
 import 'package:mesmots/shared/widgets/page_dots.dart';
 import 'package:mesmots/shared/widgets/pop_in.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 
 enum _OnboardingStep { welcome, tour, createPin, confirmPin }
 
@@ -126,14 +127,16 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: AnimatedSwitcher(
-            duration: duration,
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            transitionBuilder: _slideTransition,
-            child: KeyedSubtree(
-              key: ValueKey(_step),
-              child: _buildStep(),
+          child: BoundedContent(
+            child: AnimatedSwitcher(
+              duration: duration,
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              transitionBuilder: _slideTransition,
+              child: KeyedSubtree(
+                key: ValueKey(_step),
+                child: _buildStep(),
+              ),
             ),
           ),
         ),

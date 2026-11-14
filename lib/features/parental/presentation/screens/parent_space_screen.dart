@@ -14,6 +14,7 @@ import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/confirm_delete_dialog.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 
 /// Adult area, reached with the PIN: create, edit and delete word lists.
 ///
@@ -43,54 +44,56 @@ class ParentSpaceScreen extends ConsumerWidget {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                  vertical: AppDimensions.paddingM,
+          child: BoundedContent(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingL,
+                    vertical: AppDimensions.paddingM,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleIconButton.surface(
+                        icon: Icons.close,
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const SizedBox(width: AppDimensions.spacingM),
+                      Expanded(
+                        child: Text(
+                          AppStrings.parentSpace,
+                          style: TextStyle(
+                            fontFamily: AppTypography.fontFamily,
+                            fontSize: AppTypography.headingMedium,
+                            fontWeight: AppTypography.bold,
+                            color: context.palette.onBackground,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    CircleIconButton.surface(
-                      icon: Icons.close,
-                      onTap: () => Navigator.pop(context),
+                Expanded(
+                  child: listsAsync.when(
+                    data: (lists) => _buildContent(context, ref, lists),
+                    loading: () => Center(
+                      child: CircularProgressIndicator(
+                        color: context.palette.onBackground,
+                      ),
                     ),
-                    const SizedBox(width: AppDimensions.spacingM),
-                    Expanded(
+                    error: (error, _) => Center(
                       child: Text(
-                        AppStrings.parentSpace,
+                        '${AppStrings.errorLoadingLists}: $error',
                         style: TextStyle(
                           fontFamily: AppTypography.fontFamily,
-                          fontSize: AppTypography.headingMedium,
-                          fontWeight: AppTypography.bold,
                           color: context.palette.onBackground,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: listsAsync.when(
-                  data: (lists) => _buildContent(context, ref, lists),
-                  loading: () => Center(
-                    child: CircularProgressIndicator(
-                      color: context.palette.onBackground,
-                    ),
-                  ),
-                  error: (error, _) => Center(
-                    child: Text(
-                      '${AppStrings.errorLoadingLists}: $error',
-                      style: TextStyle(
-                        fontFamily: AppTypography.fontFamily,
-                        color: context.palette.onBackground,
-                      ),
-                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

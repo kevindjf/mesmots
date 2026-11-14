@@ -8,6 +8,8 @@ import 'package:mesmots/features/parental/presentation/screens/parent_space_scre
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
 import 'package:mesmots/features/word_lists/presentation/widgets/word_list_card.dart';
+import 'package:mesmots/shared/widgets/adaptive_grid.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 import 'package:mesmots/shared/widgets/letter_tiles_title.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/parent_space_button.dart';
@@ -23,48 +25,50 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: Column(
-            children: [
-              // Header: the app name in letter tiles that drop in, then wave
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppDimensions.paddingL,
-                  vertical: AppDimensions.paddingM,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        // "MES MOTS": the space puts MOTS on a second row.
-                        child: LetterTilesTitle(
-                          text: AppStrings.welcomeTiles,
-                          tileSize: 36,
-                          rowAlignment: CrossAxisAlignment.start,
+          child: BoundedContent.wide(
+            child: Column(
+              children: [
+                // Header: the app name in letter tiles that drop in, then wave
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingL,
+                    vertical: AppDimensions.paddingM,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          // "MES MOTS": the space puts MOTS on a second row.
+                          child: LetterTilesTitle(
+                            text: AppStrings.welcomeTiles,
+                            tileSize: 36,
+                            rowAlignment: CrossAxisAlignment.start,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: AppDimensions.spacingM),
-                    ParentSpaceButton(
-                      onTap: () => ParentSpaceScreen.open(context),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Content
-              Expanded(
-                child: wordListsAsync.when(
-                  data: (lists) => _buildContent(context, lists),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (error, stack) => Center(
-                    child: Text('${AppStrings.errorLoadingLists}: $error'),
+                      const SizedBox(width: AppDimensions.spacingM),
+                      ParentSpaceButton(
+                        onTap: () => ParentSpaceScreen.open(context),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+
+                // Content
+                Expanded(
+                  child: wordListsAsync.when(
+                    data: (lists) => _buildContent(context, lists),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => Center(
+                      child: Text('${AppStrings.errorLoadingLists}: $error'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -99,11 +103,17 @@ class HomeScreen extends ConsumerWidget {
           const SectionTitle(AppStrings.yourLists),
           const SizedBox(height: AppDimensions.spacingM),
         ],
-        for (var i = 0; i < others.length; i++)
-          WordListCard(
-            wordList: others[i],
-            colorIndex: current == null ? i : i + 1,
-          ),
+        // One list per row; two or three columns on tablets.
+        AdaptiveGrid(
+          spacing: AppDimensions.spacingL,
+          children: [
+            for (var i = 0; i < others.length; i++)
+              WordListCard(
+                wordList: others[i],
+                colorIndex: current == null ? i : i + 1,
+              ),
+          ],
+        ),
         const SizedBox(height: AppDimensions.spacingXxl),
       ],
     );

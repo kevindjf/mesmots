@@ -15,6 +15,7 @@ import 'package:mesmots/shared/widgets/game_control_button.dart';
 import 'package:mesmots/shared/widgets/letter_button.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
+import 'package:mesmots/shared/widgets/centered_scroll_view.dart';
 
 /// Screen content of a letter puzzle game: close button, progress, word to
 /// hear, stars, the word's boxes, the tiles and the controls.
@@ -56,7 +57,7 @@ class PuzzleGameView extends StatelessWidget {
           totalCount: state.totalCount,
         ),
         Expanded(
-          child: SingleChildScrollView(
+          child: CenteredScrollView(
             padding: const EdgeInsets.all(AppDimensions.paddingXl),
             child: Column(
               children: [

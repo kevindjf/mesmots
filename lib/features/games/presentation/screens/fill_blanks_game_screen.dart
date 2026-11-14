@@ -7,6 +7,7 @@ import 'package:mesmots/features/games/presentation/providers/fill_blanks_game_p
 import 'package:mesmots/features/games/presentation/widgets/puzzle_game_view.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
+import 'package:mesmots/shared/widgets/bounded_content.dart';
 
 /// "Mots à trous": hear the word and fill in its tricky letters.
 class FillBlanksGameScreen extends ConsumerWidget {
@@ -20,41 +21,44 @@ class FillBlanksGameScreen extends ConsumerWidget {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: ref.watch(provider).when(
-                data: (state) {
-                  final puzzle = state.puzzle;
-                  if (puzzle == null) {
-                    return SuccessOverlay(
-                      onReplay: () => Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FillBlanksGameScreen(listId: listId),
+          child: BoundedContent(
+            child: ref.watch(provider).when(
+                  data: (state) {
+                    final puzzle = state.puzzle;
+                    if (puzzle == null) {
+                      return SuccessOverlay(
+                        onReplay: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                FillBlanksGameScreen(listId: listId),
+                          ),
                         ),
-                      ),
-                      onBackToList: () => Navigator.pop(context),
+                        onBackToList: () => Navigator.pop(context),
+                      );
+                    }
+                    return PuzzleGameView(
+                      state: state,
+                      puzzle: puzzle,
+                      engine: ref.read(provider.notifier).engine,
                     );
-                  }
-                  return PuzzleGameView(
-                    state: state,
-                    puzzle: puzzle,
-                    engine: ref.read(provider.notifier).engine,
-                  );
-                },
-                loading: () => Center(
-                  child: CircularProgressIndicator(
-                    color: context.palette.onBackground,
-                  ),
-                ),
-                error: (_, __) => Center(
-                  child: Text(
-                    AppStrings.errorGeneric,
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
+                  },
+                  loading: () => Center(
+                    child: CircularProgressIndicator(
                       color: context.palette.onBackground,
                     ),
                   ),
+                  error: (_, __) => Center(
+                    child: Text(
+                      AppStrings.errorGeneric,
+                      style: TextStyle(
+                        fontFamily: AppTypography.fontFamily,
+                        color: context.palette.onBackground,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+          ),
         ),
       ),
     );

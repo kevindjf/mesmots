@@ -105,11 +105,16 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
                   (constraints.maxWidth - 2 * AppDimensions.paddingL)
                       .clamp(0.0, constraints.maxHeight * 0.68);
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppDimensions.paddingL),
-                child: Column(
-                  children: [
-                    SizedBox(
+              // The board stays out of any scroll view: a vertical drag on it
+              // must select letters, not scroll. Only the words to find
+              // scroll, below it, when the list is long.
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: AppDimensions.paddingL,
+                    ),
+                    child: SizedBox(
                       width: boardSize,
                       child: WordSearchBoard(
                         state: state,
@@ -119,24 +124,33 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
                         onCellTap: game.tapCell,
                       ),
                     ),
-                    const SizedBox(height: AppDimensions.spacingXl),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: AppDimensions.spacingS,
-                      runSpacing: AppDimensions.spacingM,
-                      children: [
-                        for (var i = 0; i < state.grid.words.length; i++)
-                          WordToFindChip(
-                            word: state.grid.words[i].word,
-                            letterCount: state.grid.words[i].length,
-                            foundColor: state.found.containsKey(i)
-                                ? i.foundWordColor
-                                : null,
-                          ),
-                      ],
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppDimensions.paddingL,
+                        AppDimensions.spacingXl,
+                        AppDimensions.paddingL,
+                        AppDimensions.paddingL,
+                      ),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: AppDimensions.spacingS,
+                        runSpacing: AppDimensions.spacingM,
+                        children: [
+                          for (var i = 0; i < state.grid.words.length; i++)
+                            WordToFindChip(
+                              word: state.grid.words[i].word,
+                              letterCount: state.grid.words[i].length,
+                              foundColor: state.found.containsKey(i)
+                                  ? i.foundWordColor
+                                  : null,
+                            ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           ),

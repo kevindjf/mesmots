@@ -13,10 +13,14 @@ class ConfirmDeleteDialog extends StatelessWidget {
   final String title;
   final String message;
 
+  /// Label of the confirm button, "Supprimer" by default.
+  final String confirmText;
+
   const ConfirmDeleteDialog({
     super.key,
     required this.title,
     required this.message,
+    this.confirmText = AppStrings.delete,
   });
 
   /// Shows the dialog and returns whether the user confirmed
@@ -24,10 +28,15 @@ class ConfirmDeleteDialog extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String message,
+    String confirmText = AppStrings.delete,
   }) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (_) => ConfirmDeleteDialog(title: title, message: message),
+      builder: (_) => ConfirmDeleteDialog(
+        title: title,
+        message: message,
+        confirmText: confirmText,
+      ),
     );
     return confirmed ?? false;
   }
@@ -94,7 +103,7 @@ class ConfirmDeleteDialog extends StatelessWidget {
                 const SizedBox(width: AppDimensions.spacingM),
                 Expanded(
                   child: ColorfulButton.coral(
-                    text: AppStrings.delete,
+                    text: confirmText,
                     onTap: () => Navigator.pop(context, true),
                   ),
                 ),

@@ -5,6 +5,7 @@ import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
+import 'package:mesmots/core/extensions/responsive_context.dart';
 import 'package:mesmots/features/word_lists/domain/entities/game_type.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_list.dart';
 import 'package:mesmots/features/word_lists/presentation/providers/word_list_providers.dart';
@@ -14,6 +15,7 @@ import 'package:mesmots/shared/widgets/app_input.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
+import 'package:mesmots/shared/widgets/confirm_delete_dialog.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/bounded_content.dart';
 
@@ -127,19 +129,30 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
                       const SizedBox(height: AppDimensions.spacingXl),
                       _buildAllowedGames(),
                       const SizedBox(height: AppDimensions.spacingXl),
-
-                      // Save button
-                      if (_words.isNotEmpty)
-                        ColorfulButton.orange(
-                          text: _isEditing ? 'Enregistrer' : 'Créer la liste',
-                          icon: Icons.check,
-                          width: double.infinity,
-                          onTap: _isLoading ? null : _saveList,
-                        ),
-                      const SizedBox(height: AppDimensions.spacingXxl),
                     ],
                   ),
                 ),
+
+                // Save button, pinned under the list so it never needs a
+                // scroll. Hidden while typing on a phone held sideways,
+                // where the keyboard leaves no room for it.
+                if (_words.isNotEmpty && !_typingSideways)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppDimensions.paddingL,
+                      AppDimensions.paddingS,
+                      AppDimensions.paddingL,
+                      AppDimensions.paddingM,
+                    ),
+                    child: ColorfulButton.orange(
+                      text: _isEditing
+                          ? AppStrings.saveList
+                          : AppStrings.createTheList,
+                      icon: Icons.check,
+                      width: double.infinity,
+                      onTap: _isLoading ? null : _saveList,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -147,6 +160,9 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
       ),
     );
   }
+
+  bool get _typingSideways =>
+      context.isLandscape && MediaQuery.viewInsetsOf(context).bottom > 0;
 
   Widget _buildHeader() {
     return Padding(
@@ -243,7 +259,7 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
         GestureDetector(
           onTap: _clearAllWords,
           child: Text(
-            'Tout effacer',
+            AppStrings.clearAll,
             style: TextStyle(
               fontFamily: AppTypography.fontFamily,
               fontSize: AppTypography.bodySmall,
@@ -287,7 +303,14 @@ class _ListEditScreenState extends ConsumerState<ListEditScreen> {
     });
   }
 
-  void _clearAllWords() {
+  Future<void> _clearAllWords() async {
+    final confirmed = await ConfirmDeleteDialog.show(
+      context,
+      title: AppStrings.clearAllTitle,
+      message: AppStrings.clearAllWordsMessage,
+      confirmText: AppStrings.erase,
+    );
+    if (!confirmed || !mounted) return;
     setState(() {
       _words.clear();
     });

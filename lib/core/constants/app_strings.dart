@@ -32,6 +32,8 @@ class AppStrings {
   static const String addWords = 'Ajouter des mots (un par ligne)';
   static const String createList = 'Créer une liste';
   static const String editList = 'Modifier la liste';
+  static const String createTheList = 'Créer la liste';
+  static const String saveList = 'Enregistrer';
   static const String deleteList = 'Supprimer la liste';
   static const String confirmDelete =
       'Es-tu sûr de vouloir supprimer cette liste ?';
@@ -51,6 +53,9 @@ class AppStrings {
   static const String hint = 'Aide';
   static const String erase = 'Effacer';
   static const String clearAll = 'Tout effacer';
+  static const String clearAllTitle = 'Tout effacer ?';
+  static const String clearAllWordsMessage =
+      'Tous les mots de la liste seront retirés.';
   static const String copyTheWord = 'Recopie le mot :';
 
   // Game

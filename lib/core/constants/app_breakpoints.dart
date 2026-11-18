@@ -39,6 +39,16 @@ class AppBreakpoints {
   /// Width of the pane next to a game board, in landscape.
   static const double sidePanelWidth = 400;
 
+  /// Largest share of the screen width the side pane takes, so the board
+  /// keeps room on a phone held sideways.
+  static const double sidePanelMaxFraction = 0.6;
+
+  /// Width of the side pane of a landscape layout [width] wide.
+  static double sidePanelWidthFor(double width) {
+    final max = width * sidePanelMaxFraction;
+    return sidePanelWidth < max ? sidePanelWidth : max;
+  }
+
   /// Columns of a grid of items at least [minItemWidth] wide, [spacing]
   /// apart, in [width].
   static int columnsFor(

@@ -8,7 +8,7 @@ class BoundedContent extends StatelessWidget {
   final Widget child;
   final double maxWidth;
 
-  /// Whether a tablet held sideways gets the wide width, for screens that
+  /// Whether a screen held sideways gets the wide width, for screens that
   /// then put two panes side by side.
   final bool wideInLandscape;
 
@@ -23,14 +23,14 @@ class BoundedContent extends StatelessWidget {
       : maxWidth = AppBreakpoints.wideContentMaxWidth,
         wideInLandscape = false;
 
-  /// One column, or two side by side on a tablet held sideways.
+  /// One column, or two side by side on a screen held sideways.
   const BoundedContent.sideBySide({super.key, required this.child})
       : maxWidth = AppBreakpoints.contentMaxWidth,
         wideInLandscape = true;
 
   @override
   Widget build(BuildContext context) {
-    final width = wideInLandscape && context.isTabletLandscape
+    final width = wideInLandscape && context.isLandscape
         ? AppBreakpoints.wideContentMaxWidth
         : maxWidth;
     return Align(

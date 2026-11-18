@@ -29,7 +29,10 @@ extension ResponsiveContext on BuildContext {
 
   bool get isTablet => screenClass.isTablet;
 
+  /// Held sideways, phone or tablet: wider than tall.
+  bool get isLandscape =>
+      MediaQuery.orientationOf(this) == Orientation.landscape;
+
   /// A tablet held sideways: room for two panes side by side.
-  bool get isTabletLandscape =>
-      isTablet && MediaQuery.orientationOf(this) == Orientation.landscape;
+  bool get isTabletLandscape => isTablet && isLandscape;
 }

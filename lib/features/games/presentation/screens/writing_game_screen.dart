@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
 import 'package:mesmots/core/extensions/responsive_context.dart';
-import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/writing_game_provider.dart';
-import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_layout.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/features/games/presentation/widgets/writing_answer.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:mesmots/shared/widgets/child_keyboard.dart';
-import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/game_control_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
@@ -87,10 +85,12 @@ class WritingGameScreen extends ConsumerWidget {
     final showModel =
         question.phase == WritingPhase.wrong || question.isCopying;
 
+    final isLandscape = context.isLandscape;
     final content = CenteredScrollView(
-      padding: const EdgeInsets.symmetric(
+      alwaysCenter: isLandscape,
+      padding: EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingXl,
-        vertical: AppDimensions.paddingM,
+        vertical: isLandscape ? AppDimensions.paddingS : AppDimensions.paddingM,
       ),
       child: Column(
         children: [
@@ -177,74 +177,19 @@ class WritingGameScreen extends ConsumerWidget {
       ),
     );
 
-    // Tablet held sideways: the word on the left, the keyboard on the right.
-    if (context.isTabletLandscape) {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppDimensions.paddingL,
-              vertical: AppDimensions.paddingS,
-            ),
-            child: Row(
-              children: [
-                CircleIconButton.surface(
-                  icon: Icons.close,
-                  onTap: () => Navigator.pop(context),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-          GameHeader(
-            progress: state.progress,
-            validatedCount: state.validatedCount,
-            totalCount: state.totalCount,
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(child: content),
-                SizedBox(
-                  width: AppBreakpoints.sidePanelWidth,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [controls, keyboard],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-            vertical: AppDimensions.paddingS,
-          ),
-          child: Row(
-            children: [
-              CircleIconButton.surface(
-                icon: Icons.close,
-                onTap: () => Navigator.pop(context),
-              ),
-              const Spacer(),
-            ],
-          ),
-        ),
-        GameHeader(
-          progress: state.progress,
-          validatedCount: state.validatedCount,
-          totalCount: state.totalCount,
-        ),
-        Expanded(child: content),
-        controls,
-        keyboard,
-      ],
+    return GameLayout(
+      progress: state.progress,
+      validatedCount: state.validatedCount,
+      totalCount: state.totalCount,
+      topBarPadding: AppDimensions.paddingS,
+      portrait: Column(
+        children: [Expanded(child: content), controls, keyboard],
+      ),
+      prompt: content,
+      answer: CenteredScrollView(
+        alwaysCenter: true,
+        child: Column(children: [controls, keyboard]),
+      ),
     );
   }
 }

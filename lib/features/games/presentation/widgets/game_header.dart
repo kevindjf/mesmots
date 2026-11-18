@@ -12,6 +12,9 @@ class GameHeader extends StatelessWidget {
   final Color? progressColor;
   final Widget? timer; // optional timer widget displayed next to percentage
 
+  /// Thinner, for a screen held sideways where height is short.
+  final bool compact;
+
   const GameHeader({
     super.key,
     required this.progress,
@@ -19,6 +22,7 @@ class GameHeader extends StatelessWidget {
     required this.totalCount,
     this.progressColor,
     this.timer,
+    this.compact = false,
   });
 
   @override
@@ -27,11 +31,16 @@ class GameHeader extends StatelessWidget {
     final palette = context.palette;
 
     return Container(
-      margin: const EdgeInsets.symmetric(
+      margin: EdgeInsets.symmetric(
         horizontal: AppDimensions.paddingL,
-        vertical: AppDimensions.paddingS,
+        vertical: compact ? 0 : AppDimensions.paddingS,
       ),
-      padding: const EdgeInsets.all(AppDimensions.paddingM),
+      padding: compact
+          ? const EdgeInsets.symmetric(
+              horizontal: AppDimensions.paddingM,
+              vertical: AppDimensions.paddingS,
+            )
+          : const EdgeInsets.all(AppDimensions.paddingM),
       decoration: BoxDecoration(
         color: palette.panel,
         borderRadius: BorderRadius.circular(AppDimensions.radiusL),
@@ -50,13 +59,19 @@ class GameHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '$validatedCount/$totalCount ${AppStrings.validated}',
-                style: TextStyle(
-                  fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.bodyMedium,
-                  fontWeight: AppTypography.semiBold,
-                  color: palette.panelText,
+              // Shrinks first when the header is narrow (a phone held
+              // sideways), so the percentage always shows.
+              Flexible(
+                child: Text(
+                  '$validatedCount/$totalCount ${AppStrings.validated}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: AppTypography.fontFamily,
+                    fontSize: AppTypography.bodyMedium,
+                    fontWeight: AppTypography.semiBold,
+                    color: palette.panelText,
+                  ),
                 ),
               ),
               Row(
@@ -79,7 +94,9 @@ class GameHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppDimensions.spacingS),
+          SizedBox(
+            height: compact ? AppDimensions.spacingXs : AppDimensions.spacingS,
+          ),
           Container(
             height: 8,
             decoration: BoxDecoration(

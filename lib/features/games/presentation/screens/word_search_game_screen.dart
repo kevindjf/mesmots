@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
-import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
-import 'package:mesmots/core/extensions/responsive_context.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/word_search_game_provider.dart';
 import 'package:mesmots/features/games/presentation/widgets/found_word_colors.dart';
-import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_layout.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/features/games/presentation/widgets/word_search_board.dart';
 import 'package:mesmots/features/games/presentation/widgets/word_to_find_chip.dart';
-import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/bounded_content.dart';
 
@@ -102,38 +99,32 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
       ],
     );
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-            vertical: AppDimensions.paddingM,
-          ),
-          child: Row(
-            children: [
-              CircleIconButton.surface(
-                icon: Icons.close,
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
+    // The board stays out of any scroll view: a vertical drag on it must
+    // select letters, not scroll. Only the words to find scroll, when the
+    // list is long.
+    return GameLayout(
+      progress: state.progress,
+      validatedCount: state.foundCount,
+      totalCount: state.totalCount,
+      portrait: LayoutBuilder(
+        builder: (context, constraints) =>
+            _buildStacked(constraints, board, words),
+      ),
+      // Sideways: the board as big as the pane allows, the words to find
+      // next to it.
+      prompt: LayoutBuilder(
+        builder: (context, constraints) {
+          final boardSize = (constraints.maxHeight - 2 * AppDimensions.paddingL)
+              .clamp(0.0, constraints.maxWidth - 2 * AppDimensions.paddingL);
+          return Center(child: SizedBox(width: boardSize, child: board));
+        },
+      ),
+      answer: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimensions.paddingL),
+          child: words,
         ),
-        GameHeader(
-          progress: state.progress,
-          validatedCount: state.foundCount,
-          totalCount: state.totalCount,
-        ),
-        // The board stays out of any scroll view: a vertical drag on it must
-        // select letters, not scroll. Only the words to find scroll, when
-        // the list is long.
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) => context.isTabletLandscape
-                ? _buildSideBySide(constraints, board, words)
-                : _buildStacked(constraints, board, words),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -160,38 +151,6 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
               AppDimensions.paddingL,
             ),
             child: words,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Tablet held sideways: the board as tall as the screen allows, the words
-  /// to find next to it.
-  Widget _buildSideBySide(
-    BoxConstraints constraints,
-    Widget board,
-    Widget words,
-  ) {
-    final boardSize =
-        (constraints.maxHeight - 2 * AppDimensions.paddingL).clamp(
-      0.0,
-      constraints.maxWidth -
-          AppBreakpoints.sidePanelWidth -
-          2 * AppDimensions.paddingL,
-    );
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(AppDimensions.paddingL),
-          child: SizedBox(width: boardSize, child: board),
-        ),
-        Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimensions.paddingL),
-              child: words,
-            ),
           ),
         ),
       ],

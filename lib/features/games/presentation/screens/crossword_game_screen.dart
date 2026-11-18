@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
-import 'package:mesmots/core/extensions/responsive_context.dart';
-import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/core/constants/app_colors.dart';
 import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
@@ -11,13 +9,14 @@ import 'package:mesmots/features/games/domain/entities/grid_point.dart';
 import 'package:mesmots/features/games/presentation/providers/crossword_game_provider.dart';
 import 'package:mesmots/features/games/presentation/widgets/crossword_board.dart';
 import 'package:mesmots/features/games/presentation/widgets/crossword_clue_chip.dart';
-import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_layout.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/shared/widgets/child_keyboard.dart';
 import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/colorful_button.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
 import 'package:mesmots/shared/widgets/bounded_content.dart';
+import 'package:mesmots/shared/widgets/centered_scroll_view.dart';
 
 class CrosswordGameScreen extends ConsumerStatefulWidget {
   final String listId;
@@ -218,53 +217,28 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
       const SizedBox(height: AppDimensions.spacingM),
     ];
 
-    final header = [
-      _buildHeader(),
-      GameHeader(
-        progress: state.progress,
-        validatedCount: state.solvedCount,
-        totalCount: state.totalCount,
-      ),
-    ];
-
-    // Tablet held sideways: the grid on the left, the clues and the
-    // keyboard on the right.
-    if (context.isTabletLandscape) {
-      return Column(
+    // Sideways: the grid on the left, the clues and the keyboard on the
+    // right.
+    return GameLayout(
+      progress: state.progress,
+      validatedCount: state.solvedCount,
+      totalCount: state.totalCount,
+      portrait: Column(
         children: [
-          ...header,
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppDimensions.paddingM,
-                    ),
-                    child: board,
-                  ),
-                ),
-                SizedBox(
-                  width: AppBreakpoints.sidePanelWidth,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: controls,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: board),
+          const SizedBox(height: AppDimensions.spacingM),
+          ...controls,
         ],
-      );
-    }
-
-    return Column(
-      children: [
-        ...header,
-        Expanded(child: board),
-        const SizedBox(height: AppDimensions.spacingM),
-        ...controls,
-      ],
+      ),
+      prompt: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppDimensions.paddingM),
+        child: board,
+      ),
+      answer: CenteredScrollView(
+        alwaysCenter: true,
+        padding: const EdgeInsets.only(top: AppDimensions.paddingS),
+        child: Column(children: controls),
+      ),
     );
   }
 

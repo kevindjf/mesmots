@@ -5,15 +5,15 @@ import 'package:mesmots/core/constants/app_dimensions.dart';
 import 'package:mesmots/core/constants/app_strings.dart';
 import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/features/games/presentation/providers/qcm_game_provider.dart';
-import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 import 'package:mesmots/shared/widgets/speaker_button.dart';
 import 'package:mesmots/shared/widgets/progress_stars.dart';
 import 'package:mesmots/shared/widgets/gradient_background.dart';
-import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
+import 'package:mesmots/features/games/presentation/widgets/game_layout.dart';
 import 'package:mesmots/features/games/presentation/widgets/qcm_option_card.dart';
 import 'package:mesmots/features/games/presentation/widgets/success_overlay.dart';
 import 'package:mesmots/features/word_lists/domain/entities/word_status.dart';
 import 'package:mesmots/shared/widgets/bounded_content.dart';
+import 'package:mesmots/shared/widgets/centered_scroll_view.dart';
 
 class QcmGameScreen extends ConsumerStatefulWidget {
   final String listId;
@@ -48,7 +48,7 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: BoundedContent(
+          child: BoundedContent.sideBySide(
             child: gameStateAsync.when(
               data: (gameState) {
                 if (gameState.question == null) {
@@ -72,98 +72,73 @@ class _QcmGameScreenState extends ConsumerState<QcmGameScreen> {
                     ref.read(qcmGameProvider(widget.listId).notifier);
                 final question = gameState.question!;
 
-                return Column(
-                  children: [
-                    // Header with close button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppDimensions.paddingL,
-                        vertical: AppDimensions.paddingM,
-                      ),
-                      child: Row(
-                        children: [
-                          CircleIconButton.surface(
-                            icon: Icons.close,
-                            onTap: () => Navigator.pop(context),
-                          ),
-                          const Spacer(),
-                        ],
-                      ),
+                final prompt = <Widget>[
+                  SpeakerButton(word: question.word, size: 80),
+                  const SizedBox(height: AppDimensions.spacingS),
+                  Text(
+                    AppStrings.tapToReplay,
+                    style: TextStyle(
+                      fontFamily: AppTypography.fontFamily,
+                      fontSize: AppTypography.bodySmall,
+                      color: context.palette.onBackground,
+                      fontStyle: FontStyle.italic,
                     ),
-
-                    // Progress header
-                    GameHeader(
-                      progress: gameState.progress,
-                      validatedCount: gameState.validatedCount,
-                      totalCount: gameState.totalCount,
+                  ),
+                  const SizedBox(height: AppDimensions.spacingXl),
+                  AnimatedProgressStars(
+                    count: question.stars,
+                    max: WordStatus.masteryThreshold,
+                    size: AppDimensions.iconL,
+                  ),
+                ];
+                final options = LayoutBuilder(
+                  builder: (context, constraints) => GridView.count(
+                    crossAxisCount: _columns,
+                    crossAxisSpacing: AppDimensions.spacingL,
+                    mainAxisSpacing: AppDimensions.spacingL,
+                    childAspectRatio: _cardAspectRatio(
+                      constraints,
+                      question.options.length,
                     ),
-
-                    // Main content
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppDimensions.paddingXl),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Speaker button
-                            SpeakerButton(
-                              word: question.word,
-                              size: 80,
-                            ),
-                            const SizedBox(height: AppDimensions.spacingS),
-                            Text(
-                              AppStrings.tapToReplay,
-                              style: TextStyle(
-                                fontFamily: AppTypography.fontFamily,
-                                fontSize: AppTypography.bodySmall,
-                                color: context.palette.onBackground,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                            const SizedBox(height: AppDimensions.spacingXl),
-
-                            // Stars
-                            AnimatedProgressStars(
-                              count: question.stars,
-                              max: WordStatus.masteryThreshold,
-                              size: AppDimensions.iconL,
-                            ),
-                            const SizedBox(height: AppDimensions.spacingXxl),
-
-                            // Options (2x2 grid)
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) =>
-                                    GridView.count(
-                                  crossAxisCount: _columns,
-                                  crossAxisSpacing: AppDimensions.spacingL,
-                                  mainAxisSpacing: AppDimensions.spacingL,
-                                  childAspectRatio: _cardAspectRatio(
-                                    constraints,
-                                    question.options.length,
-                                  ),
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  children: [
-                                    for (final option in question.options)
-                                      QcmOptionCard(
-                                        text: option.text,
-                                        isCorrect: option.isCorrect,
-                                        isAnswered: question.isAnswered,
-                                        isSelected:
-                                            question.selected == option.text,
-                                        onTap: () =>
-                                            gameProvider.answer(option.text),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      for (final option in question.options)
+                        QcmOptionCard(
+                          text: option.text,
+                          isCorrect: option.isCorrect,
+                          isAnswered: question.isAnswered,
+                          isSelected: question.selected == option.text,
+                          onTap: () => gameProvider.answer(option.text),
                         ),
-                      ),
+                    ],
+                  ),
+                );
+
+                return GameLayout(
+                  progress: gameState.progress,
+                  validatedCount: gameState.validatedCount,
+                  totalCount: gameState.totalCount,
+                  portrait: Padding(
+                    padding: const EdgeInsets.all(AppDimensions.paddingXl),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...prompt,
+                        const SizedBox(height: AppDimensions.spacingXxl),
+                        Expanded(child: options),
+                      ],
                     ),
-                  ],
+                  ),
+                  prompt: CenteredScrollView(
+                    alwaysCenter: true,
+                    padding: const EdgeInsets.all(AppDimensions.paddingL),
+                    child: Column(children: prompt),
+                  ),
+                  answer: Padding(
+                    padding: const EdgeInsets.all(AppDimensions.paddingXl),
+                    child: Center(child: options),
+                  ),
                 );
               },
               loading: () => Center(

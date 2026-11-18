@@ -40,6 +40,18 @@ void main() {
     // Assert
     expect(isTablet, isFalse);
     expect(seen.isTabletLandscape, isFalse);
+    expect(seen.isLandscape, isTrue);
+  });
+
+  testWidgets('a phone held upright is not landscape', (tester) async {
+    // Arrange
+    await pumpOn(tester, const Size(412, 840));
+
+    // Act
+    final isLandscape = seen.isLandscape;
+
+    // Assert
+    expect(isLandscape, isFalse);
   });
 
   testWidgets('a tablet held sideways has room for two panes', (tester) async {

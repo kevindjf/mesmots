@@ -46,7 +46,7 @@ void main() {
     expect(tester.getCenter(find.byKey(content)).dx, tablet.width / 2);
   });
 
-  testWidgets('side by side widens only on a tablet held sideways',
+  testWidgets('side by side widens only on a screen held sideways',
       (tester) async {
     // Arrange
     const upright = Size(800, 1280);
@@ -62,5 +62,22 @@ void main() {
     // Assert
     expect(uprightWidth, AppBreakpoints.contentMaxWidth);
     expect(sidewaysWidth, AppBreakpoints.wideContentMaxWidth);
+  });
+
+  testWidgets('side by side fills a phone held sideways', (tester) async {
+    // Arrange
+    const phone = Size(852, 393);
+
+    // Act
+    final width = await widthOn(
+      tester,
+      phone,
+      const BoundedContent.sideBySide(
+        child: SizedBox(key: content, height: 10),
+      ),
+    );
+
+    // Assert
+    expect(width, phone.width);
   });
 }

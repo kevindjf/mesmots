@@ -21,7 +21,7 @@ class FillBlanksGameScreen extends ConsumerWidget {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
-          child: BoundedContent(
+          child: BoundedContent.sideBySide(
             child: ref.watch(provider).when(
                   data: (state) {
                     final puzzle = state.puzzle;

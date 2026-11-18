@@ -8,15 +8,19 @@ class CenteredScrollView extends StatelessWidget {
   final Widget child;
   final EdgeInsets padding;
 
+  /// Whether to center on phones too, as in the panes of a landscape game.
+  final bool alwaysCenter;
+
   const CenteredScrollView({
     super.key,
     required this.child,
     this.padding = EdgeInsets.zero,
+    this.alwaysCenter = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (!context.isTablet) {
+    if (!alwaysCenter && !context.isTablet) {
       return SingleChildScrollView(padding: padding, child: child);
     }
     return LayoutBuilder(

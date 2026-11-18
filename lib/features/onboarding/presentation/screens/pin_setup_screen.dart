@@ -171,8 +171,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         return _buildPinStep(
           title: AppStrings.createPinTitle,
           text: AppStrings.createPinText,
-          entry: PinEntry(
+          entry: (header) => PinEntry(
             key: const ValueKey('create'),
+            header: header,
             validate: (_) async => true,
             onAccepted: (pin) {
               _pin = pin;
@@ -187,8 +188,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         return _buildPinStep(
           title: AppStrings.confirmPinTitle,
           text: AppStrings.confirmPinText,
-          entry: PinEntry(
+          entry: (header) => PinEntry(
             key: const ValueKey('confirm'),
+            header: header,
             validate: (pin) async => pin == _pin,
             onAccepted: (_) => _completeSetup(),
             errorMessage: AppStrings.pinMismatch,
@@ -201,53 +203,66 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   }
 
   Widget _buildWelcome() {
-    return Padding(
-      padding: const EdgeInsets.all(AppDimensions.paddingXl),
-      child: Column(
-        children: [
-          const Spacer(flex: 3),
-          const LetterTilesTitle(text: AppStrings.welcomeTiles, tileSize: 64),
-          const SizedBox(height: AppDimensions.spacingXl),
-          PopIn.rise(
-            delay: Duration(milliseconds: 1000),
-            child: Text(
-              AppStrings.welcomeTagline,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: AppTypography.fontFamily,
-                fontSize: AppTypography.headingMedium,
-                fontWeight: AppTypography.bold,
-                color: context.palette.onBackground,
-              ),
-            ),
+    // Scrolls when the screen is too short for it, held sideways.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        padding: const EdgeInsets.all(AppDimensions.paddingXl),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: (constraints.maxHeight - 2 * AppDimensions.paddingXl)
+                .clamp(0.0, double.infinity),
           ),
-          const SizedBox(height: AppDimensions.spacingM),
-          PopIn.rise(
-            delay: Duration(milliseconds: 1100),
-            child: Text(
-              AppStrings.welcomeAudience,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: AppTypography.fontFamily,
-                fontSize: AppTypography.bodyLarge,
-                fontWeight: AppTypography.semiBold,
-                color: context.palette.onBackground,
-              ),
-            ),
-          ),
-          const Spacer(flex: 4),
-          PopIn.rise(
-            delay: const Duration(milliseconds: 1300),
-            child: ColorfulButton.orange(
-              text: AppStrings.start,
-              icon: Icons.arrow_forward,
-              width: double.infinity,
-              onTap: () => _goTo(_OnboardingStep.tour),
-            ),
-          ),
-          const SizedBox(height: AppDimensions.spacingL),
-        ],
+          child: IntrinsicHeight(child: _buildWelcomeContent()),
+        ),
       ),
+    );
+  }
+
+  Widget _buildWelcomeContent() {
+    return Column(
+      children: [
+        const Spacer(flex: 3),
+        const LetterTilesTitle(text: AppStrings.welcomeTiles, tileSize: 64),
+        const SizedBox(height: AppDimensions.spacingXl),
+        PopIn.rise(
+          delay: Duration(milliseconds: 1000),
+          child: Text(
+            AppStrings.welcomeTagline,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: AppTypography.fontFamily,
+              fontSize: AppTypography.headingMedium,
+              fontWeight: AppTypography.bold,
+              color: context.palette.onBackground,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingM),
+        PopIn.rise(
+          delay: Duration(milliseconds: 1100),
+          child: Text(
+            AppStrings.welcomeAudience,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: AppTypography.fontFamily,
+              fontSize: AppTypography.bodyLarge,
+              fontWeight: AppTypography.semiBold,
+              color: context.palette.onBackground,
+            ),
+          ),
+        ),
+        const Spacer(flex: 4),
+        PopIn.rise(
+          delay: const Duration(milliseconds: 1300),
+          child: ColorfulButton.orange(
+            text: AppStrings.start,
+            icon: Icons.arrow_forward,
+            width: double.infinity,
+            onTap: () => _goTo(_OnboardingStep.tour),
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingL),
+      ],
     );
   }
 
@@ -310,8 +325,37 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   Widget _buildPinStep({
     required String title,
     required String text,
-    required Widget entry,
+    required Widget Function(Widget header) entry,
   }) {
+    final header = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const PopIn(child: IconBadge.blue(icon: Icons.lock_outline)),
+        const SizedBox(height: AppDimensions.spacingL),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.headingLarge,
+            fontWeight: AppTypography.bold,
+            color: context.palette.onBackground,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingS),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: AppTypography.bodyLarge,
+            fontWeight: AppTypography.semiBold,
+            color: context.palette.onBackground,
+          ),
+        ),
+        const SizedBox(height: AppDimensions.spacingXl),
+      ],
+    );
     return Column(
       children: [
         OnboardingTopBar(onBack: _back),
@@ -323,31 +367,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
               ),
               child: Column(
                 children: [
-                  const PopIn(child: IconBadge.blue(icon: Icons.lock_outline)),
-                  const SizedBox(height: AppDimensions.spacingL),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
-                      fontSize: AppTypography.headingLarge,
-                      fontWeight: AppTypography.bold,
-                      color: context.palette.onBackground,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.spacingS),
-                  Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: AppTypography.fontFamily,
-                      fontSize: AppTypography.bodyLarge,
-                      fontWeight: AppTypography.semiBold,
-                      color: context.palette.onBackground,
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.spacingXl),
-                  entry,
+                  entry(header),
                   const SizedBox(height: AppDimensions.spacingXl),
                 ],
               ),

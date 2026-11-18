@@ -26,10 +26,12 @@ class KeypadButton extends StatefulWidget {
     Key? key,
     required int number,
     required VoidCallback onTap,
+    double size = 70,
   }) {
     return KeypadButton(
       key: key,
       onTap: onTap,
+      size: size,
       child: Builder(
         builder: (context) => Text(
           number.toString(),
@@ -48,10 +50,12 @@ class KeypadButton extends StatefulWidget {
   factory KeypadButton.delete({
     Key? key,
     required VoidCallback onTap,
+    double size = 70,
   }) {
     return KeypadButton(
       key: key,
       onTap: onTap,
+      size: size,
       backgroundColor: const Color(0xFFFDE8E8),
       shadowColor: const Color(0xFFE5B0B0),
       child: const Icon(

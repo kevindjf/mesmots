@@ -108,7 +108,7 @@ class PuzzleGameEngine {
   /// Stop: the game screen was closed, possibly during a pause.
   void dispose() {
     _disposed = true;
-    if (spellAloud) _tts.stop().ignore();
+    _tts.stop().ignore();
   }
 
   void _publish() {
@@ -182,6 +182,10 @@ class PuzzleGameEngine {
   }
 
   Future<void> _check() async {
+    // The child may have answered faster than the spelling: cut it.
+    _spelling++;
+    _spokenPosition = null;
+    _tts.stop().ignore();
     final checked = _puzzle!.checked();
     _puzzle = checked;
     if (checked.phase == PuzzlePhase.correct) {

@@ -59,6 +59,9 @@ class TtsService {
 
     _utterance++;
     try {
+      // Cut what is still being said (a spelling, the previous word):
+      // iOS would otherwise queue the new word behind it.
+      await _tts.stop();
       await _tts.speak(word);
     } catch (e) {
       print('TTS speak error: $e');

@@ -68,6 +68,9 @@ class WordSearchGame extends _$WordSearchGame {
     }
 
     _recorder = ProgressRecorder(repository, listId);
+    // Leaving the game cuts a word still being read.
+    final tts = ref.read(ttsServiceProvider);
+    ref.onDispose(() => tts.stop().ignore());
     return WordSearchGameState(grid: GenerateWordSearch()(wordList.words));
   }
 

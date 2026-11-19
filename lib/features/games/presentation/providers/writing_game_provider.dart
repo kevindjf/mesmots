@@ -108,7 +108,12 @@ class WritingGame extends _$WritingGame {
     if (wordList == null) throw Exception('Word list not found');
 
     _recorder = ProgressRecorder(repository, listId);
-    ref.onDispose(() => _disposed = true);
+    final tts = ref.read(ttsServiceProvider);
+    ref.onDispose(() {
+      _disposed = true;
+      // Leaving the game cuts a word still being read.
+      tts.stop().ignore();
+    });
     _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
     _keys = keyboardForWords(wordList.words);
     // Free play: every game uses all the words of the list
@@ -182,6 +187,8 @@ class WritingGame extends _$WritingGame {
   Future<void> submit() async {
     final q = _question;
     if (q == null || !q.canType || q.input.trim().isEmpty) return;
+    // A word checked while still read cuts the voice.
+    ref.read(ttsServiceProvider).stop().ignore();
 
     final word = q.word;
     final isRight = normalizedEquals(q.input.trim(), word);

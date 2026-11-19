@@ -109,7 +109,12 @@ class CrosswordGame extends _$CrosswordGame {
       throw Exception('Word list not found');
     }
     _recorder = ProgressRecorder(repository, listId);
-    ref.onDispose(() => _disposed = true);
+    final tts = ref.read(ttsServiceProvider);
+    ref.onDispose(() {
+      _disposed = true;
+      // Leaving the game cuts a word still being read.
+      tts.stop().ignore();
+    });
     _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
 
     final crossword = GenerateCrossword()(wordList.words);

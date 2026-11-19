@@ -44,6 +44,7 @@ void main() {
     when(audio.playSuccess).thenAnswer((_) async {});
     when(audio.playLevelComplete).thenAnswer((_) async {});
     when(() => tts.speak(any())).thenAnswer((_) async {});
+    when(() => tts.stop()).thenAnswer((_) async {});
     when(haptic.success).thenAnswer((_) async {});
     when(haptic.light).thenAnswer((_) async {});
     when(haptic.selectionClick).thenAnswer((_) async {});

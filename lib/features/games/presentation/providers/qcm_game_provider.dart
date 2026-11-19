@@ -96,7 +96,12 @@ class QcmGame extends _$QcmGame {
     }
 
     _recorder = ProgressRecorder(repository, listId);
-    ref.onDispose(() => _disposed = true);
+    final tts = ref.read(ttsServiceProvider);
+    ref.onDispose(() {
+      _disposed = true;
+      // Leaving the game cuts a word still being read.
+      tts.stop().ignore();
+    });
     _stars = {for (final w in wordList.words) w: wordList.statusOf(w).stars};
     // Free play: every game uses all the words of the list
     _session = GameSession.initial(wordList.words);
@@ -143,6 +148,8 @@ class QcmGame extends _$QcmGame {
 
   /// Answer the current question. Ignored while an answer is shown.
   Future<void> answer(String selectedAnswer) async {
+    // An answer given while the word is still read cuts the voice.
+    ref.read(ttsServiceProvider).stop().ignore();
     final question = _currentQuestion;
     if (_session == null || question == null || question.isAnswered) return;
 

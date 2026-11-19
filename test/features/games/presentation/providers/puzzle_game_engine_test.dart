@@ -41,6 +41,7 @@ void main() {
       list = invocation.positionalArguments.first as WordList;
     });
     when(() => tts.speak(any())).thenAnswer((_) async {});
+    when(() => tts.stop()).thenAnswer((_) async {});
     for (final call in [
       audio.playSuccess,
       audio.playError,
@@ -154,9 +155,17 @@ void main() {
       when(
         () => tts.spell(any(), onLetter: any(named: 'onLetter')),
       ).thenAnswer((invocation) async {
-        onLetter = invocation.namedArguments[#onLetter]
-            as void Function(int? position);
+        onLetter = invocation.namedArguments[#onLetter] as void Function(
+            int? position);
       });
+      final haptic = _MockHaptic();
+      for (final call in [
+        haptic.success,
+        haptic.error,
+        haptic.selectionClick,
+      ]) {
+        when(call).thenAnswer((_) async {});
+      }
       states = [];
       spellingEngine = PuzzleGameEngine(
         wordList: list,
@@ -166,7 +175,7 @@ void main() {
             word: word, blanks: const [1, 3], tiles: const ['t', 'h', 'd']),
         tts: tts,
         audio: audio,
-        haptic: _MockHaptic(),
+        haptic: haptic,
         recorder: ProgressRecorder(repository, 'l'),
         onChange: states.add,
       );
@@ -199,6 +208,22 @@ void main() {
       first(1);
 
       // Assert
+      expect(spellingEngine.state.spokenPosition, isNull);
+    });
+
+    test('cuts the spelling when the child answers first', () async {
+      // Arrange
+      final spelling = onLetter;
+      spelling(0);
+
+      // Act: "chat", before the spelling ends
+      spellingEngine.place(1);
+      spellingEngine.place(0);
+      spelling(1);
+      await Future<void>.delayed(Duration.zero);
+
+      // Assert
+      verify(() => tts.stop()).called(1);
       expect(spellingEngine.state.spokenPosition, isNull);
     });
 

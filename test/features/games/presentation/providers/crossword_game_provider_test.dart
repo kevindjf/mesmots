@@ -49,6 +49,7 @@ void main() {
     when(audio.playError).thenAnswer((_) async {});
     when(audio.playLevelComplete).thenAnswer((_) async {});
     when(() => tts.speak(any())).thenAnswer((_) async {});
+    when(() => tts.stop()).thenAnswer((_) async {});
     when(haptic.success).thenAnswer((_) async {});
     when(haptic.error).thenAnswer((_) async {});
     when(haptic.selectionClick).thenAnswer((_) async {});
@@ -112,13 +113,11 @@ void main() {
     expect(current().selectedEntry, isNot(first));
   });
 
-  test('a wrong word shows its wrong letters, then erases only them',
-      () async {
+  test('a wrong word shows its wrong letters, then erases only them', () async {
     // Arrange
     await load();
     final index = current().selectedEntry;
-    final free =
-        current().selected.cells.where(current().isEditable).toList();
+    final free = current().selected.cells.where(current().isEditable).toList();
 
     // Act
     typeSelectedWord(wrongLast: true);

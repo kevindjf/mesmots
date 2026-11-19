@@ -44,6 +44,7 @@ void main() {
       list = invocation.positionalArguments.first as WordList;
     });
     when(() => tts.speak(any())).thenAnswer((_) async {});
+    when(() => tts.stop()).thenAnswer((_) async {});
     for (final call in [
       audio.playSuccess,
       audio.playStar,

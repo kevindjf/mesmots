@@ -37,21 +37,31 @@ class WritingQuestion {
   /// [WritingPhase.wrong]).
   final List<bool> marks;
 
+  /// Where the next letter goes, as a letter (grapheme) index in [input];
+  /// null at the end.
+  final int? cursor;
+
   const WritingQuestion({
     required this.word,
     this.input = '',
     this.phase = WritingPhase.typing,
     this.isCopying = false,
     this.marks = const [],
+    this.cursor,
   });
 
   bool get canType => phase == WritingPhase.typing;
+
+  /// Letter index of the cursor, the end of [input] included.
+  int get cursorIndex => cursor ?? input.graphemeLen;
 
   WritingQuestion copyWith({
     String? input,
     WritingPhase? phase,
     bool? isCopying,
     List<bool>? marks,
+    int? cursor,
+    bool cursorAtEnd = false,
   }) {
     return WritingQuestion(
       word: word,
@@ -59,6 +69,7 @@ class WritingQuestion {
       phase: phase ?? this.phase,
       isCopying: isCopying ?? this.isCopying,
       marks: marks ?? this.marks,
+      cursor: cursorAtEnd ? null : cursor ?? this.cursor,
     );
   }
 }
@@ -154,16 +165,42 @@ class WritingGame extends _$WritingGame {
     if (q == null || !q.canType) return;
     // Room for a few extra letters, not for endless typing.
     if (q.input.graphemeLen >= q.word.graphemeLen + 5) return;
-    _question = q.copyWith(input: q.input + letter);
+    final letters = q.input.graphemes..insert(q.cursorIndex, letter);
+    _question = _withCursor(q, letters, q.cursorIndex + 1);
     ref.read(hapticServiceProvider).selectionClick();
     _publish();
   }
 
   void backspace() {
     final q = _question;
-    if (q == null || !q.canType || q.input.isEmpty) return;
-    _question = q.copyWith(input: (q.input.graphemes..removeLast()).join());
+    if (q == null || !q.canType || q.cursorIndex == 0) return;
+    final letters = q.input.graphemes..removeAt(q.cursorIndex - 1);
+    _question = _withCursor(q, letters, q.cursorIndex - 1);
     _publish();
+  }
+
+  /// Put the cursor before the letter at [position] (the end past the
+  /// last letter), to insert or erase a letter there.
+  void moveCursor(int position) {
+    final q = _question;
+    if (q == null || !q.canType) return;
+    _question = _withCursor(q, q.input.graphemes, position);
+    _publish();
+  }
+
+  /// [q] with [letters] typed and the cursor at [position], kept at the
+  /// end when it is there.
+  WritingQuestion _withCursor(
+    WritingQuestion q,
+    List<String> letters,
+    int position,
+  ) {
+    final at = position.clamp(0, letters.length);
+    return q.copyWith(
+      input: letters.join(),
+      cursor: at,
+      cursorAtEnd: at == letters.length,
+    );
   }
 
   /// Help: keep the right beginning of the input and add the next right
@@ -180,7 +217,10 @@ class WritingGame extends _$WritingGame {
       right++;
     }
     if (right >= word.length) return;
-    _question = q.copyWith(input: word.take(right + 1).join());
+    _question = q.copyWith(
+      input: word.take(right + 1).join(),
+      cursorAtEnd: true,
+    );
     _publish();
   }
 
@@ -237,6 +277,7 @@ class WritingGame extends _$WritingGame {
         phase: WritingPhase.typing,
         isCopying: true,
         marks: const [],
+        cursorAtEnd: true,
       );
       _publish();
     }

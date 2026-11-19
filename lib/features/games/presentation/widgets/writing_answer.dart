@@ -7,14 +7,19 @@ import 'package:mesmots/core/constants/app_typography.dart';
 import 'package:mesmots/core/extensions/motion_context.dart';
 import 'package:mesmots/core/utils/string_utils.dart';
 import 'package:mesmots/features/games/presentation/providers/writing_game_provider.dart';
+import 'package:mesmots/features/games/presentation/widgets/tappable_letter.dart';
 import 'package:mesmots/shared/widgets/shake.dart';
 
 /// The word typed in "Écriture": green when right; after a mistake each
-/// letter is green or red and the box shakes.
+/// letter is green or red and the box shakes. While typing, tapping a
+/// letter moves the cursor there, to insert a forgotten letter.
 class WritingAnswer extends StatelessWidget {
   final WritingQuestion question;
 
-  const WritingAnswer({super.key, required this.question});
+  /// Cursor moved to a letter index (the end past the last letter).
+  final ValueChanged<int>? onMoveCursor;
+
+  const WritingAnswer({super.key, required this.question, this.onMoveCursor});
 
   @override
   Widget build(BuildContext context) {
@@ -87,20 +92,29 @@ class WritingAnswer extends StatelessWidget {
           ),
         );
       case WritingPhase.typing:
+        final letters = question.input.graphemes;
+        final letterStyle = style.copyWith(color: palette.tileText);
+        final cursor = Container(
+          key: const ValueKey('cursor'),
+          width: 3,
+          height: 34,
+          margin: const EdgeInsets.symmetric(horizontal: 1),
+          color: palette.tileText,
+        );
+        final move = onMoveCursor ?? (_) {};
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              question.input,
-              style: style.copyWith(color: palette.tileText),
-            ),
-            // Cursor
-            Container(
-              width: 3,
-              height: 34,
-              margin: const EdgeInsets.only(left: 2),
-              color: palette.tileText,
-            ),
+            for (var i = 0; i < letters.length; i++) ...[
+              if (i == question.cursorIndex) cursor,
+              TappableLetter(
+                letter: letters[i],
+                style: letterStyle,
+                onTapBefore: () => move(i),
+                onTapAfter: () => move(i + 1),
+              ),
+            ],
+            if (question.cursorIndex >= letters.length) cursor,
           ],
         );
     }

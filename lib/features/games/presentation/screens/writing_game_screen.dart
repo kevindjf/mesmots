@@ -133,7 +133,7 @@ class WritingGameScreen extends ConsumerWidget {
                 : null,
           ),
           const SizedBox(height: AppDimensions.spacingS),
-          WritingAnswer(question: question),
+          WritingAnswer(question: question, onMoveCursor: game.moveCursor),
         ],
       ),
     );

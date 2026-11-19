@@ -142,4 +142,61 @@ void main() {
     // Assert
     expect(state().question!.input, 'éco');
   });
+
+  group('cursor', () {
+    test('a letter typed after moving the cursor is inserted there', () async {
+      // Arrange: "écle", the o forgotten
+      await start();
+      typeWord('écle');
+
+      // Act
+      game().moveCursor(2);
+      game().type('o');
+
+      // Assert
+      expect(state().question!.input, 'école');
+      expect(state().question!.cursorIndex, 3);
+    });
+
+    test('erasing removes the letter before the cursor', () async {
+      // Arrange: "écxole"
+      await start();
+      typeWord('écxole');
+      game().moveCursor(3);
+
+      // Act
+      game().backspace();
+
+      // Assert
+      expect(state().question!.input, 'école');
+      expect(state().question!.cursorIndex, 2);
+    });
+
+    test('erasing does nothing with the cursor at the start', () async {
+      // Arrange
+      await start();
+      typeWord('éc');
+      game().moveCursor(0);
+
+      // Act
+      game().backspace();
+
+      // Assert
+      expect(state().question!.input, 'éc');
+    });
+
+    test('typing at the end keeps the cursor at the end', () async {
+      // Arrange
+      await start();
+      typeWord('éc');
+      game().moveCursor(9);
+
+      // Act
+      game().type('o');
+
+      // Assert
+      expect(state().question!.cursor, isNull);
+      expect(state().question!.cursorIndex, 3);
+    });
+  });
 }

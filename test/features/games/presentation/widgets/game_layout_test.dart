@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mesmots/core/constants/app_breakpoints.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_header.dart';
 import 'package:mesmots/features/games/presentation/widgets/game_layout.dart';
+import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 
 void main() {
   const portrait = Key('portrait');
@@ -29,6 +30,20 @@ void main() {
       ),
     );
   }
+
+  testWidgets('puts the close button on the progress line', (tester) async {
+    // Arrange
+    const phone = Size(390, 844);
+
+    // Act
+    await pumpOn(tester, phone);
+
+    // Assert
+    final close = tester.getRect(find.byType(CircleIconButton));
+    final header = tester.getRect(find.byType(GameHeader));
+    expect(close.right, lessThanOrEqualTo(header.left));
+    expect(close.center.dy, closeTo(header.center.dy, 1));
+  });
 
   testWidgets('shows the portrait content below the progress, upright',
       (tester) async {

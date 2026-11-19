@@ -7,10 +7,12 @@ import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 
 /// Layout shared by every game screen.
 ///
-/// Upright: the close button, the progress, then [portrait] below.
+/// The close button always sits next to the progress.
+///
+/// Upright: [portrait] below them.
 ///
 /// Held sideways, on a phone or a tablet: two panes. On the left, the
-/// close button next to the progress, then [prompt] (what to hear, read or
+/// close button and the progress, then [prompt] (what to hear, read or
 /// look at). On the right, as tall as the screen, [answer] (tiles, keyboard,
 /// options), so a keyboard always fits.
 class GameLayout extends StatelessWidget {
@@ -27,7 +29,7 @@ class GameLayout extends StatelessWidget {
   /// Right pane, sideways.
   final Widget answer;
 
-  /// Vertical padding around the close button, upright.
+  /// Space above the close button and the progress, upright.
   final double topBarPadding;
 
   const GameLayout({
@@ -43,16 +45,29 @@ class GameLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final closeButton = CircleIconButton.surface(
-      icon: Icons.close,
-      onTap: () => Navigator.pop(context),
-    );
     final isLandscape = context.isLandscape;
-    final header = GameHeader(
-      progress: progress,
-      validatedCount: validatedCount,
-      totalCount: totalCount,
-      compact: isLandscape,
+    // The close button sits on the progress line, to save a row of height.
+    final topBar = Padding(
+      padding: EdgeInsets.only(
+        left: AppDimensions.paddingL,
+        top: isLandscape ? AppDimensions.paddingS : topBarPadding,
+      ),
+      child: Row(
+        children: [
+          CircleIconButton.surface(
+            icon: Icons.close,
+            onTap: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: GameHeader(
+              progress: progress,
+              validatedCount: validatedCount,
+              totalCount: totalCount,
+              compact: isLandscape,
+            ),
+          ),
+        ],
+      ),
     );
 
     if (isLandscape) {
@@ -62,18 +77,7 @@ class GameLayout extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: AppDimensions.paddingL,
-                      top: AppDimensions.paddingS,
-                    ),
-                    child: Row(
-                      children: [
-                        closeButton,
-                        Expanded(child: header),
-                      ],
-                    ),
-                  ),
+                  topBar,
                   Expanded(child: prompt),
                 ],
               ),
@@ -89,14 +93,7 @@ class GameLayout extends StatelessWidget {
 
     return Column(
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppDimensions.paddingL,
-            vertical: topBarPadding,
-          ),
-          child: Row(children: [closeButton, const Spacer()]),
-        ),
-        header,
+        topBar,
         Expanded(child: portrait),
       ],
     );

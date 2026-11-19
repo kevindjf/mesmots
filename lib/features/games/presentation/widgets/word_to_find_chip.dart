@@ -91,24 +91,26 @@ class _WordToFindChipState extends ConsumerState<WordToFindChip> {
                   : context.palette.panelText,
             ),
             const SizedBox(width: AppDimensions.spacingXs),
-            if (showWord)
-              Text(
-                widget.word,
-                style: TextStyle(
-                  fontFamily: AppTypography.fontFamily,
-                  fontSize: AppTypography.bodyMedium,
-                  fontWeight: AppTypography.semiBold,
-                  color: isFound
-                      ? context.palette.onBlock(widget.foundColor!)
-                      : context.palette.panelText,
-                  decoration: isFound ? TextDecoration.lineThrough : null,
-                  decorationColor: isFound
-                      ? context.palette.onBlock(widget.foundColor!)
-                      : null,
-                ),
-              )
-            else
-              LetterDots(count: widget.letterCount),
+            // Shrinks to the room left, so a very long word wraps.
+            Flexible(
+              child: showWord
+                  ? Text(
+                      widget.word,
+                      style: TextStyle(
+                        fontFamily: AppTypography.fontFamily,
+                        fontSize: AppTypography.bodyMedium,
+                        fontWeight: AppTypography.semiBold,
+                        color: isFound
+                            ? context.palette.onBlock(widget.foundColor!)
+                            : context.palette.panelText,
+                        decoration: isFound ? TextDecoration.lineThrough : null,
+                        decorationColor: isFound
+                            ? context.palette.onBlock(widget.foundColor!)
+                            : null,
+                      ),
+                    )
+                  : LetterDots(count: widget.letterCount),
+            ),
           ],
         ),
       ),

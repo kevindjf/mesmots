@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mesmots/core/extensions/palette_context.dart';
 
-/// One dot per letter of a hidden word.
+/// One dot per letter of a hidden word, on several lines when the word is
+/// longer than the room it has.
 class LetterDots extends StatelessWidget {
   final int count;
 
@@ -9,8 +10,8 @@ class LetterDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      runSpacing: 4,
       children: [
         for (var i = 0; i < count; i++)
           Container(

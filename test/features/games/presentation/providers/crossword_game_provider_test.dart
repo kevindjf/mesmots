@@ -87,6 +87,53 @@ void main() {
     }
   }
 
+  /// Selects an unsolved word that has letters already in the grid
+  /// before its first free cell.
+  Future<void> selectWordStartingFilled() async {
+    final state = await load();
+    final entries = state.crossword.entries;
+    final index = [
+      for (var i = 0; i < entries.length; i++)
+        if (!state.solved.contains(i) &&
+            !state.isEditable(entries[i].cells.first) &&
+            entries[i].cells.any(state.isEditable))
+          i,
+    ].first;
+    game().selectEntry(index);
+  }
+
+  test('a whole word typed in one go steps over the letters already there',
+      () async {
+    // Arrange
+    await selectWordStartingFilled();
+    final index = current().selectedEntry;
+    final cells = current().selected.cells;
+    final solution = current().crossword.solution;
+
+    // Act: every letter of the word, the filled ones included
+    for (final cell in cells) {
+      game().typeLetter(solution[cell]!);
+    }
+
+    // Assert
+    expect(current().solved, contains(index));
+    expect(current().isShowingMistake, isFalse);
+  });
+
+  test('a letter other than the filled one goes in the free cell', () async {
+    // Arrange
+    await selectWordStartingFilled();
+    final free = current().selected.cells.firstWhere(current().isEditable);
+    final letter = current().crossword.solution[free]!;
+    final filled = current().inputs[current().selected.cells.first];
+
+    // Act
+    game().typeLetter(letter);
+
+    // Assert
+    if (letter != filled) expect(current().inputs[free], letter);
+  });
+
   test('starts with given letters and the cursor on a free cell', () async {
     // Act
     final state = await load();

@@ -101,6 +101,13 @@ class CrosswordGame extends _$CrosswordGame {
   final _mistakes = <int>{};
   bool _disposed = false;
 
+  /// Letters already in the grid that the cursor just jumped over, in
+  /// order. A child writing the whole word in one go types them again:
+  /// each one typed in turn is absorbed instead of filling the cursor
+  /// cell. Only valid while the cursor is still on [_skippableCursor].
+  List<GridPoint> _skippable = const [];
+  GridPoint? _skippableCursor;
+
   @override
   Future<CrosswordGameState> build(String listId) async {
     final repository = ref.read(wordListRepositoryProvider);
@@ -141,6 +148,7 @@ class CrosswordGame extends _$CrosswordGame {
     );
     final first = _firstUnsolved(initial) ?? 0;
     final state = _select(initial, first);
+    _skipBeforeCursor(state);
     _speakSelected(state);
     return state;
   }
@@ -152,6 +160,7 @@ class CrosswordGame extends _$CrosswordGame {
     final current = _current;
     if (current == null) return;
     final updated = _select(current, index);
+    _skipBeforeCursor(updated);
     state = AsyncData(updated);
     _speakSelected(updated);
   }
@@ -184,6 +193,8 @@ class CrosswordGame extends _$CrosswordGame {
           : _nextEditable(current, index, point),
       clearWrong: true,
     );
+    _skipBetween(updated,
+        from: point, includingFrom: !current.isEditable(point));
     state = AsyncData(updated);
     if (changedEntry) _speakSelected(updated);
   }
@@ -200,19 +211,25 @@ class CrosswordGame extends _$CrosswordGame {
     final cursor = current?.cursor;
     if (current == null || cursor == null || current.isShowingMistake) return;
 
+    final typedLetter = letter.nfc.toLowerCase();
     ref.read(hapticServiceProvider).selectionClick();
+    if (_skippableCursor == cursor &&
+        _skippable.isNotEmpty &&
+        current.inputs[_skippable.first] == typedLetter) {
+      // A letter already in the grid, typed again: step over it.
+      _skippable = _skippable.sublist(1);
+      return;
+    }
+
     final typed = current.copyWith(
-      inputs: {...current.inputs, cursor: letter.nfc.toLowerCase()},
+      inputs: {...current.inputs, cursor: typedLetter},
       clearWrong: true,
     );
     final checked = _checkEntries(typed, cursor);
-    state = AsyncData(
-      checked.copyWith(
-        cursor: _nextEditable(checked, checked.selectedEntry, cursor),
-        clearCursor:
-            _nextEditable(checked, checked.selectedEntry, cursor) == null,
-      ),
-    );
+    final next = _nextEditable(checked, checked.selectedEntry, cursor);
+    final advanced = checked.copyWith(cursor: next, clearCursor: next == null);
+    _skipBetween(advanced, from: cursor, includingFrom: false);
+    state = AsyncData(advanced);
     if (checked.solved.contains(checked.selectedEntry)) _moveToNextWord();
   }
 
@@ -238,6 +255,7 @@ class CrosswordGame extends _$CrosswordGame {
     }
 
     final target = cells[index];
+    _skippable = const [];
     state = AsyncData(
       current.copyWith(
         inputs: Map.of(current.inputs)..remove(target),
@@ -264,6 +282,7 @@ class CrosswordGame extends _$CrosswordGame {
       clearWrong: true,
     );
     final checked = _checkEntries(revealed, target);
+    _skippable = const [];
     state = AsyncData(
       checked.copyWith(
         cursor: _nextEditable(checked, checked.selectedEntry, target),
@@ -370,6 +389,32 @@ class CrosswordGame extends _$CrosswordGame {
       clearCursor: firstEditable.isEmpty,
       clearWrong: true,
     );
+  }
+
+  /// The cursor was placed at the first free cell of the word: every
+  /// letter before it may be typed again.
+  void _skipBeforeCursor(CrosswordGameState current) {
+    final cells = current.selected.cells;
+    final cursor = current.cursor;
+    _skippableCursor = cursor;
+    _skippable =
+        cursor == null ? const [] : cells.sublist(0, cells.indexOf(cursor));
+  }
+
+  /// The cursor jumped from [from] over filled cells: they may be typed
+  /// again, [from] too when [includingFrom].
+  void _skipBetween(
+    CrosswordGameState current, {
+    required GridPoint from,
+    required bool includingFrom,
+  }) {
+    final cells = current.selected.cells;
+    final cursor = current.cursor;
+    final start = cells.indexOf(from) + (includingFrom ? 0 : 1);
+    final end = cursor == null ? -1 : cells.indexOf(cursor);
+    _skippableCursor = cursor;
+    _skippable =
+        start >= 0 && end > start ? cells.sublist(start, end) : const [];
   }
 
   /// Next editable cell after [from] in the entry, or null

@@ -110,8 +110,9 @@ class _WordSearchGameScreenState extends ConsumerState<WordSearchGameScreen> {
         builder: (context, constraints) =>
             _buildStacked(constraints, board, words),
       ),
-      // Sideways: the board as big as the pane allows, the words to find
-      // next to it.
+      // Sideways: the board as tall as the screen, the words to find next
+      // to it.
+      squarePrompt: true,
       prompt: LayoutBuilder(
         builder: (context, constraints) {
           final boardSize = (constraints.maxHeight - 2 * AppDimensions.paddingL)

@@ -15,6 +15,10 @@ import 'package:mesmots/shared/widgets/circle_icon_button.dart';
 /// close button and the progress, then [prompt] (what to hear, read or
 /// look at). On the right, as tall as the screen, [answer] (tiles, keyboard,
 /// options), so a keyboard always fits.
+///
+/// With [squarePrompt], sideways, [prompt] is a square as tall as the
+/// screen and the close button and the progress go above [answer], which
+/// takes the rest of the width: a board gets all the height.
 class GameLayout extends StatelessWidget {
   final double progress;
   final int validatedCount;
@@ -32,6 +36,9 @@ class GameLayout extends StatelessWidget {
   /// Space above the close button and the progress, upright.
   final double topBarPadding;
 
+  /// Sideways, [prompt] as a square as tall as the screen.
+  final bool squarePrompt;
+
   const GameLayout({
     super.key,
     required this.progress,
@@ -41,6 +48,7 @@ class GameLayout extends StatelessWidget {
     required this.prompt,
     required this.answer,
     this.topBarPadding = AppDimensions.paddingM,
+    this.squarePrompt = false,
   });
 
   @override
@@ -69,6 +77,35 @@ class GameLayout extends StatelessWidget {
         ],
       ),
     );
+
+    if (isLandscape && squarePrompt) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final side = constraints.maxHeight.clamp(
+            0.0,
+            constraints.maxWidth - AppBreakpoints.sidePanelMinWidth,
+          );
+          return Row(
+            children: [
+              SizedBox(width: side, child: prompt),
+              Expanded(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: AppDimensions.paddingL,
+                      ),
+                      child: topBar,
+                    ),
+                    Expanded(child: answer),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     if (isLandscape) {
       return LayoutBuilder(

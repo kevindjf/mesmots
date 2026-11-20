@@ -39,6 +39,9 @@ class AppBreakpoints {
   /// Width of the pane next to a game board, in landscape.
   static const double sidePanelWidth = 400;
 
+  /// Narrowest pane next to a square board as tall as the screen.
+  static const double sidePanelMinWidth = 240;
+
   /// Largest share of the screen width the side pane takes, so the board
   /// keeps room on a phone held sideways.
   static const double sidePanelMaxFraction = 0.6;

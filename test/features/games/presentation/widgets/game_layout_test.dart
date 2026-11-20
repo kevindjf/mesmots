@@ -10,21 +10,26 @@ void main() {
   const prompt = Key('prompt');
   const answer = Key('answer');
 
-  Future<void> pumpOn(WidgetTester tester, Size size) async {
+  Future<void> pumpOn(
+    WidgetTester tester,
+    Size size, {
+    bool squarePrompt = false,
+  }) async {
     tester.view
       ..physicalSize = size
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: GameLayout(
+            squarePrompt: squarePrompt,
             progress: 0.5,
             validatedCount: 1,
             totalCount: 2,
-            portrait: SizedBox.expand(key: portrait),
-            prompt: SizedBox.expand(key: prompt),
-            answer: SizedBox.expand(key: answer),
+            portrait: const SizedBox.expand(key: portrait),
+            prompt: const SizedBox.expand(key: prompt),
+            answer: const SizedBox.expand(key: answer),
           ),
         ),
       ),
@@ -100,6 +105,39 @@ void main() {
     expect(
       answerRect.width,
       narrow.width * AppBreakpoints.sidePanelMaxFraction,
+    );
+  });
+
+  testWidgets('a square prompt takes the whole height, sideways',
+      (tester) async {
+    // Arrange
+    const phone = Size(923, 412);
+
+    // Act
+    await pumpOn(tester, phone, squarePrompt: true);
+
+    // Assert
+    final promptRect = tester.getRect(find.byKey(prompt));
+    final answerRect = tester.getRect(find.byKey(answer));
+    final header = tester.getRect(find.byType(GameHeader));
+    expect(promptRect.width, phone.height);
+    expect(promptRect.height, phone.height);
+    expect(header.left, greaterThanOrEqualTo(promptRect.right));
+    expect(answerRect.top, greaterThanOrEqualTo(header.bottom));
+  });
+
+  testWidgets('a square prompt leaves room for the answer, sideways',
+      (tester) async {
+    // Arrange
+    const narrow = Size(480, 320);
+
+    // Act
+    await pumpOn(tester, narrow, squarePrompt: true);
+
+    // Assert
+    expect(
+      tester.getRect(find.byKey(answer)).width,
+      AppBreakpoints.sidePanelMinWidth,
     );
   });
 }

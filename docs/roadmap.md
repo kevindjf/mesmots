@@ -5,6 +5,15 @@ Format pensé pour un import futur dans Linear : un titre `[ID] Titre`, puis ét
 
 Priorités : P1 urgent · P2 haute · P3 normale · P4 basse.
 
+## À prévoir (prochaine version)
+
+- [ ] **MM-31** Code parent oublié : contrôle parental hors ligne (calcul dur) puis nouveau code, sans perte de données
+- [ ] **MM-16** Partage de liste par QR code, entre deux téléphones, sans réseau
+- [ ] **MM-15** Export / import de listes par la feuille de partage (base du QR code)
+- [ ] **MM-30** Accent anglais pour les mots en anglais
+
+Livré en 1.3.0 (22/11/2026) : MM-23 à MM-29.
+
 ---
 
 ## v1 — Sortie publique (Android + iOS)
@@ -84,6 +93,89 @@ Priorités : P1 urgent · P2 haute · P3 normale · P4 basse.
 
 ---
 
+## Retours testeur du 18/11/2026 (à trier)
+
+Retour global très positif : « j'ai envie d'y jouer toute la journée », la personne va recommander l'app. Les priorités ci-dessous sont des propositions.
+
+#### MM-23 Couper la voix quand on passe au mot suivant
+- **Étiquettes** : bug, audio
+- **Priorité** : P2
+- **Description** : Dans « Écoute et épelle », si l'enfant écrit plus vite que l'épellation, la voix continue en fond alors qu'on est déjà passé au mot suivant.
+- **Critères d'acceptation**
+  - [ ] Le TTS est stoppé à la validation d'un mot, au changement de mot et à la sortie du jeu
+  - [ ] Vérifier le même cas dans tous les jeux qui lisent ou épellent un mot
+
+#### MM-24 Placer le curseur au milieu d'un mot dans « Écriture »
+- **Étiquettes** : ux, jeux
+- **Priorité** : P2
+- **Description** : Impossible de toucher au milieu d'un mot pour insérer une lettre oubliée (ex. « bueau » → ajouter le r) : il faut tout effacer.
+- **Critères d'acceptation**
+  - [ ] Un tap sur une lettre déplace le curseur à cet endroit
+  - [ ] La saisie et l'effacement s'appliquent à la position du curseur
+
+#### MM-25 Ne plus perdre les modifications d'une liste
+- **Étiquettes** : bug, ux, parent
+- **Priorité** : P1
+- **Description** : Dans l'éditeur de liste, le bouton Enregistrer en bas n'est pas visible. Le testeur a quitté et perdu ses mots sans comprendre pourquoi.
+- **Critères d'acceptation**
+  - [ ] Bouton Enregistrer toujours visible (épinglé, au-dessus du clavier), ou sauvegarde automatique
+  - [ ] À défaut d'autosave : avertissement « modifications non enregistrées » en quittant
+
+#### MM-26 Mots longs sur une seule ligne dans la liste
+- **Étiquettes** : ui
+- **Priorité** : P3
+- **Description** : « hypocondriaque » passe sur deux lignes dans la liste sur téléphone. Réduire la taille du texte pour les mots longs plutôt que de les couper (FittedBox / AutoSizeText).
+- **Critères d'acceptation**
+  - [ ] Un mot reste sur une seule ligne, avec une taille minimale lisible
+
+#### MM-27 Mots croisés : sauter les lettres déjà remplies
+- **Étiquettes** : ux, jeux
+- **Priorité** : P2
+- **Description** : Le testeur veut taper le mot en entier d'un trait. Aujourd'hui il faut penser à ne pas retaper les lettres déjà posées par un autre mot.
+- **Critères d'acceptation**
+  - [ ] Si la case suivante est déjà remplie (croisement) et que la touche tapée est cette lettre, elle est absorbée et le curseur avance
+  - [ ] Les doubles lettres marchent : pour « ll », le second tap remplit bien la case vide suivante
+  - [ ] Si la lettre tapée diffère de la case pré-remplie, comportement à définir (on saute la case et on écrit dans la suivante ?)
+
+#### MM-28 Bouton fermer sur la même ligne que la barre de progression
+- **Étiquettes** : ui, jeux
+- **Priorité** : P3
+- **Description** : Pour gagner de la hauteur dans tous les jeux, mettre le bouton X sur la même ligne que la carte de progression (« 0/2 validés … 0% ») au lieu d'une ligne à part.
+- **Critères d'acceptation**
+  - [ ] Header commun à tous les jeux : X à gauche, progression à droite
+  - [ ] Tap target du X toujours ≥ 44 px
+
+#### MM-29 Jouer en paysage (téléphone et tablette)
+- **Étiquettes** : ui, responsive
+- **Priorité** : P1 (prochain chantier)
+- **Description** : En paysage, aucun jeu n'est jouable. L'orientation n'est pas verrouillée (Info.plist autorise le paysage), donc les écrans débordent. Le paysage serait utile pour un clavier aux touches plus espacées.
+- **Critères d'acceptation**
+  - [ ] Tous les jeux jouables en paysage sur téléphone et tablette (consigne d'un côté, clavier de l'autre par exemple)
+  - [ ] À défaut, verrouiller le portrait sur téléphone en attendant
+
+#### MM-30 Prononciation des mots en anglais
+- **Étiquettes** : audio, i18n
+- **Priorité** : P3
+- **Lié à** : MM-20
+- **Description** : Le testeur utilise aussi l'app pour ses mots d'anglais. La voix devrait les lire avec l'accent anglais. Plus léger que MM-20 : une langue par liste (ou par mot) qui pilote la voix TTS.
+- **Critères d'acceptation**
+  - [ ] Choix de la langue sur une liste, voix TTS correspondante
+  - [ ] Épellation et distracteurs : à cadrer avec MM-20
+
+#### MM-31 Récupérer le code parent sans réinstaller
+- **Étiquettes** : parent
+- **Priorité** : P2
+- **Description** : Code PIN oublié = réinstaller l'app et perdre toute la progression. Le testeur propose de demander un email, et demande pourquoi rien n'est stocké en ligne.
+- **Décision (22/11/2026)** : solution 100 % hors ligne, pas d'email ni de compte. Un lien « Code oublié ? » sur l'écran du PIN ouvre un contrôle parental (un calcul dur), puis permet de choisir un nouveau code. Les listes et la progression sont conservées. Le PIN n'est pas une sécurité, il sert seulement à tenir l'enfant (6-9 ans) hors de l'espace parent.
+- **Critères d'acceptation**
+  - [ ] Lien « Code oublié ? » sur l'écran de saisie du PIN
+  - [ ] Contrôle parental tiré au hasard, hors de portée d'un enfant de primaire : par exemple une multiplication à deux chiffres (« 37 × 6 »), ou un nombre écrit en lettres à taper en chiffres (« quatre cent soixante-dix-huit »)
+  - [ ] Nouvelle question après une erreur ; un délai après plusieurs erreurs pour empêcher de tenter au hasard
+  - [ ] Réponse juste → choix d'un nouveau PIN, sans perte de données
+  - [ ] Contrôle parental réutilisable plus tard pour les liens externes et la notation de l'app, que la catégorie Enfants de l'App Store exige
+
+---
+
 ## v1.1
 
 #### MM-14 Listes prédéfinies par thème
@@ -97,8 +189,8 @@ Priorités : P1 urgent · P2 haute · P3 normale · P4 basse.
 
 #### MM-15 Export / import de listes
 - **Étiquettes** : v1.1, feature
-- **Priorité** : P3
-- **Description** : Partager une liste entre parents ou entre appareils.
+- **Priorité** : P2
+- **Description** : Partager une liste entre parents ou entre appareils. Cas concret (22/11/2026) : deux parents sur deux téléphones qui veulent la même liste de la semaine. Pas de serveur : c'est ce qui évite pour l'instant d'avoir besoin d'internet et d'un compte.
 - **Critères d'acceptation**
   - [ ] Export via la feuille de partage système (fichier ou texte)
   - [ ] Import depuis un fichier ou du texte collé, avec dédoublonnage
@@ -106,9 +198,9 @@ Priorités : P1 urgent · P2 haute · P3 normale · P4 basse.
 
 #### MM-16 Partage de liste par QR code
 - **Étiquettes** : v1.1, feature
-- **Priorité** : P3
+- **Priorité** : P2
 - **Dépend de** : MM-15
-- **Description** : Générer un QR code pour une liste et le scanner sur un autre appareil. Un enseignant pourrait par exemple afficher la dictée de la semaine.
+- **Description** : Générer un QR code pour une liste et le scanner sur un autre appareil. C'est le plus simple pour deux parents côte à côte : aucun réseau nécessaire, et une liste d'une vingtaine de mots tient largement dans un QR code. Un enseignant pourrait aussi afficher la dictée de la semaine.
 - **Critères d'acceptation**
   - [ ] QR code généré côté parent
   - [ ] Scan derrière le code PIN parent, avec une permission caméra justifiée

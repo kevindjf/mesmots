@@ -1,0 +1,7 @@
+node_modules/
+raw/
+clips/
+sheets/
+stills/
+out/
+render.log
